@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Manifest>
+    <identifier>XenobionicPatcher</identifier>
+    <version>1.0.0</version>
+    <dependencies>
+        <li>HugsLib</li>
+    </dependencies>
+    <loadAfter>
+        <li>HugsLib</li>
+    </loadAfter>
+    <manifestUri>https://raw.githubusercontent.com/SineSwiper/RimWorld-XenobionicPatcher/master/About/Manifest.xml</manifestUri>
+</Manifest>
