@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<LanguageData>
+
+    <XP_RestartNoteHeader_Title>(Restart required!)</XP_RestartNoteHeader_Title>
+    <XP_RestartNoteHeader_Description>Mod settings do not take effect until after you restart RimWorld!</XP_RestartNoteHeader_Description>
+
+    <!-- Search Operation Toggles -->
+    <XP_SearchHeader_Title>Search Operation Toggles</XP_SearchHeader_Title>
+    <XP_SearchHeader_Description>These options control which surgery operations the patcher should look for when applying them to pawn definitions.</XP_SearchHeader_Description>
+
+    <XP_SearchAdminsterRecipes_Title>Administer Items</XP_SearchAdminsterRecipes_Title>
+    <XP_SearchAdminsterRecipes_Description>Look through all "Administer Ingestible" and "Administer Usable Item" bills</XP_SearchAdminsterRecipes_Description>
+
+    <XP_SearchInstallNaturalBodyPartRecipes_Title>Install Natural Body Parts</XP_SearchInstallNaturalBodyPartRecipes_Title>
+    <XP_SearchInstallNaturalBodyPartRecipes_Description>Look through all "Install Natural Body Part" operations</XP_SearchInstallNaturalBodyPartRecipes_Description>
+
+    <XP_SearchInstallArtificialBodyPartRecipes_Title>Install Artificial Body Parts</XP_SearchInstallArtificialBodyPartRecipes_Title>
+    <XP_SearchInstallArtificialBodyPartRecipes_Description>Look through all "Install Artificial Body Part" operations.  Disabling this option also effectively disables the &lt;b&gt;Artificial Parts → Mechs&lt;/b&gt; toggle.</XP_SearchInstallArtificialBodyPartRecipes_Description>
+
+    <XP_SearchInstallImplantRecipes_Title>Install Implants</XP_SearchInstallImplantRecipes_Title>
+    <XP_SearchInstallImplantRecipes_Description>Look through all "Install Implant" operations, such as brain implants like Joywires.</XP_SearchInstallImplantRecipes_Description>
+
+    <!-- Patching Toggles -->
+    <XP_PatchHeader_Title>Patching Toggles</XP_PatchHeader_Title>
+    <XP_PatchHeader_Description>These options control what kind of patching jobs are ran to match surgery operations from one kind of pawn to other pawn definitions.</XP_PatchHeader_Description>
+
+    <XP_PatchAnimalToAnimal_Title>Animal Surgeries → Animals</XP_PatchAnimalToAnimal_Title>
+    <XP_PatchAnimalToAnimal_Description>Patch animal surgical operations into other animals</XP_PatchAnimalToAnimal_Description>
+
+    <XP_PatchHumanlikeToHumanlike_Title>Humanlike Surgeries → Humanlikes</XP_PatchHumanlikeToHumanlike_Title>
+    <XP_PatchHumanlikeToHumanlike_Description>Patch humanlike surgical operations into other humanlikes</XP_PatchHumanlikeToHumanlike_Description>
+
+    <XP_PatchArtificialToMech_Title>Artificial Parts → Mechs</XP_PatchArtificialToMech_Title>
+    <XP_PatchArtificialToMech_Description>Patch artificial body part operations into any mech-like creature</XP_PatchArtificialToMech_Description>
+
+    <XP_PatchAnimalToHumanlike_Title>Animal Surgeries → Humanlikes</XP_PatchAnimalToHumanlike_Title>
+    <XP_PatchAnimalToHumanlike_Description>Patch animal surgical operations into humanlikes</XP_PatchAnimalToHumanlike_Description>
+
+    <XP_PatchHumanlikeToAnimal_Title>Humanlike Surgeries → Animals</XP_PatchHumanlikeToAnimal_Title>
+    <XP_PatchHumanlikeToAnimal_Description>Patch humanlike surgical operations into animals</XP_PatchHumanlikeToAnimal_Description>
+
+</LanguageData>
