@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Defs>
+	<HugsLib.UpdateFeatureDef Abstract="true" Name="UpdateFeatureBase">
+		<modNameReadable>Xenobionic Patcher</modNameReadable>
+		<modIdentifier>XenobionicPatcher</modIdentifier>
+		<linkUrl>https://steamcommunity.com/sharedfiles/filedetails/?id=??????</linkUrl>
+	</HugsLib.UpdateFeatureDef>
+</Defs>

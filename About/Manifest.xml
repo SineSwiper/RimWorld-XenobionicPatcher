@@ -6,7 +6,70 @@
         <li>HugsLib</li>
     </dependencies>
     <loadAfter>
+        <li>ADogSaid...AnimalProsthetics</li>
+        <li>ARimWorldofMagic</li>
+        <li>AdvancedBiomes</li>
+        <li>AlienVsPredator</li>
+        <li>AlphaAnimals</li>
+        <li>Androids</li>
+        <li>AnimalCollabProj</li>
+        <li>AnimalsLogic</li>
+        <li>BeastManTribes</li>
+        <li>CallofCthulhu-CosmicHorrors</li>
+        <li>CallofCthulhu-ElderThings</li>
+        <li>CallofCthulhu-Factions</li>
+        <li>CrudeBionics</li>
+        <li>CuproPanda'sDrinks</li>
+        <li>CyberFauna1.0</li>
+        <li>DeathRattle</li>
+        <li>Dinosauria</li>
+        <li>EnhancedRaiders1.0</li>
+        <li>ExpandedProstheticsandOrganEngineering</li>
+        <li>ExtendedHumanBodySimulation</li>
+        <li>FactionBlender</li>
+        <li>GeneticRim</li>
+        <li>GeneticRimAlphaAnimalsPatch</li>
+        <li>GeneticRimCosmicHorrorsPatch</li>
+        <li>GeneticRimDinosauriaPatch</li>
+        <li>GeneticRimMegafaunaPatch</li>
+        <li>Glittertech</li>
         <li>HugsLib</li>
+        <li>HumanoidAlienRaces2.0</li>
+        <li>JurassicRimworld1.0</li>
+        <li>LBE'sADogSaidEasyPatcher</li>
+        <li>LessArbitrarySurgery</li>
+        <li>LifeSupport</li>
+        <li>LordoftheRims-Dwarves</li>
+        <li>LordoftheRims-Elves</li>
+        <li>LordoftheRims-Hobbits</li>
+        <li>LordoftheRims-TheThirdAge</li>
+        <li>LordoftheRims-Unlimited</li>
+        <li>MechaniteForgeReborn</li>
+        <li>Megafauna</li>
+        <li>Misc.Robots</li>
+        <li>MoreMechanoids</li>
+        <li>Pharmacist</li>
+        <li>Psychology</li>
+        <li>QuestionableEthics</li>
+        <li>QuestionableEthicsEnhanced</li>
+        <li>RBSEHardcoreEdition</li>
+        <li>Rah'sBionicsandSurgeryExpansion</li>
+        <li>Raiderpedes</li>
+        <li>RimEffect-AsarioftheRims</li>
+        <li>RimofMadness-Arachnophobia</li>
+        <li>RimofMadness-Vampires</li>
+        <li>RimofMadness-Werewolves</li>
+        <li>Rimsenal-Federation</li>
+        <li>Rimsenal-Feral</li>
+        <li>SmartMedicine</li>
+        <li>Spidercamp'sDogPack(1.0)</li>
+        <li>StarWarsAnimalCollection</li>
+        <li>TheMantodeaninsectoidrace</li>
+        <li>ThrumboRace</li>
+        <li>VGPGardenMedicine</li>
+        <li>[1.0]Androidtiers</li>
+        <li>[FSF]VanillaBionicsExpansion</li>
+        <li>[O21]Rimhammer40K</li>
     </loadAfter>
     <manifestUri>https://raw.githubusercontent.com/SineSwiper/RimWorld-XenobionicPatcher/master/About/Manifest.xml</manifestUri>
 </Manifest>
