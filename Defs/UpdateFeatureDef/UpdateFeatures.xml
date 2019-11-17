@@ -5,4 +5,21 @@
 		<modIdentifier>XenobionicPatcher</modIdentifier>
 		<linkUrl>https://steamcommunity.com/sharedfiles/filedetails/?id=1911273785</linkUrl>
 	</HugsLib.UpdateFeatureDef>
+
+	<HugsLib.UpdateFeatureDef ParentName="UpdateFeatureBase">
+		<defName>XenobionicPatcher_1_1_0</defName>
+		<assemblyVersion>1.1.0</assemblyVersion>
+		<content>&lt;b&gt;Additions:&lt;/b&gt;
+- Expanded patching to include removal operations and certain "special" operations from a few different mods
+- All surgeries are now sorted after patching
+
+&lt;b&gt;Fixes:&lt;/b&gt;
+- Fixed a bug in animal surgery identification that blocked many animal surgery additions
+- Patching is now much more optimized, even for large amounts of surgeries and pawn types
+- The "part-to-part" mapper is primed with a static part group list to help identify certain animal parts
+
+&lt;b&gt;Tweaks:&lt;/b&gt;
+- Added timers to injection debug lines
+        </content>
+	</HugsLib.UpdateFeatureDef>
 </Defs>
