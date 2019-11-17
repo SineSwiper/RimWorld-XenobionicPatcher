@@ -171,8 +171,11 @@ namespace XenobionicPatcher {
                 pawnDef.recipes?.RemoveDuplicates();
             }
 
-            // XXX: Given that Core and other "important" modules are loaded first, we'll assume the first recipe
-            // (surgery) is the destination that should receive the expanded parts lists from otherSurgery.
+            /* XXX: Given that Core and other "important" modules are loaded first, we'll assume the first recipe
+             * (surgery) is the destination that should receive the expanded parts lists from otherSurgery.
+             * 
+             * Of course, I say that right before we resort the surgery list...
+             */
 
             // Merge surgeries that do the same thing on different body parts
             var partsSurgeryList = surgeryList.Where(s => s.targetsBodyPart).ToList();
@@ -236,6 +239,16 @@ namespace XenobionicPatcher {
                 // Second loop is still an enumerator, so delete here
                 toDelete.ForEach( s => partsSurgeryList.Remove(s) );
             }
+
+            // Sort all of the recipes on the pawn side
+            foreach (ThingDef pawnDef in pawnList.Where(p => p.recipes != null)) {
+                pawnDef.recipes = pawnDef.recipes.
+                    OrderBy(s => Helpers.SurgerySort(s)).
+                    ThenBy (s => s.label.ToLower()).
+                    ToList()
+                ;
+            }
+
         }
     }
 }
