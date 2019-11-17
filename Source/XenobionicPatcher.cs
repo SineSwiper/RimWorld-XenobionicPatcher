@@ -1,6 +1,7 @@
 ﻿using RimWorld;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text.RegularExpressions;
 using HugsLib;
@@ -15,6 +16,7 @@ namespace XenobionicPatcher {
         }
         public static Base         Instance    { get; private set; }
         public static DefInjectors DefInjector { get; private set; }
+        public static bool IsDebug             { get; private set; }
 
         internal HugsLib.Utils.ModLogger ModLogger { get; private set; }
 
@@ -22,6 +24,7 @@ namespace XenobionicPatcher {
             Instance    = this;
             DefInjector = new XenobionicPatcher.DefInjectors();
             ModLogger   = this.Logger;
+            IsDebug     = false;
         }
 
         internal Dictionary<string, SettingHandle> config = new Dictionary<string, SettingHandle>();
@@ -52,48 +55,80 @@ namespace XenobionicPatcher {
 
             // Animal/Animal
             if ( ((SettingHandle<bool>)config["PatchAnimalToAnimal"]).Value ) {
-                Logger.Message("Injecting animal surgical recipes into other animals");
-                DefInjector.InjectSurgeryRecipes(
-                    allSurgeryDefs.Where(s => GetSurgeryBioType(s) == "animal"),
-                    allPawnDefs   .Where(p => GetPawnBioType   (p) == "animal")
-                );
+                if (IsDebug) Logger.Message(beforeMsg, "animal", "other animals");
+
+                var surgeryList = allSurgeryDefs.Where(s => Helpers.GetSurgeryBioType(s) == "animal");
+                var    pawnList = allPawnDefs   .Where(p => Helpers.GetPawnBioType   (p) == "animal");
+
+                stopwatch.Start();
+                DefInjector.InjectSurgeryRecipes(surgeryList, pawnList);
+                stopwatch.Stop();
+
+                Logger.Message(afterMsg, "animal", "other animals", stopwatch.ElapsedMilliseconds / 1000f, surgeryList.Count() * pawnList.Count());
             }
+            stopwatch.Reset();
 
             // Humanlike/Humanlike
             if ( ((SettingHandle<bool>)config["PatchHumanlikeToHumanlike"]).Value ) {
-                Logger.Message("Injecting humanlike surgical recipes into other humanlikes");
-                DefInjector.InjectSurgeryRecipes(
-                    allSurgeryDefs.Where(s => GetSurgeryBioType(s) == "humanlike"),
-                    allPawnDefs   .Where(p => GetPawnBioType   (p) == "humanlike")
-                );
+                if (IsDebug) Logger.Message(beforeMsg, "humanlike", "other humanlikes");
+
+                var surgeryList = allSurgeryDefs.Where(s => Helpers.GetSurgeryBioType(s) == "humanlike");
+                var    pawnList = allPawnDefs   .Where(p => Helpers.GetPawnBioType   (p) == "humanlike");
+
+                stopwatch.Start();
+                DefInjector.InjectSurgeryRecipes(surgeryList, pawnList);
+                stopwatch.Stop();
+
+                Logger.Message(afterMsg, "humanlike", "other humanlikes", stopwatch.ElapsedMilliseconds / 1000f, surgeryList.Count() * pawnList.Count());
             }
+            stopwatch.Reset();
 
             // */Mech (artificial only)
             if ( ((SettingHandle<bool>)config["PatchArtificialToMech"]).Value ) {
-                Logger.Message("Injecting artificial part surgical recipes into mechs");
-                DefInjector.InjectSurgeryRecipes(
-                    allSurgeryDefs.Where(s => typeof(Recipe_InstallArtificialBodyPart).IsAssignableFrom(s.workerClass)),
-                    allPawnDefs   .Where(p => GetPawnBioType   (p) == "mech")
+                if (IsDebug) Logger.Message(beforeMsg, "artificial part", "mechs");
+
+                var surgeryList = allSurgeryDefs.Where(s => 
+                    Helpers.IsSupertypeOf(typeof(Recipe_InstallArtificialBodyPart), s.workerClass)
                 );
+                var    pawnList = allPawnDefs   .Where(p => Helpers.GetPawnBioType   (p) == "mech");
+
+                stopwatch.Start();
+                DefInjector.InjectSurgeryRecipes(surgeryList, pawnList);
+                stopwatch.Stop();
+
+                Logger.Message(afterMsg, "artificial part", "mechs", stopwatch.ElapsedMilliseconds / 1000f, surgeryList.Count() * pawnList.Count());
             }
+            stopwatch.Reset();
 
             // Animal/Humanlike
             if ( ((SettingHandle<bool>)config["PatchAnimalToHumanlike"]).Value ) {
-                Logger.Message("Injecting animal surgical recipes into humanlikes");
-                DefInjector.InjectSurgeryRecipes(
-                    allSurgeryDefs.Where(s => GetSurgeryBioType(s) == "animal"),
-                    allPawnDefs   .Where(p => GetPawnBioType   (p) == "humanlike")
-                );
+                if (IsDebug) Logger.Message(beforeMsg, "animal", "humanlikes");
+
+                var surgeryList = allSurgeryDefs.Where(s => Helpers.GetSurgeryBioType(s) == "animal");
+                var    pawnList = allPawnDefs   .Where(p => Helpers.GetPawnBioType   (p) == "humanlike");
+
+                stopwatch.Start();
+                DefInjector.InjectSurgeryRecipes(surgeryList, pawnList);
+                stopwatch.Stop();
+
+                Logger.Message(afterMsg, "animal", "humanlikes", stopwatch.ElapsedMilliseconds / 1000f, surgeryList.Count() * pawnList.Count());
             }
+            stopwatch.Reset();
 
             // Humanlike/Animal
             if ( ((SettingHandle<bool>)config["PatchHumanlikeToAnimal"]).Value ) {
-                Logger.Message("Injecting humanlike surgical recipes into animals");
-                DefInjector.InjectSurgeryRecipes(
-                    allSurgeryDefs.Where(s => GetSurgeryBioType(s) == "humanlike"),
-                    allPawnDefs   .Where(p => GetPawnBioType   (p) == "animal")
-                );
+                if (IsDebug) Logger.Message(beforeMsg, "humanlike", "animals");
+
+                var surgeryList = allSurgeryDefs.Where(s => Helpers.GetSurgeryBioType(s) == "humanlike");
+                var    pawnList = allPawnDefs   .Where(p => Helpers.GetPawnBioType   (p) == "animal");
+
+                stopwatch.Start();
+                DefInjector.InjectSurgeryRecipes(surgeryList, pawnList);
+                stopwatch.Stop();
+
+                Logger.Message(afterMsg, "humanlike", "animals", stopwatch.ElapsedMilliseconds / 1000f, surgeryList.Count() * pawnList.Count());
             }
+            stopwatch.Reset();
 
             // Any Fleshlike to any Fleshlike (only if all other similar ones are on)
             if (
@@ -102,18 +137,31 @@ namespace XenobionicPatcher {
                 ((SettingHandle<bool>)config["PatchAnimalToHumanlike"])   .Value &&
                 ((SettingHandle<bool>)config["PatchHumanlikeToAnimal"])   .Value
             ) {
-                Logger.Message("Injecting fleshlike surgical recipes into other fleshlikes");
-                DefInjector.InjectSurgeryRecipes(
-                    allSurgeryDefs.Where(s => Regex.IsMatch( GetSurgeryBioType(s), "animal|(?:human|flesh)like|mixed" )),
-                    allPawnDefs   .Where(p => GetPawnBioType   (p) != "mech")
-                );
+                if (IsDebug) Logger.Message(beforeMsg, "fleshlike", "fleshlikes");
+
+                var surgeryList = allSurgeryDefs.Where(s => Regex.IsMatch( Helpers.GetSurgeryBioType(s), "animal|(?:human|flesh)like|mixed" ));
+                var    pawnList = allPawnDefs   .Where(p => Helpers.GetPawnBioType(p) != "mech");
+
+                stopwatch.Start();
+                DefInjector.InjectSurgeryRecipes(surgeryList, pawnList);
+                stopwatch.Stop();
+
+                Logger.Message(afterMsg, "fleshlike", "fleshlikes", stopwatch.ElapsedMilliseconds / 1000f, surgeryList.Count() * pawnList.Count());
             }
+            stopwatch.Reset();
 
             // Clean up
-            Logger.Message("Merging duplicate surgical recipes");
+            if (IsDebug) Logger.Message("Merging duplicate surgical recipes");
+
+            stopwatch.Start();
             DefInjector.CleanupSurgeryRecipes(allSurgeryDefs, allPawnDefs);
+            stopwatch.Stop();
 
+            Logger.Message("Merged duplicate surgical recipes (took {0:F4}s)", stopwatch.ElapsedMilliseconds / 1000f);
+            stopwatch.Reset();
 
+            // No need to occupy all of this memory
+            Helpers.ClearCaches();
         }
 
         public void ProcessSettings () {
