@@ -4,9 +4,7 @@
     <author>SineSwiper</author>
     <url>https://github.com/SineSwiper/RimWorld-XenobionicPatcher</url>
     <supportedVersions><li>1.0</li></supportedVersions>
-<description>This patcher mod looks through most of the surgery operations, and matches your modded surgeries (like new bionics) with your modded races and animals.  In other words, if you have a bionic expansion mod like FSF's Vanilla Bionics Expansion, EPOE, or RBSE, and a set of modded races or animals, this patcher will match them together.
-
-It will match them together a few different ways (examples in quotes):
+<description>This patcher mod looks through most of the surgery operations, and matches your modded surgeries (like new bionics) with your modded races and animals.  In other words, if you have a bionic expansion mod like FSF's Vanilla Bionics Expansion, EPOE, or RBSE, and a set of modded races or animals, this patcher will match them together a few different ways (examples in quotes):
 
 1. If the surgery works against a "Leg", and your pawn has a "Leg", your pawn gets the operation option.
 2. If the surgery works against a different named part, but your pawn definition really calls it a "Leg" in the label, the body part will be mapped together and your pawn will get other "Leg" operations.
@@ -14,14 +12,14 @@ It will match them together a few different ways (examples in quotes):
 
 On top of the surgery-to-race compatibilities, Xenobionic Patcher will also link humanlike operations with animals and visa-versa.  Think of the possibilities:
 
-* Do your animals need bionic legs or an Orion Exoskeleton from Glittertech?  You got them!
-* Is your best colonist quickly dying from a shot to the heart (only alive because of Deathrattle) and the only other heart you own is some bionic animal heart you bought cheap from a trader?  You can save him!
+* Do your animals need bionic legs or an Orion Exoskeleton from Glitter Tech?  You got them!
+* Is your best colonist quickly dying from a shot to the heart (only alive because of Death Rattle) and the only other heart you own is some bionic animal heart you bought cheap from a trader?  You can save him!
 * Do you want those sweet Genetic Rim animal implants for yourselves?  Install them freely!
 
 This patcher does not create any items or pawns. It merely links already known operations to other races and animals.
 
 In most cases, you don't need any additional race or animal patchers. However, they shouldn't interfere with Xenobionic Patcher, even if you do.
 
-Load Order: PUT THIS DEAD LAST for best compatibility!  After any race mods, bionic mods, medical mods, surgery mods, animal mods, etc.
+Load Order: PUT THIS DEAD LAST for best compatibility!  After any race mods, animal mods, bionic mods, medical mods, surgery mods, etc.
 </description>
 </ModMetaData>
