@@ -112,28 +112,8 @@ namespace XenobionicPatcher {
             // Clean up
             Logger.Message("Merging duplicate surgical recipes");
             DefInjector.CleanupSurgeryRecipes(allSurgeryDefs, allPawnDefs);
-        }
 
-        public string GetSurgeryBioType (RecipeDef surgery) {
-            var users = surgery.AllRecipeUsers;
-            if (users.All(p => GetPawnBioType(p) == "mech"))      return "mech";
-            if (users.All(p => GetPawnBioType(p) == "animal"))    return "animal";
-            if (users.All(p => GetPawnBioType(p) == "humanlike")) return "humanlike";
-            if (users.All(p => GetPawnBioType(p) == "other"))     return "other";
 
-            if (users.All(p => Regex.IsMatch( GetPawnBioType(p), "animal|humanlike" ))) return "fleshlike";
-            return "mixed";
-        }
-
-        public string GetPawnBioType (ThingDef pawn) {
-            // This catches mechanoids and droids, but not meat-containing Androids
-            if (pawn.race.IsMechanoid || pawn.GetStatValueAbstract(StatDefOf.MeatAmount) <= 0) return "mech";
-
-            if (pawn.race.Animal)    return "animal";
-            if (pawn.race.Humanlike) return "humanlike";
-
-            // Must be a toolUser?
-            return "other";
         }
 
         public void ProcessSettings () {
