@@ -179,8 +179,10 @@ namespace XenobionicPatcher {
             for (int ps = 0; ps < partsSurgeryList.Count(); ps++) {
                 RecipeDef surgery = partsSurgeryList[ps];
                 
+                if (surgery.recipeUsers == null) surgery.recipeUsers = new List<ThingDef> {};
+
                 // The other side of the "easy dupe" cleaning
-                surgery.recipeUsers?.RemoveDuplicates();
+                surgery.recipeUsers.RemoveDuplicates();
 
                 var toDelete = new List<RecipeDef> {};
                 foreach (RecipeDef otherSurgery in partsSurgeryList.Where(s => 
@@ -192,23 +194,19 @@ namespace XenobionicPatcher {
 
                     s.fixedIngredientFilter?.Summary == surgery.fixedIngredientFilter?.Summary
                 )) {
-                    /*
-                    XP.ModLogger.Message(
-                        "    [" + surgery.defName + "] Merging " + otherSurgery.defName
-                    );
-                    */
-
                     surgery.appliedOnFixedBodyParts.AddRange(otherSurgery.appliedOnFixedBodyParts);
                     surgery.appliedOnFixedBodyParts.RemoveDuplicates();
 
-                    surgery.recipeUsers.AddRange(otherSurgery.recipeUsers);
-                    surgery.recipeUsers.RemoveDuplicates();
+                    List<ThingDef> otherSurgeryPawns = new List<ThingDef> {};
+                    if (otherSurgery.recipeUsers != null && otherSurgery.recipeUsers.Count > 0) {
+                        surgery.recipeUsers.AddRange(otherSurgery.recipeUsers);
+                        surgery.recipeUsers.RemoveDuplicates();
 
-                    // This is like pawnDef.AllRecipes, without actually initializing the permanent cache.  We aren't going
-                    // to trust that every def is actually injected in both sides (pawn.recipes + surgery.recipeUsers).
-                    List<ThingDef> otherSurgeryPawns = otherSurgery.recipeUsers;
-                    otherSurgeryPawns.AddRange( pawnList.Where(p => p.recipes.Contains(otherSurgery)) );
-                    otherSurgeryPawns.RemoveDuplicates();
+                        // This is like pawnDef.AllRecipes, without actually initializing the permanent cache.  We aren't going
+                        // to trust that every def is actually injected in both sides (pawn.recipes + surgery.recipeUsers).
+                        otherSurgeryPawns.AddRange(otherSurgery.recipeUsers);
+                    }
+                    pawnList.Where(p => p.recipes.Contains(otherSurgery)).Do( p => otherSurgeryPawns.AddDistinct(p) );
                     
                     foreach (ThingDef pawnDef in otherSurgeryPawns) {
                         surgery.recipeUsers.AddDistinct(pawnDef);
@@ -233,12 +231,6 @@ namespace XenobionicPatcher {
                     removeMethod.Invoke(null, new object[] { otherSurgery });  // static method: first arg is null
 
                     toDelete.Add(otherSurgery);  // don't re-merge in the other direction on our main loop
-
-                    /*
-                    XP.ModLogger.Message(
-                        "    [" + surgery.defName + "] Results: " + string.Join(", ", surgery.appliedOnFixedBodyParts?.Select(bp => bp.defName).ToArray())
-                    );
-                    */
                 }
 
                 // Second loop is still an enumerator, so delete here
