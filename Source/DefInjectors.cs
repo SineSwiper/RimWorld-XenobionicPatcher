@@ -9,17 +9,56 @@ namespace XenobionicPatcher {
         public void InjectSurgeryRecipes (IEnumerable<RecipeDef> surgeryList, IEnumerable<ThingDef> pawnList) {
             Base XP = Base.Instance;
 
-            /* Some mods (like *cough*elderthings*cough*) like to use different def names for basic body parts.
-             * This makes it harder to add the surgery recipe to the alien.  We'll need to add in the similar
-             * body part to the appliedOnFixedBodyParts list first.
+            /* Many mods like to use different def names for basic body parts.  This makes it harder to add the
+             * surgery recipe to the alien.  We'll need to add in the similar body part to the
+             * appliedOnFixedBodyParts list first.
              * 
              * First, look through the list of common surgery recipes to infer the part type.  In other words, if
              * there's a surgery called "Install bionic arm" then that part is an arm that can accept other kinds of
              * arms.  Then, also look for body part matches by looking at the body part labels directly (basically
              * duck typing).
+             * 
+             * These's all go into the part mapper for later injection.
              */
             var partToPartMapper = new Dictionary<string, List<BodyPartDef>> {};
 
+            // Start with a hard-coded list, just in case any of these don't match.  This is especially helpful for
+            // animals, since they don't always have obvious humanlike analogues.
+            var staticPartGroups = new Dictionary<string, string[]> {
+                { "Hand",    new[] { "hand", "hoof", "claw", "grasper", "pincer" } },
+                { "Eye",     new[] { "eye", "sight", "seeing"                    } },
+                { "Ear",     new[] { "ear", "hear", "hearing"                    } },
+                { "Nose",    new[] { "nose", "nostril", "smell", "smelling"      } },
+                { "Jaw",     new[] { "jaw", "beak", "mouth", "maw", "teeth"      } },
+                // Doubtful anybody has any surgeries like these...
+                { "Ribcage", new[] { "ribcage", "thorax" } },
+                { "Neck",    new[] { "neck", "pronotum"  } },
+            };
+
+            // Static part loop
+            foreach (var partDefName in staticPartGroups.Keys) {
+                BodyPartDef vanillaPart = DefDatabase<BodyPartDef>.GetNamed(partDefName);
+                if (!partToPartMapper.ContainsKey(partDefName)) partToPartMapper[partDefName] = new List<BodyPartDef> {};
+
+                var partGroup  = staticPartGroups[partDefName];
+                var groupParts = new List<BodyPartDef> { vanillaPart };
+                for (int i = 0; i < partGroup.Count(); i++) {
+                    string fuzzyPartName = partGroup[i];
+                    foreach (BodyPartDef raceBodyPart in
+                        raceBodyParts.Where(bpr => Helpers.DoesBodyPartMatch(bpr, fuzzyPartName)).Select(bpr => bpr.def)
+                    ) {
+                        string rbpDefName = raceBodyPart.defName;
+                        if (!partToPartMapper.ContainsKey(rbpDefName)) partToPartMapper[rbpDefName] = new List<BodyPartDef> {};
+
+                        groupParts.Add(raceBodyPart);
+                    }
+                }
+
+                // New list construction should already be covered by the above "if (!ContainsKey)" checks
+                groupParts.ForEach( bpd => partToPartMapper[bpd.defName].AddRange(groupParts) );
+            }
+
+            // Main surgery loop
             foreach (RecipeDef surgery in surgeryList.Where(s => s.targetsBodyPart)) {
                 foreach (ThingDef pawnDef in pawnList) {
                     // We can't cross the animal/humanlike boundary with these checks because animal surgery recipes tend to be a lot
