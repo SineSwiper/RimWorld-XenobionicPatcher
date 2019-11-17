@@ -60,47 +60,38 @@ namespace XenobionicPatcher {
 
             // Main surgery loop
             foreach (RecipeDef surgery in surgeryList.Where(s => s.targetsBodyPart)) {
-                foreach (ThingDef pawnDef in pawnList) {
-                    // We can't cross the animal/humanlike boundary with these checks because animal surgery recipes tend to be a lot
-                    // looser with limbs (ie: power claws on animal legs)
-                    if (XP.GetPawnBioType(pawnDef) != XP.GetSurgeryBioType(surgery)) continue;
+                string surgeryBioType    = Helpers.GetSurgeryBioType(surgery);
+                string surgeryLabelLower = surgery.label.ToLower();
+
+                foreach (BodyPartDef surgeryBodyPart in surgery.appliedOnFixedBodyParts) {
+                    string sbpDefName = surgeryBodyPart.defName;
+                    if (!partToPartMapper.ContainsKey(sbpDefName)) partToPartMapper[sbpDefName] = new List<BodyPartDef> {};
 
                     // Look for matching surgery labels, and map them to similar body parts
-                    foreach (RecipeDef otherSurgery in pawnDef.recipes?.Where(s =>
-                        s.targetsBodyPart && s != surgery && s.defName != surgery.defName && s.label.ToLower() == surgery.label.ToLower()
-                    )) {
-                        foreach (BodyPartDef surgeryBodyPart in surgery.appliedOnFixedBodyParts) {
-                            foreach (BodyPartDef otherSurgeryBodyPart in otherSurgery.appliedOnFixedBodyParts.Where(
-                                bp => bp != surgeryBodyPart && bp.defName != surgeryBodyPart.defName && bp.label.ToLower() != surgeryBodyPart.label.ToLower()
-                            )) {
-                                if (!partToPartMapper.ContainsKey(surgeryBodyPart.defName)) partToPartMapper[surgeryBodyPart.defName] = new List<BodyPartDef> {};
-                                partToPartMapper[surgeryBodyPart.defName].AddDistinct(otherSurgeryBodyPart);
-                            }
-                        }
-                    }
+                    partToPartMapper[sbpDefName].AddRange(
+                        pawnList.
+                        // We can't cross the animal/humanlike boundary with these checks because animal surgery recipes tend to be a lot
+                        // looser with limbs (ie: power claws on animal legs)
+                        Where     (p  => Helpers.GetPawnBioType(p) == surgeryBioType && p.recipes != null).
+                        SelectMany(p  => p.recipes).Distinct().
+                        Where     (s  => s.targetsBodyPart && s != surgery && s.defName != surgery.defName && s.label.ToLower() == surgeryLabelLower).
+                        SelectMany(s  => s.appliedOnFixedBodyParts).Distinct().
+                        Where     (bp => bp != surgeryBodyPart && bp.defName != sbpDefName)
+                    );
 
-                    // Looks for matching body part labels
-                    foreach (BodyPartDef surgeryBodyPart in surgery.appliedOnFixedBodyParts) {
-                        foreach (
-                            BodyPartDef raceBodyPart in
-                            pawnDef.race.body.AllParts.Select(bpr => bpr.def).Where(rbp =>
-                                surgeryBodyPart != rbp && surgeryBodyPart.defName != rbp.defName && surgeryBodyPart.label.ToLower() == rbp.label.ToLower()
-                            )
-                        ) {
-                            if (!partToPartMapper.ContainsKey(surgeryBodyPart.defName)) partToPartMapper[surgeryBodyPart.defName] = new List<BodyPartDef> {};
-                            partToPartMapper[surgeryBodyPart.defName].AddDistinct(raceBodyPart);
-                        }
-                    }
-                }
-
-                // DEBUG
-                /*
-                if (surgery.label.ToLower() == "install power claw" || surgery.label.ToLower() == "install bionic leg") {
-                    XP.ModLogger.Message(
-                        "    [" + surgery.defName + "] Before: " + String.Join(", ", surgery.appliedOnFixedBodyParts?.Select(bp => bp.defName).ToArray())
+                    // Looks for matching (or near-matching) body part labels
+                    partToPartMapper[sbpDefName].AddRange(
+                        raceBodyParts.
+                        Where (bpr => surgeryBodyPart != bpr.def && sbpDefName != bpr.def.defName && Helpers.DoesBodyPartMatch(bpr, surgeryBodyPart)).
+                        Select(bpr => bpr.def)
                     );
                 }
-                */
+            }
+
+            // Clear out empty lists and dupes
+            foreach (string part in partToPartMapper.Keys.ToArray()) {
+                if (partToPartMapper[part].Count < 1) partToPartMapper.Remove(part);
+                else                                  partToPartMapper[part].RemoveDuplicates();
             }
 
             // With the parts mapped, add new body parts to existing recipes
@@ -116,15 +107,6 @@ namespace XenobionicPatcher {
                     surgery.appliedOnFixedBodyParts.AddRange(newPartList);
                     surgery.appliedOnFixedBodyParts.RemoveDuplicates();
                 }
-
-                // DEBUG
-                /*
-                if (surgery.label.ToLower() == "install power claw" || surgery.label.ToLower() == "install bionic leg") {
-                    XP.ModLogger.Message(
-                        "    [" + surgery.defName + "] After: " + String.Join(", ", surgery.appliedOnFixedBodyParts?.Select(bp => bp.defName).ToArray())
-                    );
-                }
-                */
             }
 
             // Apply relevant missing surgery options to all pawn Defs
