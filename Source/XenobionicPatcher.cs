@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Text.RegularExpressions;
+using Harmony;
 using HugsLib;
 using HugsLib.Settings;
 using Verse;
@@ -39,19 +40,65 @@ namespace XenobionicPatcher {
                 { "Adminster",                 new[] { typeof(Recipe_AdministerIngestible), typeof(Recipe_AdministerUsableItem) } },
                 { "InstallNaturalBodyPart",    new[] { typeof(Recipe_InstallNaturalBodyPart)    } },
                 { "InstallArtificialBodyPart", new[] { typeof(Recipe_InstallArtificialBodyPart) } },
-                { "InstallImplant",            new[] { typeof(Recipe_InstallImplant)            } }
+                { "InstallImplant",            new[] { typeof(Recipe_InstallImplant)            } },
+                { "VanillaRemoval",            new[] { typeof(Recipe_RemoveHediff), AccessTools.TypeByName("RimWorld.Recipe_RemoveBodyPart") } }, 
             };
             foreach (string cName in searchConfigMapper.Keys) {
                 if ( ((SettingHandle<bool>)config["Search" + cName + "Recipes"]).Value ) surgeryWorkerClassesFilter.AddRange( searchConfigMapper[cName] );
             }
+
+            // Add additional search types for modded surgery classes
+            if ( ((SettingHandle<bool>)config["SearchModdedSurgeryClasses"]).Value ) {
+                List<string> moddedWorkerClassNames = new List<string> {
+                    // (EPOE doesn't have any custom worker classes)
+                    
+                    // Rah's Bionics and Surgery Expansion
+                    "ScarRemoving.Recipe_RemoveHediff_noBrain",
+                
+                    // Medical Surgery Expansion
+                    "OrenoMSE.Recipe_InstallBodyPartModule",
+                    "OrenoMSE.Recipe_InstallImplantSystem",
+                    "OrenoMSE.Recipe_RemoveImplantSystem",
+
+                    // Chj's Androids
+                    "Androids.Recipe_Disassemble",
+                    "Androids.Recipe_RepairKit",
+
+                    // Android Tiers
+                    "MOARANDROIDS.Recipe_InstallImplantAndroid",
+                    "MOARANDROIDS.Recipe_InstallArtificialBodyPartAndroid",
+                    
+                    // Alien vs. Predator
+                    "RRYautja.Recipe_Remove_Gauntlet",
+                    "RRYautja.Recipe_RemoveHugger",
+                };
+
+                foreach (string workerName in moddedWorkerClassNames) {
+                    Type worker = Helpers.SafeTypeByName(workerName);
+
+                    if (worker != null) surgeryWorkerClassesFilter.Add(worker);
+                }
+            }
             
             // Start with a few global lists
             List<ThingDef> allPawnDefs = DefDatabase<ThingDef>.AllDefs.Where(
-                thing => typeof(Pawn).IsAssignableFrom(thing.thingClass)
+                thing => Helpers.IsSupertypeOf(typeof(Pawn), thing.thingClass)
             ).ToList();
             List<RecipeDef> allSurgeryDefs = DefDatabase<RecipeDef>.AllDefs.Where(
-                recipe => recipe.IsSurgery && surgeryWorkerClassesFilter.Any( t => t.IsAssignableFrom(recipe.workerClass) )
+                recipe => recipe.IsSurgery && surgeryWorkerClassesFilter.Any( t => Helpers.IsSupertypeOf(t, recipe.workerClass) )
             ).ToList();
+
+            Stopwatch stopwatch = Stopwatch.StartNew();
+            string beforeMsg = "Injecting {0} surgical recipes into {1}";
+            string  afterMsg = "Injected {0} surgical recipes into {1} (took {2:F4}s; {3:N0} combinations)";
+
+            // Pre-caching
+            stopwatch.Start();
+            allSurgeryDefs.ForEach(s => Helpers.GetSurgeryBioType(s));
+            allPawnDefs   .ForEach(p => Helpers.GetPawnBioType   (p));
+            stopwatch.Stop();
+
+            Logger.Message("Pre-caching (took {0:F4}s; {1:N0} defs)", stopwatch.ElapsedMilliseconds / 1000f, allSurgeryDefs.Count() + allPawnDefs.Count());
 
             // Animal/Animal
             if ( ((SettingHandle<bool>)config["PatchAnimalToAnimal"]).Value ) {
@@ -83,12 +130,14 @@ namespace XenobionicPatcher {
             }
             stopwatch.Reset();
 
-            // */Mech (artificial only)
+            // */Mech (artificial+mech only)
             if ( ((SettingHandle<bool>)config["PatchArtificialToMech"]).Value ) {
                 if (IsDebug) Logger.Message(beforeMsg, "artificial part", "mechs");
 
                 var surgeryList = allSurgeryDefs.Where(s => 
-                    Helpers.IsSupertypeOf(typeof(Recipe_InstallArtificialBodyPart), s.workerClass)
+                    Helpers.IsSupertypeOf(typeof(Recipe_InstallArtificialBodyPart), s.workerClass) ||
+                    Helpers.IsSupertypeOf("OrenoMSE.Recipe_InstallBodyPartModule",  s.workerClass) ||
+                    Helpers.GetSurgeryBioType(s) == "mech"
                 );
                 var    pawnList = allPawnDefs   .Where(p => Helpers.GetPawnBioType   (p) == "mech");
 
@@ -186,6 +235,8 @@ namespace XenobionicPatcher {
                 "SearchInstallNaturalBodyPartRecipes",
                 "SearchInstallArtificialBodyPartRecipes",
                 "SearchInstallImplantRecipes",
+                "SearchVanillaRemovalRecipes",
+                "SearchModdedSurgeryClasses",
 
                 "BlankHeader",
                 "PatchHeader",

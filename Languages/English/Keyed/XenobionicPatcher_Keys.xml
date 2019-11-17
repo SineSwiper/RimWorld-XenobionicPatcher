@@ -15,10 +15,16 @@
     <XP_SearchInstallNaturalBodyPartRecipes_Description>Look through all "Install Natural Body Part" operations</XP_SearchInstallNaturalBodyPartRecipes_Description>
 
     <XP_SearchInstallArtificialBodyPartRecipes_Title>Install Artificial Body Parts</XP_SearchInstallArtificialBodyPartRecipes_Title>
-    <XP_SearchInstallArtificialBodyPartRecipes_Description>Look through all "Install Artificial Body Part" operations.  Disabling this option also effectively disables the &lt;b&gt;Artificial Parts → Mechs&lt;/b&gt; toggle.</XP_SearchInstallArtificialBodyPartRecipes_Description>
+    <XP_SearchInstallArtificialBodyPartRecipes_Description>Look through all "Install Artificial Body Part" operations.</XP_SearchInstallArtificialBodyPartRecipes_Description>
 
     <XP_SearchInstallImplantRecipes_Title>Install Implants</XP_SearchInstallImplantRecipes_Title>
     <XP_SearchInstallImplantRecipes_Description>Look through all "Install Implant" operations, such as brain implants like Joywires.</XP_SearchInstallImplantRecipes_Description>
+
+    <XP_SearchVanillaRemovalRecipes_Title>Basic Removals</XP_SearchVanillaRemovalRecipes_Title>
+    <XP_SearchVanillaRemovalRecipes_Description>Look through all basic "removal" operations, such as harvesting, part removal, or excising.</XP_SearchVanillaRemovalRecipes_Description>
+
+    <XP_SearchModdedSurgeryClasses_Title>Modded Surgery Classes</XP_SearchModdedSurgeryClasses_Title>
+    <XP_SearchModdedSurgeryClasses_Description>Look through any surgery that requires a special non-vanilla worker class.</XP_SearchModdedSurgeryClasses_Description>
 
     <!-- Patching Toggles -->
     <XP_PatchHeader_Title>Patching Toggles</XP_PatchHeader_Title>
@@ -31,7 +37,7 @@
     <XP_PatchHumanlikeToHumanlike_Description>Patch humanlike surgical operations into other humanlikes</XP_PatchHumanlikeToHumanlike_Description>
 
     <XP_PatchArtificialToMech_Title>Artificial Parts → Mechs</XP_PatchArtificialToMech_Title>
-    <XP_PatchArtificialToMech_Description>Patch artificial body part operations into any mech-like creature</XP_PatchArtificialToMech_Description>
+    <XP_PatchArtificialToMech_Description>Patch artificial body part operations (and certain mech-only operations) into any mech-like creature</XP_PatchArtificialToMech_Description>
 
     <XP_PatchAnimalToHumanlike_Title>Animal Surgeries → Humanlikes</XP_PatchAnimalToHumanlike_Title>
     <XP_PatchAnimalToHumanlike_Description>Patch animal surgical operations into humanlikes</XP_PatchAnimalToHumanlike_Description>
