@@ -22,6 +22,31 @@ namespace XenobionicPatcher {
              */
             var partToPartMapper = new Dictionary<string, List<BodyPartDef>> {};
 
+            // This list is used a few times.  Best to compose it outside the loops.  Distinct is important
+            // because there's a lot of dupes.
+            List<BodyPartRecord> raceBodyParts =
+                pawnList.
+                Select    (p  => p.race.body).Distinct().
+                SelectMany(bd => bd.AllParts).Distinct().
+                ToList()
+            ;
+
+            // Both of these are useful in surgery->pawn body part matches
+            var doesPawnHaveSurgery  = new HashSet<string> {};
+            var doesPawnHaveBodyPart = new HashSet<string> {};
+            foreach (ThingDef pawn in pawnList) {
+                if (pawn.recipes != null) doesPawnHaveSurgery.AddRange(
+                    pawn.recipes.Select(
+                        s => pawn.defName + "|" + s.label.ToLower()
+                    ).ToList()
+                );
+                doesPawnHaveBodyPart.AddRange(
+                    pawn.race.body.AllParts.Distinct().Select(
+                        bpr => pawn.defName + "|" + bpr.def.defName
+                    ).ToList()
+                );
+            }
+
             // Start with a hard-coded list, just in case any of these don't match.  This is especially helpful for
             // animals, since they don't always have obvious humanlike analogues.
             var staticPartGroups = new Dictionary<string, string[]> {
@@ -111,23 +136,22 @@ namespace XenobionicPatcher {
 
             // Apply relevant missing surgery options to all pawn Defs
             foreach (RecipeDef surgery in surgeryList) {
-                foreach (ThingDef pawnDef in pawnList) {
+                string surgeryLabelLower = surgery.label.ToLower();
+
+                foreach (ThingDef pawnDef in pawnList.Where( p =>
+                    // If it already exists, don't add it
+                    !doesPawnHaveSurgery.Contains( p.defName + "|" + surgeryLabelLower ) &&
+                    // If the pawn never had any recipes, then it doesn't even have the basics, so don't risk adding new ones
+                    p.recipes != null && p.recipes.Count() >= 1
+                )) {
                     bool shouldAddSurgery = false;
 
-                    // If the pawn never had any recipes, then it doesn't even have the basics, so don't risk adding new ones
-                    if (pawnDef.recipes == null || pawnDef.recipes.Count() < 1) continue;
-
-                    // If it already exists, don't add it
-                    else if (pawnDef.recipes.Any( s =>
-                        s == surgery || s.defName == surgery.defName || s.label.ToLower() == surgery.label.ToLower()
-                    )) continue;
-
                     // If it's an administer recipe, add it
-                    else if (!surgery.targetsBodyPart) shouldAddSurgery = true;
+                    if (!surgery.targetsBodyPart) shouldAddSurgery = true;
 
-                    // If it targets any body parts that exist within the alien, add it
+                    // If it targets any body parts that exist within the pawn, add it
                     else if (surgery.targetsBodyPart && surgery.appliedOnFixedBodyParts.Count() >= 1 && surgery.appliedOnFixedBodyParts.Any( sbp =>
-                        pawnDef.race.body.AllParts.Any( rbpr => sbp.defName == rbpr.def.defName )
+                        doesPawnHaveBodyPart.Contains( pawnDef.defName + "|" + sbp.defName )
                     )) shouldAddSurgery = true;
 
                     if (shouldAddSurgery) {
