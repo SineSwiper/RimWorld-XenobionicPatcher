@@ -209,7 +209,7 @@ namespace XenobionicPatcher {
                         // to trust that every def is actually injected in both sides (pawn.recipes + surgery.recipeUsers).
                         otherSurgeryPawns.AddRange(otherSurgery.recipeUsers);
                     }
-                    pawnList.Where(p => p.recipes.Contains(otherSurgery)).Do( p => otherSurgeryPawns.AddDistinct(p) );
+                    pawnList.Where(p => p.recipes != null && p.recipes.Contains(otherSurgery)).Do( p => otherSurgeryPawns.AddDistinct(p) );
                     
                     foreach (ThingDef pawnDef in otherSurgeryPawns) {
                         surgery.recipeUsers.AddDistinct(pawnDef);
