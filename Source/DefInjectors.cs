@@ -237,13 +237,19 @@ namespace XenobionicPatcher {
                 toDelete.ForEach( s => partsSurgeryList.Remove(s) );
             }
 
-            // Sort all of the recipes on the pawn side
             foreach (ThingDef pawnDef in pawnList.Where(p => p.recipes != null)) {
+                // Sort all of the recipes on the pawn side
                 pawnDef.recipes = pawnDef.recipes.
                     OrderBy(s => Helpers.SurgerySort(s)).
                     ThenBy (s => s.label.ToLower()).
                     ToList()
                 ;
+
+                /* One of the mods before us may have called AllRecipes, which sets up a permanent cache.  This
+                 * means that our new additions might never show up.  Force clear the cache, punching through
+                 * the private field via reflection.
+                 */
+                 Traverse.Create(pawnDef).Field("allRecipesCached").SetValue(null);
             }
 
         }
