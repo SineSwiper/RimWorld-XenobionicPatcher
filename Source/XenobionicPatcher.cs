@@ -79,6 +79,10 @@ namespace XenobionicPatcher {
                     if (worker != null) surgeryWorkerClassesFilter.Add(worker);
                 }
             }
+
+            Stopwatch stopwatch = Stopwatch.StartNew();
+            string beforeMsg = "Injecting {0} surgical recipes into {1}";
+            string  afterMsg = "Injected {0} surgical recipes into {1} (took {2:F4}s; {3:N0} combinations)";
             
             // Start with a few global lists
             List<ThingDef> allPawnDefs = DefDatabase<ThingDef>.AllDefs.Where(
@@ -88,17 +92,24 @@ namespace XenobionicPatcher {
                 recipe => recipe.IsSurgery && surgeryWorkerClassesFilter.Any( t => Helpers.IsSupertypeOf(t, recipe.workerClass) )
             ).ToList();
 
-            Stopwatch stopwatch = Stopwatch.StartNew();
-            string beforeMsg = "Injecting {0} surgical recipes into {1}";
-            string  afterMsg = "Injected {0} surgical recipes into {1} (took {2:F4}s; {3:N0} combinations)";
+            // Because we use pawn.recipes so often for surgery checks, and not the other side (surgery.recipeUsers),
+            // merge the latter into the former.  Our new additions will be sure to add it in both sides to keep
+            // pawn.recipes complete.
+            stopwatch.Start();
+            foreach (ThingDef pawn in allPawnDefs) {
+                if (pawn.recipes == null) pawn.recipes = new List<RecipeDef> {};
+                pawn.recipes.AddRange(
+                    allSurgeryDefs.Where(s => s.recipeUsers != null && s.recipeUsers.Contains(pawn))
+                );
+                pawn.recipes.RemoveDuplicates();
+            }            
 
             // Pre-caching
-            stopwatch.Start();
             allSurgeryDefs.ForEach(s => Helpers.GetSurgeryBioType(s));
             allPawnDefs   .ForEach(p => Helpers.GetPawnBioType   (p));
             stopwatch.Stop();
 
-            Logger.Message("Pre-caching (took {0:F4}s; {1:N0} defs)", stopwatch.ElapsedMilliseconds / 1000f, allSurgeryDefs.Count() + allPawnDefs.Count());
+            Logger.Message("Prep work / pre-caching (took {0:F4}s; {1:N0} defs)", stopwatch.ElapsedMilliseconds / 1000f, allSurgeryDefs.Count() + allPawnDefs.Count());
 
             // Animal/Animal
             if ( ((SettingHandle<bool>)config["PatchAnimalToAnimal"]).Value ) {

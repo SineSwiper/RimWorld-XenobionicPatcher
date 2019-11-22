@@ -140,9 +140,7 @@ namespace XenobionicPatcher {
 
                 foreach (ThingDef pawnDef in pawnList.Where( p =>
                     // If it already exists, don't add it
-                    !doesPawnHaveSurgery.Contains( p.defName + "|" + surgeryLabelLower ) &&
-                    // If the pawn never had any recipes, then it doesn't even have the basics, so don't risk adding new ones
-                    p.recipes != null && p.recipes.Count() >= 1
+                    !doesPawnHaveSurgery.Contains( p.defName + "|" + surgeryLabelLower )
                 )) {
                     bool shouldAddSurgery = false;
 
@@ -155,9 +153,8 @@ namespace XenobionicPatcher {
                     )) shouldAddSurgery = true;
 
                     if (shouldAddSurgery) {
-                        pawnDef.recipes.Add(surgery);
-                        if (surgery.recipeUsers == null) surgery.recipeUsers = new List<ThingDef> { pawnDef };
-                        else                             surgery.recipeUsers.Add(pawnDef);
+                        if (pawnDef.recipes     == null) pawnDef.recipes     = new List<RecipeDef> { surgery }; else pawnDef.recipes    .Add(surgery);
+                        if (surgery.recipeUsers == null) surgery.recipeUsers = new List<ThingDef>  { pawnDef }; else surgery.recipeUsers.Add(pawnDef);
                     }
                 }
             }
