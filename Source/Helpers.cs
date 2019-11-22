@@ -64,8 +64,8 @@ namespace XenobionicPatcher {
         // Sub-descriptors of body parts that might interfere with matching
         internal static string[] bodyPartAdjectives = new[] {
             "tiny", "small", "medium", "large", "huge",
-            "internal", "external", 
-            "tentacle", "malformed", "pupula", "duplex", "spot", "sentient", "sensor",
+            "internal", "external", "appendix",
+            "tentacle", "malformed", "pupula", "duplex", "spot", "sentient", "sensor", "set",
             "insect", "animal", "plant", "crocodile", "snake", "artificial", "skeletal", "sickle", "mech(anical)?", "xeno",
             "front", "back", "rear",
             "left", "center", "right", "upper", "middle", "lower",
@@ -77,7 +77,7 @@ namespace XenobionicPatcher {
             RegexOptions.Compiled | RegexOptions.IgnoreCase
         );
         internal static Regex postfixedBodyPartAdjectives = new Regex(
-            @"(?<=\w)\s*\b\(?(?<word>" + string.Join("|", bodyPartAdjectives) + @")\)?\b\s*$",
+            @"(?<=\w)\s+\(?(?<word>" + string.Join("|", bodyPartAdjectives) + @")\)?\b\s*$",
             RegexOptions.Compiled | RegexOptions.IgnoreCase
         );
 
