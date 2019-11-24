@@ -7,6 +7,18 @@
 	</HugsLib.UpdateFeatureDef>
 
 	<HugsLib.UpdateFeatureDef ParentName="UpdateFeatureBase">
+		<defName>XenobionicPatcher_1_1_1</defName>
+		<assemblyVersion>1.1.1</assemblyVersion>
+		<content>&lt;b&gt;Fixes:&lt;/b&gt;
+- Better support for certain pawn kinds
+- Force a refresh the surgery operations cache, which earlier mods might have activated prematurely
+
+&lt;b&gt;Tweaks:&lt;/b&gt;
+- Added a few more body part keywords and adjectives to the static mapper list
+        </content>
+	</HugsLib.UpdateFeatureDef>
+
+	<HugsLib.UpdateFeatureDef ParentName="UpdateFeatureBase">
 		<defName>XenobionicPatcher_1_1_0</defName>
 		<assemblyVersion>1.1.0</assemblyVersion>
 		<content>&lt;b&gt;Additions:&lt;/b&gt;
