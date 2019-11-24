@@ -50,11 +50,12 @@ namespace XenobionicPatcher {
             // Start with a hard-coded list, just in case any of these don't match.  This is especially helpful for
             // animals, since they don't always have obvious humanlike analogues.
             var staticPartGroups = new Dictionary<string, string[]> {
-                { "Hand",    new[] { "hand", "hoof", "claw", "grasper", "pincer" } },
-                { "Eye",     new[] { "eye", "sight", "seeing"                    } },
-                { "Ear",     new[] { "ear", "hear", "hearing"                    } },
-                { "Nose",    new[] { "nose", "nostril", "smell", "smelling"      } },
-                { "Jaw",     new[] { "jaw", "beak", "mouth", "maw", "teeth"      } },
+                { "Arm",     new[] { "flipper"                                  } },
+                { "Hand",    new[] { "hand", "hoof", "paw", "claw", "grasper", "pincer" } },
+                { "Eye",     new[] { "eye", "sight", "seeing"                   } },
+                { "Ear",     new[] { "ear", "antenna", "hear", "hearing"        } },
+                { "Nose",    new[] { "nose", "nostril", "smell", "smelling"     } },
+                { "Jaw",     new[] { "jaw", "beak", "mouth", "maw", "teeth"     } },
                 // Doubtful anybody has any surgeries like these...
                 { "Ribcage", new[] { "ribcage", "thorax" } },
                 { "Neck",    new[] { "neck", "pronotum"  } },
