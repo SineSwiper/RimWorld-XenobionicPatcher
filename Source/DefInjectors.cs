@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using Harmony;
@@ -60,6 +61,15 @@ namespace XenobionicPatcher {
                 { "Ribcage", new[] { "ribcage", "thorax" } },
                 { "Neck",    new[] { "neck", "pronotum"  } },
             };
+
+            /* I think, at this point, it's futile to try to separate the hand/foot connection and just embrace it.
+             * Animals have "hands" which also sometimes double as feet.  Ergo, any humanlike has the option to
+             * swap out hands with feet or visa-versa.
+             * 
+             * We're still going to keep the bio-boundary below to keep out leg->hand connections.  That's still a 
+             * bit off.  And mechs, of course.
+             */
+            staticPartGroups["Foot"] = staticPartGroups["Hand"];
 
             // Static part loop
             foreach (var partDefName in staticPartGroups.Keys) {
