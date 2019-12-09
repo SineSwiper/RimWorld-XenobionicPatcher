@@ -85,6 +85,8 @@ namespace XenobionicPatcher {
         internal static Dictionary<string, string> simplifyCache = new Dictionary<string, string>() {};
 
         public static string SimplifyBodyPartLabel (string label) {
+            if (label == null) return null;  // dodge exceptions
+
             if (simplifyCache.ContainsKey(label)) return simplifyCache[label];
             var newLabel = label;
 
@@ -139,6 +141,7 @@ namespace XenobionicPatcher {
         }
         // One string
         public static bool DoesBodyPartMatch (BodyPartRecord bpr, string match) {
+            if (match == null) return false;
             string cleanMatch = SimplifyBodyPartLabel(match);
         
             return (
@@ -151,6 +154,7 @@ namespace XenobionicPatcher {
             return DoesBodyPartMatch(bpr, match);
         }
         public static bool DoesBodyPartMatch (BodyPartDef bpd, string match) {
+            if (match == null) return false;
             string cleanMatch = SimplifyBodyPartLabel(match);
         
             return (
@@ -163,6 +167,7 @@ namespace XenobionicPatcher {
         }
         // Two strings
         public static bool DoesBodyPartMatch (string matchFirst, string matchSecond) {
+            if (matchFirst == null || matchSecond == null) return false;
             return SimplifyBodyPartLabel(matchFirst) == SimplifyBodyPartLabel(matchSecond);
         }
 
