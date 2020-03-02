@@ -45,4 +45,10 @@
     <XP_PatchHumanlikeToAnimal_Title>Humanlike Surgeries → Animals</XP_PatchHumanlikeToAnimal_Title>
     <XP_PatchHumanlikeToAnimal_Description>Patch humanlike surgical operations into animals</XP_PatchHumanlikeToAnimal_Description>
 
+    <XP_PatchHumanlikeToMech_Title>Humanlike Surgeries → Mechs</XP_PatchHumanlikeToMech_Title>
+    <XP_PatchHumanlikeToMech_Description>Patch humanlike surgical operations into any mech-like creature.  Note that this may enable certain organic-like surgeries into mechs with strange side effects, like installing organic arms onto mechs with no visible effect, or applying serums &amp; mutagens that would only make sense used on a meaty organic.</XP_PatchHumanlikeToMech_Description>
+
+    <XP_PatchMechlikeToHumanlike_Title>Mech-like Surgeries → Humanlikes</XP_PatchMechlikeToHumanlike_Title>
+    <XP_PatchMechlikeToHumanlike_Description>Patch mech-like surgical operations into humanlikes.  Note that this may enable certain mech-like surgeries into organics with strange side effects, like "shutting down" humans or repairing humans with a mech toolkit.</XP_PatchMechlikeToHumanlike_Description>
+
 </LanguageData>
