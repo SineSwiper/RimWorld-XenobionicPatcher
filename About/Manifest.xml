@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <Manifest>
     <identifier>XenobionicPatcher</identifier>
-    <version>1.1.2</version>
+    <version>1.1.3</version>
     <dependencies>
+        <li>Harmony</li>
         <li>HugsLib</li>
     </dependencies>
     <loadAfter>
@@ -33,6 +34,7 @@
         <li>GeneticRimDinosauriaPatch</li>
         <li>GeneticRimMegafaunaPatch</li>
         <li>Glittertech</li>
+        <li>Harmony</li>
         <li>HugsLib</li>
         <li>HumanoidAlienRaces2.0</li>
         <li>JurassicRimworld1.0</li>
