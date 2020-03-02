@@ -22,6 +22,9 @@ Source/obj/*
 # Source-DLLs, since these aren't free or available elsewhere
 Source/Source-DLLs/*
 
+# NuGet packages
+Source/packages/*
+
 # Visual Studio 2015/2017 cache/options directory
 .vs/
 
