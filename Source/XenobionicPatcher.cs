@@ -210,6 +210,36 @@ namespace XenobionicPatcher {
             }
             stopwatch.Reset();
 
+            // Humanlike/Mech
+            if ( ((SettingHandle<bool>)config["PatchHumanlikeToMech"]).Value ) {
+                if (IsDebug) Logger.Message(beforeMsg, "humanlike", "mechs");
+
+                var surgeryList = allSurgeryDefs.Where(s => Helpers.GetSurgeryBioType(s) == "humanlike");
+                var    pawnList = allPawnDefs   .Where(p => Helpers.GetPawnBioType   (p) == "mech");
+
+                stopwatch.Start();
+                DefInjector.InjectSurgeryRecipes(surgeryList, pawnList);
+                stopwatch.Stop();
+
+                Logger.Message(afterMsg, "humanlike", "mechs", stopwatch.ElapsedMilliseconds / 1000f, surgeryList.Count() * pawnList.Count());
+            }
+            stopwatch.Reset();
+
+            // Mech-like/Humanlike
+            if ( ((SettingHandle<bool>)config["PatchHumanlikeToMech"]).Value ) {
+                if (IsDebug) Logger.Message(beforeMsg, "mech-like", "humanlikes");
+
+                var surgeryList = allSurgeryDefs.Where(s => Helpers.GetSurgeryBioType(s) == "mech");
+                var    pawnList = allPawnDefs   .Where(p => Helpers.GetPawnBioType   (p) == "humanlike");
+
+                stopwatch.Start();
+                DefInjector.InjectSurgeryRecipes(surgeryList, pawnList);
+                stopwatch.Stop();
+
+                Logger.Message(afterMsg, "mech-like", "humanlikes", stopwatch.ElapsedMilliseconds / 1000f, surgeryList.Count() * pawnList.Count());
+            }
+            stopwatch.Reset();
+
             // Clean up
             if (IsDebug) Logger.Message("Merging duplicate surgical recipes and sorting");
 
@@ -256,11 +286,14 @@ namespace XenobionicPatcher {
                 "PatchArtificialToMech",
                 "PatchAnimalToHumanlike",
                 "PatchHumanlikeToAnimal",
+                "PatchHumanlikeToMech",
+                "PatchMechlikeToHumanlike",
             };
             
             int order = 1;
             foreach (string sName in settingNames) {
                 bool isHeader = sName.Contains("Header");
+                bool isOffByDefault = sName == "PatchHumanlikeToMech" || sName == "PatchMechlikeToHumanlike";
 
                 if (sName == "BlankHeader") {
                     // No translations here
@@ -275,7 +308,7 @@ namespace XenobionicPatcher {
                             isHeader ? "</b></size>" : ""
                         ),
                         ("XP_" + sName + "_Description").Translate(),
-                        !isHeader
+                        !isHeader && !isOffByDefault
                     );
                 }
 
