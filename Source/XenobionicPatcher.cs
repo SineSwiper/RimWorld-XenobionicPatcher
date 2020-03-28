@@ -226,7 +226,7 @@ namespace XenobionicPatcher {
             stopwatch.Reset();
 
             // Mech-like/Humanlike
-            if ( ((SettingHandle<bool>)config["PatchHumanlikeToMech"]).Value ) {
+            if ( ((SettingHandle<bool>)config["PatchMechlikeToHumanlike"]).Value ) {
                 if (IsDebug) Logger.Message(beforeMsg, "mech-like", "humanlikes");
 
                 var surgeryList = allSurgeryDefs.Where(s => Helpers.GetSurgeryBioType(s) == "mech"     ).ToList();
