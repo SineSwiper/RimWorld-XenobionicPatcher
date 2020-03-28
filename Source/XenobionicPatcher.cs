@@ -115,8 +115,8 @@ namespace XenobionicPatcher {
             if ( ((SettingHandle<bool>)config["PatchAnimalToAnimal"]).Value ) {
                 if (IsDebug) Logger.Message(beforeMsg, "animal", "other animals");
 
-                var surgeryList = allSurgeryDefs.Where(s => Helpers.GetSurgeryBioType(s) == "animal");
-                var    pawnList = allPawnDefs   .Where(p => Helpers.GetPawnBioType   (p) == "animal");
+                var surgeryList = allSurgeryDefs.Where(s => Helpers.GetSurgeryBioType(s) == "animal").ToList();
+                var    pawnList = allPawnDefs   .Where(p => Helpers.GetPawnBioType   (p) == "animal").ToList();
 
                 stopwatch.Start();
                 DefInjector.InjectSurgeryRecipes(surgeryList, pawnList);
@@ -130,8 +130,8 @@ namespace XenobionicPatcher {
             if ( ((SettingHandle<bool>)config["PatchHumanlikeToHumanlike"]).Value ) {
                 if (IsDebug) Logger.Message(beforeMsg, "humanlike", "other humanlikes");
 
-                var surgeryList = allSurgeryDefs.Where(s => Helpers.GetSurgeryBioType(s) == "humanlike");
-                var    pawnList = allPawnDefs   .Where(p => Helpers.GetPawnBioType   (p) == "humanlike");
+                var surgeryList = allSurgeryDefs.Where(s => Helpers.GetSurgeryBioType(s) == "humanlike").ToList();
+                var    pawnList = allPawnDefs   .Where(p => Helpers.GetPawnBioType   (p) == "humanlike").ToList();
 
                 stopwatch.Start();
                 DefInjector.InjectSurgeryRecipes(surgeryList, pawnList);
@@ -149,8 +149,8 @@ namespace XenobionicPatcher {
                     Helpers.IsSupertypeOf(typeof(Recipe_InstallArtificialBodyPart), s.workerClass) ||
                     Helpers.IsSupertypeOf("OrenoMSE.Recipe_InstallBodyPartModule",  s.workerClass) ||
                     Helpers.GetSurgeryBioType(s) == "mech"
-                );
-                var    pawnList = allPawnDefs   .Where(p => Helpers.GetPawnBioType   (p) == "mech");
+                ).ToList();
+                var    pawnList = allPawnDefs   .Where(p => Helpers.GetPawnBioType   (p) == "mech").ToList();
 
                 stopwatch.Start();
                 DefInjector.InjectSurgeryRecipes(surgeryList, pawnList);
@@ -164,8 +164,8 @@ namespace XenobionicPatcher {
             if ( ((SettingHandle<bool>)config["PatchAnimalToHumanlike"]).Value ) {
                 if (IsDebug) Logger.Message(beforeMsg, "animal", "humanlikes");
 
-                var surgeryList = allSurgeryDefs.Where(s => Helpers.GetSurgeryBioType(s) == "animal");
-                var    pawnList = allPawnDefs   .Where(p => Helpers.GetPawnBioType   (p) == "humanlike");
+                var surgeryList = allSurgeryDefs.Where(s => Helpers.GetSurgeryBioType(s) == "animal"   ).ToList();
+                var    pawnList = allPawnDefs   .Where(p => Helpers.GetPawnBioType   (p) == "humanlike").ToList();
 
                 stopwatch.Start();
                 DefInjector.InjectSurgeryRecipes(surgeryList, pawnList);
@@ -179,8 +179,8 @@ namespace XenobionicPatcher {
             if ( ((SettingHandle<bool>)config["PatchHumanlikeToAnimal"]).Value ) {
                 if (IsDebug) Logger.Message(beforeMsg, "humanlike", "animals");
 
-                var surgeryList = allSurgeryDefs.Where(s => Helpers.GetSurgeryBioType(s) == "humanlike");
-                var    pawnList = allPawnDefs   .Where(p => Helpers.GetPawnBioType   (p) == "animal");
+                var surgeryList = allSurgeryDefs.Where(s => Helpers.GetSurgeryBioType(s) == "humanlike").ToList();
+                var    pawnList = allPawnDefs   .Where(p => Helpers.GetPawnBioType   (p) == "animal"   ).ToList();
 
                 stopwatch.Start();
                 DefInjector.InjectSurgeryRecipes(surgeryList, pawnList);
@@ -199,8 +199,8 @@ namespace XenobionicPatcher {
             ) {
                 if (IsDebug) Logger.Message(beforeMsg, "fleshlike", "fleshlikes");
 
-                var surgeryList = allSurgeryDefs.Where(s => Regex.IsMatch( Helpers.GetSurgeryBioType(s), "animal|(?:human|flesh)like|mixed" ));
-                var    pawnList = allPawnDefs   .Where(p => Helpers.GetPawnBioType(p) != "mech");
+                var surgeryList = allSurgeryDefs.Where(s => Regex.IsMatch( Helpers.GetSurgeryBioType(s), "animal|(?:human|flesh)like|mixed" )).ToList();
+                var    pawnList = allPawnDefs   .Where(p => Helpers.GetPawnBioType(p) != "mech").ToList();
 
                 stopwatch.Start();
                 DefInjector.InjectSurgeryRecipes(surgeryList, pawnList);
@@ -214,8 +214,8 @@ namespace XenobionicPatcher {
             if ( ((SettingHandle<bool>)config["PatchHumanlikeToMech"]).Value ) {
                 if (IsDebug) Logger.Message(beforeMsg, "humanlike", "mechs");
 
-                var surgeryList = allSurgeryDefs.Where(s => Helpers.GetSurgeryBioType(s) == "humanlike");
-                var    pawnList = allPawnDefs   .Where(p => Helpers.GetPawnBioType   (p) == "mech");
+                var surgeryList = allSurgeryDefs.Where(s => Helpers.GetSurgeryBioType(s) == "humanlike").ToList();
+                var    pawnList = allPawnDefs   .Where(p => Helpers.GetPawnBioType   (p) == "mech"     ).ToList();
 
                 stopwatch.Start();
                 DefInjector.InjectSurgeryRecipes(surgeryList, pawnList);
@@ -229,8 +229,8 @@ namespace XenobionicPatcher {
             if ( ((SettingHandle<bool>)config["PatchHumanlikeToMech"]).Value ) {
                 if (IsDebug) Logger.Message(beforeMsg, "mech-like", "humanlikes");
 
-                var surgeryList = allSurgeryDefs.Where(s => Helpers.GetSurgeryBioType(s) == "mech");
-                var    pawnList = allPawnDefs   .Where(p => Helpers.GetPawnBioType   (p) == "humanlike");
+                var surgeryList = allSurgeryDefs.Where(s => Helpers.GetSurgeryBioType(s) == "mech"     ).ToList();
+                var    pawnList = allPawnDefs   .Where(p => Helpers.GetPawnBioType   (p) == "humanlike").ToList();
 
                 stopwatch.Start();
                 DefInjector.InjectSurgeryRecipes(surgeryList, pawnList);

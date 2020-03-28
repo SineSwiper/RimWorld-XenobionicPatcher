@@ -7,7 +7,7 @@ using Verse;
 
 namespace XenobionicPatcher {
     public class DefInjectors {
-        public void InjectSurgeryRecipes (IEnumerable<RecipeDef> surgeryList, IEnumerable<ThingDef> pawnList) {
+        public void InjectSurgeryRecipes (List<RecipeDef> surgeryList, List<ThingDef> pawnList) {
             Base XP = Base.Instance;
 
             /* Many mods like to use different def names for basic body parts.  This makes it harder to add the
@@ -171,7 +171,7 @@ namespace XenobionicPatcher {
             }
         }
 
-        public void CleanupSurgeryRecipes (IEnumerable<RecipeDef> surgeryList, IEnumerable<ThingDef> pawnList) {
+        public void CleanupSurgeryRecipes (List<RecipeDef> surgeryList, List<ThingDef> pawnList) {
             Base XP = Base.Instance;
 
             // Just in case we have some easy dupes to clean
