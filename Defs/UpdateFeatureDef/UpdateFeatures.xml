@@ -1,44 +1,56 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <Defs>
-	<HugsLib.UpdateFeatureDef Abstract="true" Name="UpdateFeatureBase">
-		<modNameReadable>Xenobionic Patcher</modNameReadable>
-		<modIdentifier>XenobionicPatcher</modIdentifier>
-		<linkUrl>https://steamcommunity.com/sharedfiles/filedetails/?id=1911273785</linkUrl>
-	</HugsLib.UpdateFeatureDef>
+    <HugsLib.UpdateFeatureDef Abstract="true" Name="UpdateFeatureBase">
+        <modNameReadable>Xenobionic Patcher</modNameReadable>
+        <modIdentifier>XenobionicPatcher</modIdentifier>
+        <linkUrl>https://steamcommunity.com/sharedfiles/filedetails/?id=1911273785</linkUrl>
+    </HugsLib.UpdateFeatureDef>
 
-	<HugsLib.UpdateFeatureDef ParentName="UpdateFeatureBase">
-		<defName>XenobionicPatcher_1_1_3</defName>
-		<assemblyVersion>1.1.3</assemblyVersion>
-		<content>&lt;b&gt;Additions:&lt;/b&gt;
+    <HugsLib.UpdateFeatureDef ParentName="UpdateFeatureBase">
+        <defName>XenobionicPatcher_1_1_4</defName>
+        <assemblyVersion>1.1.4</assemblyVersion>
+        <content>&lt;b&gt;Additions:&lt;/b&gt;
+- Added cleanup for hand/foot surgeries on humanlikes
+
+&lt;b&gt;Fixes:&lt;/b&gt;
+- Fixed cleanup issue with Synthetic Heart surgery in EPOE Forked
+- Fixed "Mech-like Surgeries → Humanlikes" option to work on the patching operation its tied to
+        </content>
+    </HugsLib.UpdateFeatureDef>
+
+    <HugsLib.UpdateFeatureDef ParentName="UpdateFeatureBase">
+        <defName>XenobionicPatcher_1_1_3</defName>
+        <assemblyVersion>1.1.3</assemblyVersion>
+        <content>&lt;b&gt;Additions:&lt;/b&gt;
 - Recompiled for RimWorld v1.1!
 - Added Humanlike → Mechs and Mech-like → Humanlike surgery patching.  Use at your own risk!
         </content>
-	</HugsLib.UpdateFeatureDef>
+    </HugsLib.UpdateFeatureDef>
 
-	<HugsLib.UpdateFeatureDef ParentName="UpdateFeatureBase">
-		<defName>XenobionicPatcher_1_1_2</defName>
-		<assemblyVersion>1.1.2</assemblyVersion>
-		<content>&lt;b&gt;Fixes:&lt;/b&gt;
+    <HugsLib.UpdateFeatureDef ParentName="UpdateFeatureBase">
+        <defName>XenobionicPatcher_1_1_2</defName>
+        <assemblyVersion>1.1.2</assemblyVersion>
+        <content>&lt;b&gt;Fixes:&lt;/b&gt;
 - Fixed patch crashes from certain pawn kinds
         </content>
-	</HugsLib.UpdateFeatureDef>
+    </HugsLib.UpdateFeatureDef>
 
-	<HugsLib.UpdateFeatureDef ParentName="UpdateFeatureBase">
-		<defName>XenobionicPatcher_1_1_1</defName>
-		<assemblyVersion>1.1.1</assemblyVersion>
-		<content>&lt;b&gt;Fixes:&lt;/b&gt;
+    <HugsLib.UpdateFeatureDef ParentName="UpdateFeatureBase">
+        <defName>XenobionicPatcher_1_1_1</defName>
+        <assemblyVersion>1.1.1</assemblyVersion>
+        <content>&lt;b&gt;Fixes:&lt;/b&gt;
 - Better support for certain pawn kinds
 - Force a refresh the surgery operations cache, which earlier mods might have activated prematurely
 
 &lt;b&gt;Tweaks:&lt;/b&gt;
 - Added a few more body part keywords and adjectives to the static mapper list
         </content>
-	</HugsLib.UpdateFeatureDef>
+    </HugsLib.UpdateFeatureDef>
 
-	<HugsLib.UpdateFeatureDef ParentName="UpdateFeatureBase">
-		<defName>XenobionicPatcher_1_1_0</defName>
-		<assemblyVersion>1.1.0</assemblyVersion>
-		<content>&lt;b&gt;Additions:&lt;/b&gt;
+    <HugsLib.UpdateFeatureDef ParentName="UpdateFeatureBase">
+        <defName>XenobionicPatcher_1_1_0</defName>
+        <assemblyVersion>1.1.0</assemblyVersion>
+        <content>&lt;b&gt;Additions:&lt;/b&gt;
 - Expanded patching to include removal operations and certain "special" operations from a few different mods
 - All surgeries are now sorted after patching
 
@@ -50,5 +62,5 @@
 &lt;b&gt;Tweaks:&lt;/b&gt;
 - Added timers to injection debug lines
         </content>
-	</HugsLib.UpdateFeatureDef>
+    </HugsLib.UpdateFeatureDef>
 </Defs>
