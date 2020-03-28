@@ -185,6 +185,8 @@ namespace XenobionicPatcher {
              * Of course, I say that right before we resort the surgery list...
              */
 
+            ThingCategoryDef EPOERedundancy = DefDatabase<ThingCategoryDef>.GetNamed("EPOE_Redundancy", false);
+
             // Merge surgeries that do the same thing on different body parts
             var partsSurgeryList = surgeryList.Where(s => s.targetsBodyPart).ToList();
             for (int ps = 0; ps < partsSurgeryList.Count(); ps++) {
@@ -194,6 +196,12 @@ namespace XenobionicPatcher {
 
                 // The other side of the "easy dupe" cleaning
                 surgery.recipeUsers.RemoveDuplicates();
+
+                // EPOE Forked has these obsolete parts that still have surgery options, and they are called
+                // the same thing for some reason.  We have to detect and ignore these...
+                if (EPOERedundancy != null && surgery.fixedIngredientFilter != null && surgery.fixedIngredientFilter.AllowedThingDefs.Any(
+                    t => t.thingCategories.Contains(EPOERedundancy)
+                )) continue;
 
                 var toDelete = new List<RecipeDef> {};
                 foreach (RecipeDef otherSurgery in partsSurgeryList.Where(s => 
