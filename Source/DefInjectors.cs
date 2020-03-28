@@ -62,9 +62,8 @@ namespace XenobionicPatcher {
                 { "Neck",    new[] { "neck", "pronotum"  } },
             };
 
-            /* I think, at this point, it's futile to try to separate the hand/foot connection and just embrace it.
-             * Animals have "hands" which also sometimes double as feet.  Ergo, any humanlike has the option to
-             * swap out hands with feet or visa-versa.
+            /* It's futile to try to separate the hand/foot connection, as animals have "hands" which also
+             * sometimes double as feet.  We can try to clean this up later in CleanupHandFootSurgeryRecipes.
              * 
              * We're still going to keep the bio-boundary below to keep out leg->hand connections.  That's still a 
              * bit off.  And mechs, of course.
@@ -167,6 +166,27 @@ namespace XenobionicPatcher {
                         if (pawnDef.recipes     == null) pawnDef.recipes     = new List<RecipeDef> { surgery }; else pawnDef.recipes    .Add(surgery);
                         if (surgery.recipeUsers == null) surgery.recipeUsers = new List<ThingDef>  { pawnDef }; else surgery.recipeUsers.Add(pawnDef);
                     }
+                }
+            }
+        }
+
+        public void CleanupHandFootSurgeryRecipes (List<RecipeDef> surgeryList) {
+            Base XP = Base.Instance;
+
+            // Try to clean up the more obvious hand/foot cross-connections on humanlikes
+            foreach (RecipeDef surgery in surgeryList.Where(s => s.targetsBodyPart)) {
+                string surgeryLabelLower = surgery.label.ToLower();
+
+                if      (surgeryLabelLower.Contains(" foot ") || surgeryLabelLower.EndsWith(" foot")) {
+                    surgery.appliedOnFixedBodyParts.RemoveAll(sbp => Helpers.DoesBodyPartMatch(sbp, "hand"));
+                }
+                else if (surgeryLabelLower.Contains(" hand ") || surgeryLabelLower.EndsWith(" hand")) {
+                    surgery.appliedOnFixedBodyParts.RemoveAll(sbp => Helpers.DoesBodyPartMatch(sbp, "foot"));
+                }
+
+                // This shouldn't happen
+                if (surgery.appliedOnFixedBodyParts.Count == 0) {
+                    XP.ModLogger.Error("Cleaning up hand/foot surgeries for {0}, but ended up removing all the body parts!", surgery.LabelCap);
                 }
             }
         }

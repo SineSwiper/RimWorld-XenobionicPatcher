@@ -51,4 +51,11 @@
     <XP_PatchMechlikeToHumanlike_Title>Mech-like Surgeries → Humanlikes</XP_PatchMechlikeToHumanlike_Title>
     <XP_PatchMechlikeToHumanlike_Description>Patch mech-like surgical operations into humanlikes.  Note that this may enable certain mech-like surgeries into organics with strange side effects, like "shutting down" humans or repairing humans with a mech toolkit.</XP_PatchMechlikeToHumanlike_Description>
 
+    <!-- Cleanup Toggles -->
+    <XP_CleanupHeader_Title>Cleanup Toggles</XP_CleanupHeader_Title>
+    <XP_CleanupHeader_Description>These options control how to clean up the surgeries after running through all of the patching jobs.</XP_CleanupHeader_Description>
+
+    <XP_CleanupHandFootSurgeries_Title>Hand ↔ Foot Surgeries on Humanlikes</XP_CleanupHandFootSurgeries_Title>
+    <XP_CleanupHandFootSurgeries_Description>Attempt to clean up the hand/foot mixups on humanlikes.  Animals have "hands" which also sometimes double as feet, in Power Claw surgeries for example, so the part mapping can get mixed up.</XP_CleanupHandFootSurgeries_Description>
+
 </LanguageData>
