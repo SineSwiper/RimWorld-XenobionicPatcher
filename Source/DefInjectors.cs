@@ -25,6 +25,27 @@ namespace XenobionicPatcher {
              */
             var partToPartMapper = new Dictionary<string, HashSet<BodyPartDef>> {};
 
+            // There are only a few pawn bio-types, so compile all of the pawn surgery lists outside of the
+            // main surgery double-loop.
+            if (Base.IsDebug) stopwatch.Start();
+
+            var pawnSurgeriesByBioType = new Dictionary<string, HashSet<RecipeDef>> {};
+            foreach (ThingDef pawn in pawnList.Where(p => p.recipes != null)) {
+                string pawnBioType = Helpers.GetPawnBioType(pawn);
+                if (!pawnSurgeriesByBioType.ContainsKey(pawnBioType)) pawnSurgeriesByBioType[pawnBioType] = new HashSet<RecipeDef> {};
+                pawnSurgeriesByBioType[pawnBioType].AddRange(pawn.recipes);
+            }
+
+            if (Base.IsDebug) {
+                stopwatch.Stop();
+                XP.ModLogger.Message(
+                    "    PawnSurgeriesByBioType cache: took {0:F4}s; {1:N0}/{2:N0} keys/recipes",
+                    stopwatch.ElapsedMilliseconds / 1000f,
+                    pawnSurgeriesByBioType.Keys.Count(), pawnSurgeriesByBioType.Values.Sum(h => h.Count())
+                );
+                stopwatch.Reset();
+            }
+
             // This list is used a few times.  Best to compose it outside the loops.  Distinct is important
             // because there's a lot of dupes.
             if (Base.IsDebug) stopwatch.Start();
@@ -141,12 +162,10 @@ namespace XenobionicPatcher {
                     if (!partToPartMapper.ContainsKey(sbpDefName)) partToPartMapper[sbpDefName] = new HashSet<BodyPartDef> {};
 
                     // Look for matching surgery labels, and map them to similar body parts
-                    partToPartMapper[sbpDefName].AddRange(
-                        pawnList.
+                    if (pawnSurgeriesByBioType.ContainsKey(surgeryBioType)) partToPartMapper[sbpDefName].AddRange(
                         // We can't cross the animal/humanlike boundary with these checks because animal surgery recipes tend to be a lot
                         // looser with limbs (ie: power claws on animal legs)
-                        Where     (p  => Helpers.GetPawnBioType(p) == surgeryBioType && p.recipes != null).
-                        SelectMany(p  => p.recipes).Distinct().
+                        pawnSurgeriesByBioType[surgeryBioType].
                         Where     (s  => s.targetsBodyPart && s != surgery && s.defName != surgery.defName && s.label.ToLower() == surgeryLabelLower).
                         SelectMany(s  => s.appliedOnFixedBodyParts).Distinct().
                         Where     (bp => bp != surgeryBodyPart && bp.defName != sbpDefName)
