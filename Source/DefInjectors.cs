@@ -190,33 +190,29 @@ namespace XenobionicPatcher {
             // With the parts mapped, add new body parts to existing recipes
             if (Base.IsDebug) stopwatch.Start();
 
-            int newPartsAttempted = 0;
-            int newPartsAdded     = 0;
+            int newPartsAdded = 0;
             foreach (RecipeDef surgery in surgeryList.Where(s => s.targetsBodyPart)) {
-                var newPartList = new List<BodyPartDef> {};
+                var newPartSet = new HashSet<BodyPartDef> {};
                 foreach (BodyPartDef surgeryBodyPart in surgery.appliedOnFixedBodyParts) {
                     if (partToPartMapper.ContainsKey(surgeryBodyPart.defName)) {
-                        newPartList.AddRange(partToPartMapper[surgeryBodyPart.defName]);
-                        newPartList.RemoveDuplicates();
+                        newPartSet.AddRange(partToPartMapper[surgeryBodyPart.defName]);
                     }
                 }
-                if (newPartList.Count() >= 1) {
-                    newPartsAttempted += newPartList.Count();
-                    List<BodyPartDef> AOFBP = surgery.appliedOnFixedBodyParts;
 
-                    int curAOFBP = AOFBP.Count();
-                    AOFBP.AddRange(newPartList);
-                    AOFBP.RemoveDuplicates();
-                    newPartsAdded += AOFBP.Count() - curAOFBP;
+                List<BodyPartDef> AOFBP = surgery.appliedOnFixedBodyParts;
+                if (newPartSet.Count() >= 1 && !newPartSet.IsSubsetOf(AOFBP)) {
+                    newPartSet.ExceptWith(AOFBP);
+                    AOFBP.AddRange(newPartSet);
+                    newPartsAdded += newPartSet.Count();
                 }
             }
 
             if (Base.IsDebug) {
                 stopwatch.Stop();
                 XP.ModLogger.Message(
-                    "    Add new body parts to surgeries: took {0:F4}s; {1:N0}/{2:N0} total attempts/additions",
+                    "    Add new body parts to surgeries: took {0:F4}s; {1:N0} additions",
                     stopwatch.ElapsedMilliseconds / 1000f,
-                    newPartsAttempted, newPartsAdded
+                    newPartsAdded
                 );
                 stopwatch.Reset();
             }
