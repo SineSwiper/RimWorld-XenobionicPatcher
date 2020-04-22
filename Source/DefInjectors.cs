@@ -81,12 +81,12 @@ namespace XenobionicPatcher {
                 if (pawn.recipes != null) doesPawnHaveSurgery.AddRange(
                     pawn.recipes.Select(
                         s => pawn.defName + "|" + s.label.ToLower()
-                    ).ToList()
+                    )
                 );
                 doesPawnHaveBodyPart.AddRange(
                     pawn.race.body.AllParts.Distinct().Select(
                         bpr => pawn.defName + "|" + bpr.def.defName
-                    ).ToList()
+                    )
                 );
             }
 
