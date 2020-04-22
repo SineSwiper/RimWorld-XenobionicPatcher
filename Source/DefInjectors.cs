@@ -23,7 +23,7 @@ namespace XenobionicPatcher {
              * 
              * These's all go into the part mapper for later injection.
              */
-            var partToPartMapper = new Dictionary<string, List<BodyPartDef>> {};
+            var partToPartMapper = new Dictionary<string, HashSet<BodyPartDef>> {};
 
             // This list is used a few times.  Best to compose it outside the loops.  Distinct is important
             // because there's a lot of dupes.
@@ -101,7 +101,7 @@ namespace XenobionicPatcher {
             if (Base.IsDebug) stopwatch.Start();
             foreach (var partDefName in staticPartGroups.Keys) {
                 BodyPartDef vanillaPart = DefDatabase<BodyPartDef>.GetNamed(partDefName);
-                if (!partToPartMapper.ContainsKey(partDefName)) partToPartMapper[partDefName] = new List<BodyPartDef> {};
+                if (!partToPartMapper.ContainsKey(partDefName)) partToPartMapper[partDefName] = new HashSet<BodyPartDef> {};
 
                 var partGroup  = staticPartGroups[partDefName];
                 var groupParts = new List<BodyPartDef> { vanillaPart };
@@ -111,7 +111,7 @@ namespace XenobionicPatcher {
                         raceBodyParts.Where(bpr => Helpers.DoesBodyPartMatch(bpr, fuzzyPartName)).Select(bpr => bpr.def)
                     ) {
                         string rbpDefName = raceBodyPart.defName;
-                        if (!partToPartMapper.ContainsKey(rbpDefName)) partToPartMapper[rbpDefName] = new List<BodyPartDef> {};
+                        if (!partToPartMapper.ContainsKey(rbpDefName)) partToPartMapper[rbpDefName] = new HashSet<BodyPartDef> {};
 
                         groupParts.Add(raceBodyPart);
                     }
@@ -125,7 +125,7 @@ namespace XenobionicPatcher {
                 XP.ModLogger.Message(
                     "    Static part loop: took {0:F4}s; {1:N0}/{2:N0} total PartToPartMapper keys/BPDs",
                     stopwatch.ElapsedMilliseconds / 1000f,
-                    partToPartMapper.Keys.Count(), partToPartMapper.Values.Sum(l => l.Count())
+                    partToPartMapper.Keys.Count(), partToPartMapper.Values.Sum(h => h.Count())
                 );
                 stopwatch.Reset();
             }
@@ -138,7 +138,7 @@ namespace XenobionicPatcher {
 
                 foreach (BodyPartDef surgeryBodyPart in surgery.appliedOnFixedBodyParts) {
                     string sbpDefName = surgeryBodyPart.defName;
-                    if (!partToPartMapper.ContainsKey(sbpDefName)) partToPartMapper[sbpDefName] = new List<BodyPartDef> {};
+                    if (!partToPartMapper.ContainsKey(sbpDefName)) partToPartMapper[sbpDefName] = new HashSet<BodyPartDef> {};
 
                     // Look for matching surgery labels, and map them to similar body parts
                     partToPartMapper[sbpDefName].AddRange(
@@ -165,25 +165,24 @@ namespace XenobionicPatcher {
                 XP.ModLogger.Message(
                     "    Main surgery loop: took {0:F4}s; {1:N0}/{2:N0} total PartToPartMapper keys/BPDs",
                     stopwatch.ElapsedMilliseconds / 1000f,
-                    partToPartMapper.Keys.Count(), partToPartMapper.Values.Sum(l => l.Count())
+                    partToPartMapper.Keys.Count(), partToPartMapper.Values.Sum(h => h.Count())
                 );
                 stopwatch.Reset();
             }
 
-            // Clear out empty lists and dupes
+            // Clear out empty lists
             if (Base.IsDebug) stopwatch.Start();
 
             foreach (string part in partToPartMapper.Keys.ToArray()) {
                 if (partToPartMapper[part].Count < 1) partToPartMapper.Remove(part);
-                else                                  partToPartMapper[part].RemoveDuplicates();
             }
 
             if (Base.IsDebug) {
                 stopwatch.Stop();
                 XP.ModLogger.Message(
-                    "    Empty list/dupes cleanup: took {0:F4}s; {1:N0}/{2:N0} total PartToPartMapper keys/BPDs",
+                    "    Empty list cleanup: took {0:F4}s; {1:N0}/{2:N0} total PartToPartMapper keys/BPDs",
                     stopwatch.ElapsedMilliseconds / 1000f,
-                    partToPartMapper.Keys.Count(), partToPartMapper.Values.Sum(l => l.Count())
+                    partToPartMapper.Keys.Count(), partToPartMapper.Values.Sum(h => h.Count())
                 );
                 stopwatch.Reset();
             }
