@@ -1,4 +1,4 @@
-﻿using System;
+﻿using System.Diagnostics;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -9,6 +9,8 @@ namespace XenobionicPatcher {
     public class DefInjectors {
         public void InjectSurgeryRecipes (List<RecipeDef> surgeryList, List<ThingDef> pawnList) {
             Base XP = Base.Instance;
+
+            Stopwatch stopwatch = Stopwatch.StartNew();
 
             /* Many mods like to use different def names for basic body parts.  This makes it harder to add the
              * surgery recipe to the alien.  We'll need to add in the similar body part to the
@@ -25,6 +27,8 @@ namespace XenobionicPatcher {
 
             // This list is used a few times.  Best to compose it outside the loops.  Distinct is important
             // because there's a lot of dupes.
+            if (Base.IsDebug) stopwatch.Start();
+
             List<BodyPartRecord> raceBodyParts =
                 pawnList.
                 Select    (p  => p.race.body).Distinct().
@@ -32,7 +36,19 @@ namespace XenobionicPatcher {
                 ToList()
             ;
 
+            if (Base.IsDebug) {
+                stopwatch.Stop();
+                XP.ModLogger.Message(
+                    "    RaceBodyParts cache: took {0:F4}s; {1:N0} BPRs",
+                    stopwatch.ElapsedMilliseconds / 1000f,
+                    raceBodyParts.Count()
+                );
+                stopwatch.Reset();
+            }
+
             // Both of these are useful in surgery->pawn body part matches
+            if (Base.IsDebug) stopwatch.Start();
+
             var doesPawnHaveSurgery  = new HashSet<string> {};
             var doesPawnHaveBodyPart = new HashSet<string> {};
             foreach (ThingDef pawn in pawnList) {
@@ -46,6 +62,16 @@ namespace XenobionicPatcher {
                         bpr => pawn.defName + "|" + bpr.def.defName
                     ).ToList()
                 );
+            }
+
+            if (Base.IsDebug) {
+                stopwatch.Stop();
+                XP.ModLogger.Message(
+                    "    DoesPawnHaveSurgery + BodyPart caches: took {0:F4}s; {1:N0} + {2:N0} strings",
+                    stopwatch.ElapsedMilliseconds / 1000f,
+                    doesPawnHaveSurgery.Count(), doesPawnHaveBodyPart.Count()
+                );
+                stopwatch.Reset();
             }
 
             // Start with a hard-coded list, just in case any of these don't match.  This is especially helpful for
@@ -71,6 +97,7 @@ namespace XenobionicPatcher {
             staticPartGroups["Foot"] = staticPartGroups["Hand"];
 
             // Static part loop
+            if (Base.IsDebug) stopwatch.Start();
             foreach (var partDefName in staticPartGroups.Keys) {
                 BodyPartDef vanillaPart = DefDatabase<BodyPartDef>.GetNamed(partDefName);
                 if (!partToPartMapper.ContainsKey(partDefName)) partToPartMapper[partDefName] = new List<BodyPartDef> {};
@@ -92,8 +119,18 @@ namespace XenobionicPatcher {
                 // New list construction should already be covered by the above "if (!ContainsKey)" checks
                 groupParts.ForEach( bpd => partToPartMapper[bpd.defName].AddRange(groupParts) );
             }
+            if (Base.IsDebug) {
+                stopwatch.Stop();
+                XP.ModLogger.Message(
+                    "    Static part loop: took {0:F4}s; {1:N0}/{2:N0} total PartToPartMapper keys/BPDs",
+                    stopwatch.ElapsedMilliseconds / 1000f,
+                    partToPartMapper.Keys.Count(), partToPartMapper.Values.Sum(l => l.Count())
+                );
+                stopwatch.Reset();
+            }
 
             // Main surgery loop
+            if (Base.IsDebug) stopwatch.Start();
             foreach (RecipeDef surgery in surgeryList.Where(s => s.targetsBodyPart)) {
                 string surgeryBioType    = Helpers.GetSurgeryBioType(surgery);
                 string surgeryLabelLower = surgery.label.ToLower();
@@ -122,14 +159,39 @@ namespace XenobionicPatcher {
                     );
                 }
             }
+            if (Base.IsDebug) {
+                stopwatch.Stop();
+                XP.ModLogger.Message(
+                    "    Main surgery loop: took {0:F4}s; {1:N0}/{2:N0} total PartToPartMapper keys/BPDs",
+                    stopwatch.ElapsedMilliseconds / 1000f,
+                    partToPartMapper.Keys.Count(), partToPartMapper.Values.Sum(l => l.Count())
+                );
+                stopwatch.Reset();
+            }
 
             // Clear out empty lists and dupes
+            if (Base.IsDebug) stopwatch.Start();
+
             foreach (string part in partToPartMapper.Keys.ToArray()) {
                 if (partToPartMapper[part].Count < 1) partToPartMapper.Remove(part);
                 else                                  partToPartMapper[part].RemoveDuplicates();
             }
 
+            if (Base.IsDebug) {
+                stopwatch.Stop();
+                XP.ModLogger.Message(
+                    "    Empty list/dupes cleanup: took {0:F4}s; {1:N0}/{2:N0} total PartToPartMapper keys/BPDs",
+                    stopwatch.ElapsedMilliseconds / 1000f,
+                    partToPartMapper.Keys.Count(), partToPartMapper.Values.Sum(l => l.Count())
+                );
+                stopwatch.Reset();
+            }
+
             // With the parts mapped, add new body parts to existing recipes
+            if (Base.IsDebug) stopwatch.Start();
+
+            int newPartsAttempted = 0;
+            int newPartsAdded     = 0;
             foreach (RecipeDef surgery in surgeryList.Where(s => s.targetsBodyPart)) {
                 var newPartList = new List<BodyPartDef> {};
                 foreach (BodyPartDef surgeryBodyPart in surgery.appliedOnFixedBodyParts) {
@@ -139,12 +201,30 @@ namespace XenobionicPatcher {
                     }
                 }
                 if (newPartList.Count() >= 1) {
-                    surgery.appliedOnFixedBodyParts.AddRange(newPartList);
-                    surgery.appliedOnFixedBodyParts.RemoveDuplicates();
+                    newPartsAttempted += newPartList.Count();
+                    List<BodyPartDef> AOFBP = surgery.appliedOnFixedBodyParts;
+
+                    int curAOFBP = AOFBP.Count();
+                    AOFBP.AddRange(newPartList);
+                    AOFBP.RemoveDuplicates();
+                    newPartsAdded += AOFBP.Count() - curAOFBP;
                 }
             }
 
+            if (Base.IsDebug) {
+                stopwatch.Stop();
+                XP.ModLogger.Message(
+                    "    Add new body parts to surgeries: took {0:F4}s; {1:N0}/{2:N0} total attempts/additions",
+                    stopwatch.ElapsedMilliseconds / 1000f,
+                    newPartsAttempted, newPartsAdded
+                );
+                stopwatch.Reset();
+            }
+
             // Apply relevant missing surgery options to all pawn Defs
+            if (Base.IsDebug) stopwatch.Start();
+
+            int newSurgeriesAdded = 0;
             foreach (RecipeDef surgery in surgeryList) {
                 string surgeryLabelLower = surgery.label.ToLower();
 
@@ -163,10 +243,20 @@ namespace XenobionicPatcher {
                     )) shouldAddSurgery = true;
 
                     if (shouldAddSurgery) {
+                        newSurgeriesAdded++;
                         if (pawnDef.recipes     == null) pawnDef.recipes     = new List<RecipeDef> { surgery }; else pawnDef.recipes    .Add(surgery);
                         if (surgery.recipeUsers == null) surgery.recipeUsers = new List<ThingDef>  { pawnDef }; else surgery.recipeUsers.Add(pawnDef);
                     }
                 }
+            }
+            if (Base.IsDebug) {
+                stopwatch.Stop();
+                XP.ModLogger.Message(
+                    "    Add new surgeries to pawns: took {0:F4}s; {1:N0} total additions",
+                    stopwatch.ElapsedMilliseconds / 1000f,
+                    newSurgeriesAdded
+                );
+                stopwatch.Reset();
             }
         }
 
