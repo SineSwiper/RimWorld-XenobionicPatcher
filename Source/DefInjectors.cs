@@ -7,6 +7,11 @@ using Verse;
 
 namespace XenobionicPatcher {
     public class DefInjectors {
+        /* WARNING: Because of the sheer amount of combinations and loops we're dealing with, there is a LOT
+         * of caching (both here and within Helpers), HashSets (for duplicate checks), and stopwatch timing.
+         * Everything needs be optimized to the Nth degree to reduce as much overhead as possible.
+         */
+
         public void InjectSurgeryRecipes (List<RecipeDef> surgeryList, List<ThingDef> pawnList) {
             Base XP = Base.Instance;
 
@@ -144,7 +149,7 @@ namespace XenobionicPatcher {
             if (Base.IsDebug) {
                 stopwatch.Stop();
                 XP.ModLogger.Message(
-                    "    Static part loop: took {0:F4}s; {1:N0}/{2:N0} total PartToPartMapper keys/BPDs",
+                    "    Static part loop: took {0:F4}s; {1:N0}/{2:N0} PartToPartMapper keys/BPDs",
                     stopwatch.ElapsedMilliseconds / 1000f,
                     partToPartMapper.Keys.Count(), partToPartMapper.Values.Sum(h => h.Count())
                 );
@@ -182,7 +187,7 @@ namespace XenobionicPatcher {
             if (Base.IsDebug) {
                 stopwatch.Stop();
                 XP.ModLogger.Message(
-                    "    Main surgery loop: took {0:F4}s; {1:N0}/{2:N0} total PartToPartMapper keys/BPDs",
+                    "    Main surgery loop: took {0:F4}s; {1:N0}/{2:N0} PartToPartMapper keys/BPDs",
                     stopwatch.ElapsedMilliseconds / 1000f,
                     partToPartMapper.Keys.Count(), partToPartMapper.Values.Sum(h => h.Count())
                 );
@@ -199,7 +204,7 @@ namespace XenobionicPatcher {
             if (Base.IsDebug) {
                 stopwatch.Stop();
                 XP.ModLogger.Message(
-                    "    Empty list cleanup: took {0:F4}s; {1:N0}/{2:N0} total PartToPartMapper keys/BPDs",
+                    "    Empty list cleanup: took {0:F4}s; {1:N0}/{2:N0} PartToPartMapper keys/BPDs",
                     stopwatch.ElapsedMilliseconds / 1000f,
                     partToPartMapper.Keys.Count(), partToPartMapper.Values.Sum(h => h.Count())
                 );
@@ -267,7 +272,7 @@ namespace XenobionicPatcher {
             if (Base.IsDebug) {
                 stopwatch.Stop();
                 XP.ModLogger.Message(
-                    "    Add new surgeries to pawns: took {0:F4}s; {1:N0} total additions",
+                    "    Add new surgeries to pawns: took {0:F4}s; {1:N0} additions",
                     stopwatch.ElapsedMilliseconds / 1000f,
                     newSurgeriesAdded
                 );
