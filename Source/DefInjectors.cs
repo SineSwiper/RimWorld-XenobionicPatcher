@@ -79,6 +79,7 @@ namespace XenobionicPatcher {
             var staticPartGroups = new Dictionary<string, string[]> {
                 { "Arm",     new[] { "flipper"                                  } },
                 { "Hand",    new[] { "hand", "hoof", "paw", "claw", "grasper", "pincer" } },
+                { "Finger",  new[] { "finger", "thumb", "pinky"                 } },
                 { "Eye",     new[] { "eye", "sight", "seeing"                   } },
                 { "Ear",     new[] { "ear", "antenna", "hear", "hearing"        } },
                 { "Nose",    new[] { "nose", "nostril", "smell", "smelling"     } },
