@@ -156,38 +156,63 @@ namespace XenobionicPatcher {
                 stopwatch.Reset();
             }
 
-            // Main surgery loop
+            // Part-to-part mapping
+            // (This is actually fewer combinations than all of the duplicates within
+            // surgeryList -> appliedOnFixedBodyParts.)
             if (Base.IsDebug) stopwatch.Start();
+            foreach (BodyPartRecord firstBodyPart in raceBodyParts) {
+                string fbpDefName = firstBodyPart.def.defName;
+                if (!partToPartMapper.ContainsKey(fbpDefName)) partToPartMapper[fbpDefName] = new HashSet<BodyPartDef> {};
+
+                // Looks for matching (or near-matching) body part labels
+                partToPartMapper[fbpDefName].AddRange(
+                    raceBodyParts.
+                    Where (bpr => firstBodyPart.def != bpr.def && fbpDefName != bpr.def.defName && Helpers.DoesBodyPartMatch(bpr, firstBodyPart)).
+                    Select(bpr => bpr.def)
+                );
+            }
+            if (Base.IsDebug) {
+                stopwatch.Stop();
+                XP.ModLogger.Message(
+                    "    Part-to-part mapping: took {0:F4}s; {1:N0}/{2:N0} PartToPartMapper keys/BPDs",
+                    stopwatch.ElapsedMilliseconds / 1000f,
+                    partToPartMapper.Keys.Count(), partToPartMapper.Values.Sum(h => h.Count())
+                );
+                stopwatch.Reset();
+            }
+
+            // Surgery-to-part mapping
+            if (Base.IsDebug) stopwatch.Start();
+
             foreach (RecipeDef surgery in surgeryList.Where(s => s.targetsBodyPart)) {
                 string surgeryBioType    = Helpers.GetSurgeryBioType(surgery);
                 string surgeryLabelLower = surgery.label.ToLower();
+
+                // Compose this list outside of the surgeryBodyPart loop
+                HashSet<BodyPartDef> pawnSurgeryBodyParts = null;
+                if (pawnSurgeriesByBioType.ContainsKey(surgeryBioType)) pawnSurgeryBodyParts =
+                    // We can't cross the animal/humanlike boundary with these checks because animal surgery recipes tend to be a lot
+                    // looser with limbs (ie: power claws on animal legs)
+                    pawnSurgeriesByBioType[surgeryBioType].
+                    Where     (s  => s.targetsBodyPart && s != surgery && s.defName != surgery.defName && s.label.ToLower() == surgeryLabelLower).
+                    SelectMany(s  => s.appliedOnFixedBodyParts).Distinct().
+                    ToHashSet()
+                ;
 
                 foreach (BodyPartDef surgeryBodyPart in surgery.appliedOnFixedBodyParts) {
                     string sbpDefName = surgeryBodyPart.defName;
                     if (!partToPartMapper.ContainsKey(sbpDefName)) partToPartMapper[sbpDefName] = new HashSet<BodyPartDef> {};
 
                     // Look for matching surgery labels, and map them to similar body parts
-                    if (pawnSurgeriesByBioType.ContainsKey(surgeryBioType)) partToPartMapper[sbpDefName].AddRange(
-                        // We can't cross the animal/humanlike boundary with these checks because animal surgery recipes tend to be a lot
-                        // looser with limbs (ie: power claws on animal legs)
-                        pawnSurgeriesByBioType[surgeryBioType].
-                        Where     (s  => s.targetsBodyPart && s != surgery && s.defName != surgery.defName && s.label.ToLower() == surgeryLabelLower).
-                        SelectMany(s  => s.appliedOnFixedBodyParts).Distinct().
-                        Where     (bp => bp != surgeryBodyPart && bp.defName != sbpDefName)
-                    );
-
-                    // Looks for matching (or near-matching) body part labels
-                    partToPartMapper[sbpDefName].AddRange(
-                        raceBodyParts.
-                        Where (bpr => surgeryBodyPart != bpr.def && sbpDefName != bpr.def.defName && Helpers.DoesBodyPartMatch(bpr, surgeryBodyPart)).
-                        Select(bpr => bpr.def)
+                    if (pawnSurgeryBodyParts != null) partToPartMapper[sbpDefName].AddRange(
+                        pawnSurgeryBodyParts.Where(bp => bp != surgeryBodyPart && bp.defName != sbpDefName)
                     );
                 }
             }
             if (Base.IsDebug) {
                 stopwatch.Stop();
                 XP.ModLogger.Message(
-                    "    Main surgery loop: took {0:F4}s; {1:N0}/{2:N0} PartToPartMapper keys/BPDs",
+                    "    Surgery-to-part mapping: took {0:F4}s; {1:N0}/{2:N0} PartToPartMapper keys/BPDs",
                     stopwatch.ElapsedMilliseconds / 1000f,
                     partToPartMapper.Keys.Count(), partToPartMapper.Values.Sum(h => h.Count())
                 );
