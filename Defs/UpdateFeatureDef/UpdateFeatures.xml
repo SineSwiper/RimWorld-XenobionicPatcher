@@ -7,6 +7,23 @@
     </HugsLib.UpdateFeatureDef>
 
     <HugsLib.UpdateFeatureDef ParentName="UpdateFeatureBase">
+        <defName>XenobionicPatcher_1_1_5</defName>
+        <assemblyVersion>1.1.5</assemblyVersion>
+        <content>&lt;b&gt;Additions:&lt;/b&gt;
+- Added compatibility for a lot more special modded surgeries (EPOE-Forked, Android Tiers, MSE2, Questionable Ethics)
+
+&lt;b&gt;Fixes:&lt;/b&gt;
+- Fixed issue where RoM's Druid Regrowth surgery operation would pollute the part mapper, causing way more surgery-to-limb connections than necessary for other operations (installing a foot in an eye, for example)
+- Optimized injections to run much faster, even with extreme pawn-to-surgery combinations
+- Added fingers and toes to static part group
+
+&lt;b&gt;Tweaks:&lt;/b&gt;
+- Added timers and debug lines to each loop of the injection process
+- Added config to display those extra lines (was previously a hard-coded toggle)
+        </content>
+    </HugsLib.UpdateFeatureDef>
+
+    <HugsLib.UpdateFeatureDef ParentName="UpdateFeatureBase">
         <defName>XenobionicPatcher_1_1_4</defName>
         <assemblyVersion>1.1.4</assemblyVersion>
         <content>&lt;b&gt;Additions:&lt;/b&gt;
