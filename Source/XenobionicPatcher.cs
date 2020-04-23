@@ -51,6 +51,11 @@ namespace XenobionicPatcher {
             if ( ((SettingHandle<bool>)config["SearchModdedSurgeryClasses"]).Value ) {
                 List<string> moddedWorkerClassNames = new List<string> {
                     // (EPOE doesn't have any custom worker classes)
+
+                    // EPOE Forked
+                    "EPIA.Recipe_RemoveImplant",
+                    "EPIA.Recipe_RemoveScarHediff",
+                    "EPIA.Recipe_RemoveBrainScarHediff",
                     
                     // Rah's Bionics and Surgery Expansion
                     "ScarRemoving.Recipe_RemoveHediff_noBrain",
@@ -60,17 +65,40 @@ namespace XenobionicPatcher {
                     "OrenoMSE.Recipe_InstallImplantSystem",
                     "OrenoMSE.Recipe_RemoveImplantSystem",
 
+                    // Medical Surgery Expansion 2.0
+                    "MSE2.Recipe_InstallModule",
+                    "MSE2.Recipe_RemoveModules",
+                    "MSE2.Recipe_InstallNaturalBodyPartWithChildren",
+                    "MSE2.Recipe_InstallArtificialBodyPartWithChildren",
+
                     // Chj's Androids
                     "Androids.Recipe_Disassemble",
                     "Androids.Recipe_RepairKit",
 
                     // Android Tiers
+                    "MOARANDROIDS.Recipe_AndroidRewireSurgery",
+                    "MOARANDROIDS.Recipe_RemoveSentience",
+                    "MOARANDROIDS.Recipe_RerollTraits",
                     "MOARANDROIDS.Recipe_InstallImplantAndroid",
                     "MOARANDROIDS.Recipe_InstallArtificialBodyPartAndroid",
+                    "MOARANDROIDS.Recipe_InstallArtificialBrain",
+                    "MOARANDROIDS.Recipe_ApplyHydraulicNaniteBank",
+                    "MOARANDROIDS.Recipe_ApplyHealFrameworkSystem",
+                    "MOARANDROIDS.Recipe_ApplyHealCoolingSystem",
+                    "MOARANDROIDS.Recipe_ApplyHealCPUSerum",
                     
                     // Alien vs. Predator
                     "RRYautja.Recipe_Remove_Gauntlet",
                     "RRYautja.Recipe_RemoveHugger",
+
+                    // Questionable Ethics
+                    "QEthics.RecipeWorker_CreateBrainScan",
+                    "QEthics.RecipeWorker_GenomeSequencing",
+                    "QEthics.RecipeWorker_InstallNaturalBodyPart",
+                    "QEthics.RecipeWorker_NerveStapling",
+
+                    // MegaCorp
+                    "Recipe_ChangeImplantLevel",
                 };
 
                 foreach (string workerName in moddedWorkerClassNames) {

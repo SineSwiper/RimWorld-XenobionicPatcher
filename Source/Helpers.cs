@@ -12,18 +12,30 @@ namespace XenobionicPatcher {
 
         internal static Dictionary<string, string> surgeryBioTypeCache = new Dictionary<string, string>() {};
 
+        internal static List<string> mechSurgeryClasses = new List<string> {
+            "Androids.Recipe_Disassemble",
+            "Androids.Recipe_RepairKit",
+            "MOARANDROIDS.Recipe_AndroidRewireSurgery",
+            "MOARANDROIDS.Recipe_RemoveSentience",
+            "MOARANDROIDS.Recipe_RerollTraits",
+            "MOARANDROIDS.Recipe_InstallImplantAndroid",
+            "MOARANDROIDS.Recipe_InstallArtificialBodyPartAndroid",
+            "MOARANDROIDS.Recipe_InstallArtificialBrain",
+            "MOARANDROIDS.Recipe_ApplyHydraulicNaniteBank",
+            "MOARANDROIDS.Recipe_ApplyHealFrameworkSystem",
+            "MOARANDROIDS.Recipe_ApplyHealCoolingSystem",
+            "MOARANDROIDS.Recipe_ApplyHealCPUSerum",
+        };
+
         public static string GetSurgeryBioType (RecipeDef surgery) {
             if (surgeryBioTypeCache.ContainsKey(surgery.defName)) return surgeryBioTypeCache[surgery.defName];
 
             // Special short-circuit
-            if      (
-                IsSupertypeOf("Androids.Recipe_Disassemble",                          surgery.workerClass) ||
-                IsSupertypeOf("Androids.Recipe_RepairKit",                            surgery.workerClass) ||
-                IsSupertypeOf("MOARANDROIDS.Recipe_InstallImplantAndroid",            surgery.workerClass) ||
-                IsSupertypeOf("MOARANDROIDS.Recipe_InstallArtificialBodyPartAndroid", surgery.workerClass)
-            ) {
-                surgeryBioTypeCache[surgery.defName] = "mech";
-                return "mech";
+            foreach (string mechSurgeryClass in mechSurgeryClasses) {
+                if (IsSupertypeOf(mechSurgeryClass, surgery.workerClass)) {
+                    surgeryBioTypeCache[surgery.defName] = "mech";
+                    return "mech";
+                }
             }
 
             var users = surgery.AllRecipeUsers.Where(p => IsSupertypeOf(typeof(Pawn), p.thingClass)).ToList();  // pawns only
@@ -211,16 +223,35 @@ namespace XenobionicPatcher {
             SafeTypeByName("Androids.Recipe_Disassemble"),
             SafeTypeByName("Androids.Recipe_RepairKit"),
             SafeTypeByName("RRYautja.Recipe_RemoveHugger"),
+            SafeTypeByName("QEthics.RecipeWorker_CreateBrainScan"),
+            SafeTypeByName("QEthics.RecipeWorker_GenomeSequencing"),
+            SafeTypeByName("MOARANDROIDS.Recipe_AndroidRewireSurgery"),
+            SafeTypeByName("MOARANDROIDS.Recipe_RemoveSentience"),
+            SafeTypeByName("MOARANDROIDS.Recipe_RerollTraits"),
+            SafeTypeByName("MOARANDROIDS.Recipe_ApplyHydraulicNaniteBank"),
+            SafeTypeByName("MOARANDROIDS.Recipe_ApplyHealFrameworkSystem"),
+            SafeTypeByName("MOARANDROIDS.Recipe_ApplyHealCoolingSystem"),
+            SafeTypeByName("MOARANDROIDS.Recipe_ApplyHealCPUSerum"),
             typeof(Recipe_InstallArtificialBodyPart),
             SafeTypeByName("OrenoMSE.Recipe_InstallBodyPartModule"),
             SafeTypeByName("MOARANDROIDS.Recipe_InstallArtificialBodyPartAndroid"),
+            SafeTypeByName("MSE2.Recipe_InstallArtificialBodyPartWithChildren"),
             typeof(Recipe_InstallImplant),
             SafeTypeByName("OrenoMSE.Recipe_InstallImplantSystem"),
+            SafeTypeByName("MSE2.Recipe_InstallModule"),
             SafeTypeByName("MOARANDROIDS.Recipe_InstallImplantAndroid"),
+            SafeTypeByName("MOARANDROIDS.Recipe_InstallArtificialBrain"),
+            SafeTypeByName("Recipe_ChangeImplantLevel"),
+            SafeTypeByName("QEthics.RecipeWorker_NerveStapling"),
             typeof(Recipe_InstallNaturalBodyPart),
+            SafeTypeByName("QEthics.RecipeWorker_InstallNaturalBodyPart"),
+            SafeTypeByName("MSE2.Recipe_InstallNaturalBodyPartWithChildren"),
             typeof(Recipe_RemoveHediff),
             SafeTypeByName("ScarRemoving.Recipe_RemoveHediff_noBrain"),
+            SafeTypeByName("EPIA.Recipe_RemoveScarHediff"),
             SafeTypeByName("OrenoMSE.Recipe_RemoveImplantSystem"),
+            SafeTypeByName("MSE2.Recipe_RemoveModules"),
+            SafeTypeByName("EPIA.Recipe_RemoveImplant"),
             SafeTypeByName("RRYautja.Recipe_Remove_Gauntlet"),
             typeof(Recipe_AdministerUsableItem),
             typeof(Recipe_AdministerIngestible),
