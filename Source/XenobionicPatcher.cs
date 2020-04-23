@@ -35,6 +35,9 @@ namespace XenobionicPatcher {
         public override void DefsLoaded() {
             ProcessSettings();
 
+            // Set the debug flag
+            IsDebug = ((SettingHandle<bool>)config["MoreDebug"]).Value;
+
             // Curate the surgery worker class list before building allSurgeryDefs
             Dictionary<string, Type[]> searchConfigMapper = new Dictionary<string, Type[]> {
                 { "Adminster",                 new[] { typeof(Recipe_AdministerIngestible), typeof(Recipe_AdministerUsableItem) } },
@@ -335,13 +338,16 @@ namespace XenobionicPatcher {
 
                 "BlankHeader",
                 "CleanupHeader",
-                "CleanupHandFootSurgeries"
+                "CleanupHandFootSurgeries",
+
+                "BlankHeader",
+                "MoreDebug",
             };
             
             int order = 1;
             foreach (string sName in settingNames) {
                 bool isHeader = sName.Contains("Header");
-                bool isOffByDefault = sName == "PatchHumanlikeToMech" || sName == "PatchMechlikeToHumanlike";
+                bool isOffByDefault = sName == "PatchHumanlikeToMech" || sName == "PatchMechlikeToHumanlike" || sName == "MoreDebug";
 
                 if (sName == "BlankHeader") {
                     // No translations here
