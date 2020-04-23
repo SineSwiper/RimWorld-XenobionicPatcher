@@ -103,16 +103,25 @@ namespace XenobionicPatcher {
             // Start with a hard-coded list, just in case any of these don't match.  This is especially helpful for
             // animals, since they don't always have obvious humanlike analogues.
             var staticPartGroups = new Dictionary<string, string[]> {
-                { "Arm",     new[] { "flipper"                                  } },
-                { "Hand",    new[] { "hand", "hoof", "paw", "claw", "grasper", "pincer" } },
-                { "Finger",  new[] { "finger", "thumb", "pinky"                 } },
-                { "Eye",     new[] { "eye", "sight", "seeing"                   } },
-                { "Ear",     new[] { "ear", "antenna", "hear", "hearing"        } },
-                { "Nose",    new[] { "nose", "nostril", "smell", "smelling"     } },
-                { "Jaw",     new[] { "jaw", "beak", "mouth", "maw", "teeth"     } },
-                // Doubtful anybody has any surgeries like these...
-                { "Ribcage", new[] { "ribcage", "thorax" } },
-                { "Neck",    new[] { "neck", "pronotum"  } },
+                { "Arm",      new[] { "arm", "flipper"                           } },
+                { "Shoulder", new[] { "shoulder"                                 } },
+                { "Hand",     new[] { "hand", "hoof", "paw", "claw", "grasper", "pincer" } },
+                { "Finger",   new[] { "finger", "thumb", "pinky"                 } },
+                { "Leg",      new[] { "leg"                                      } },
+                { "Foot",     new[] { "foot"                                     } },
+                { "Toe",      new[] { "toe"                                      } },
+                { "Eye",      new[] { "eye", "sight", "seeing", "visual"         } },
+                { "Ear",      new[] { "ear", "antenna", "hear", "hearing", "sound" } },
+                { "Nose",     new[] { "nose", "nostril", "smell", "smelling"     } },
+                { "Jaw",      new[] { "jaw", "beak", "mouth", "maw", "teeth"     } },
+                { "Ribcage",  new[] { "ribcage", "thorax"           } },
+                { "Heart",    new[] { "heart", "reactor"            } },
+                { "Lung",     new[] { "lung"                        } },
+                { "Kidney",   new[] { "kidney"                      } },
+                { "Liver",    new[] { "liver"                       } },
+                { "Stomach",  new[] { "stomach"                     } },
+                { "Spine",    new[] { "spine"                       } },
+                { "Neck",     new[] { "neck", "pronotum"            } },
             };
 
             /* It's futile to try to separate the hand/foot connection, as animals have "hands" which also
@@ -188,9 +197,10 @@ namespace XenobionicPatcher {
                 string surgeryBioType    = Helpers.GetSurgeryBioType(surgery);
                 string surgeryLabelLower = surgery.label.ToLower();
 
+                if (!pawnSurgeriesByBioType.ContainsKey(surgeryBioType)) continue;
+
                 // Compose this list outside of the surgeryBodyPart loop
-                HashSet<BodyPartDef> pawnSurgeryBodyParts = null;
-                if (pawnSurgeriesByBioType.ContainsKey(surgeryBioType)) pawnSurgeryBodyParts =
+                HashSet<BodyPartDef> pawnSurgeryBodyParts =
                     // We can't cross the animal/humanlike boundary with these checks because animal surgery recipes tend to be a lot
                     // looser with limbs (ie: power claws on animal legs)
                     pawnSurgeriesByBioType[surgeryBioType].
@@ -199,12 +209,35 @@ namespace XenobionicPatcher {
                     ToHashSet()
                 ;
 
+                // If this list is crossing a bunch of our static part group boundaries, we should skip it.
+                // RoM's Druid Regrowth recipe is one such example that tends to pollute the whole bunch.
+                if (pawnSurgeryBodyParts.Count() >= 3) {
+                    int partGroupMatches = staticPartGroups.Keys.Sum(k =>
+                        partToPartMapper[k].Overlaps(pawnSurgeryBodyParts) ? 1 : 0
+                    );
+                    if (partGroupMatches >= 3) continue;
+                }
+
+                // Look for matching surgery labels, and map them to similar body parts
+                bool warnedAboutLargeSet = false;
                 foreach (BodyPartDef surgeryBodyPart in surgery.appliedOnFixedBodyParts) {
                     string sbpDefName = surgeryBodyPart.defName;
                     if (!partToPartMapper.ContainsKey(sbpDefName)) partToPartMapper[sbpDefName] = new HashSet<BodyPartDef> {};
 
-                    // Look for matching surgery labels, and map them to similar body parts
-                    if (pawnSurgeryBodyParts != null) partToPartMapper[sbpDefName].AddRange(
+                    // Useful to warn when it's about to add a bunch of parts into a recipe at one time
+                    HashSet<BodyPartDef> diff = pawnSurgeryBodyParts.Except(partToPartMapper[sbpDefName]).ToHashSet();
+                    if (diff.Count() > 10 && !warnedAboutLargeSet) {
+                        XP.ModLogger.Warning(
+                            "Mapping a large set of body parts from \"{0}\":\nSurgery parts: {1}\nCurrent mapper parts: {2} ==> {3}\nNew mapper parts: {4}",
+                            surgery.LabelCap,
+                            string.Join(", ", surgery.appliedOnFixedBodyParts.Select(bpd => bpd.defName)),
+                            sbpDefName, string.Join(", ", partToPartMapper[sbpDefName].Select(bpd => bpd.defName)),
+                            string.Join(", ", diff.Select(bpd => bpd.defName))
+                        );
+                        warnedAboutLargeSet = true;
+                    }
+
+                    partToPartMapper[sbpDefName].AddRange(
                         pawnSurgeryBodyParts.Where(bp => bp != surgeryBodyPart && bp.defName != sbpDefName)
                     );
                 }
