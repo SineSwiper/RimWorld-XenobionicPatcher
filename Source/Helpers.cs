@@ -289,5 +289,24 @@ namespace XenobionicPatcher {
             simplifyCache      .Clear();
             typeByNameCache    .Clear();
         }
+
+        // Dictionary helpers
+        internal static void NewIfNoKey<K, V> (this Dictionary<K, V> dict, K key) where V : new() {
+            if (!dict.ContainsKey(key)) dict.Add(key, new V());
+        }
+
+        internal static void SetOrAddNestedRange<K, V> (this Dictionary<K, List<V>> dict, K key, IEnumerable<V> value) {
+            if (dict.ContainsKey(key))
+                dict[key].AddRange(value);
+            else
+                dict.Add(key, value.ToList());
+        }
+
+        internal static void SetOrAddNestedRange<K, V> (this Dictionary<K, HashSet<V>> dict, K key, IEnumerable<V> value) {
+            if (dict.ContainsKey(key))
+                dict[key].AddRange(value);
+            else
+                dict.Add(key, value.ToHashSet());
+        }
     }
 }

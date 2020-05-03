@@ -37,8 +37,7 @@ namespace XenobionicPatcher {
             var pawnSurgeriesByBioType = new Dictionary<string, HashSet<RecipeDef>> {};
             foreach (ThingDef pawn in pawnList.Where(p => p.recipes != null)) {
                 string pawnBioType = Helpers.GetPawnBioType(pawn);
-                if (!pawnSurgeriesByBioType.ContainsKey(pawnBioType)) pawnSurgeriesByBioType[pawnBioType] = new HashSet<RecipeDef> {};
-                pawnSurgeriesByBioType[pawnBioType].AddRange(pawn.recipes);
+                pawnSurgeriesByBioType.SetOrAddNestedRange(pawnBioType, pawn.recipes);
             }
 
             if (Base.IsDebug) {
@@ -133,7 +132,6 @@ namespace XenobionicPatcher {
             if (Base.IsDebug) stopwatch.Start();
             foreach (var partDefName in staticPartGroups.Keys) {
                 BodyPartDef vanillaPart = DefDatabase<BodyPartDef>.GetNamed(partDefName);
-                if (!partToPartMapper.ContainsKey(partDefName)) partToPartMapper[partDefName] = new HashSet<BodyPartDef> {};
 
                 var partGroup  = staticPartGroups[partDefName];
                 var groupParts = new List<BodyPartDef> { vanillaPart };
@@ -142,15 +140,11 @@ namespace XenobionicPatcher {
                     foreach (BodyPartDef raceBodyPart in
                         raceBodyParts.Where(bpr => Helpers.DoesBodyPartMatch(bpr, fuzzyPartName)).Select(bpr => bpr.def)
                     ) {
-                        string rbpDefName = raceBodyPart.defName;
-                        if (!partToPartMapper.ContainsKey(rbpDefName)) partToPartMapper[rbpDefName] = new HashSet<BodyPartDef> {};
-
                         groupParts.Add(raceBodyPart);
                     }
                 }
 
-                // New list construction should already be covered by the above "if (!ContainsKey)" checks
-                groupParts.ForEach( bpd => partToPartMapper[bpd.defName].AddRange(groupParts) );
+                groupParts.ForEach( bpd => partToPartMapper.SetOrAddNestedRange(bpd.defName, groupParts) );
             }
             if (Base.IsDebug) {
                 stopwatch.Stop();
@@ -168,10 +162,9 @@ namespace XenobionicPatcher {
             if (Base.IsDebug) stopwatch.Start();
             foreach (BodyPartRecord firstBodyPart in raceBodyParts) {
                 string fbpDefName = firstBodyPart.def.defName;
-                if (!partToPartMapper.ContainsKey(fbpDefName)) partToPartMapper[fbpDefName] = new HashSet<BodyPartDef> {};
 
                 // Looks for matching (or near-matching) body part labels
-                partToPartMapper[fbpDefName].AddRange(
+                partToPartMapper.SetOrAddNestedRange(fbpDefName,
                     raceBodyParts.
                     Where (bpr => firstBodyPart.def != bpr.def && fbpDefName != bpr.def.defName && Helpers.DoesBodyPartMatch(bpr, firstBodyPart)).
                     Select(bpr => bpr.def)
@@ -221,7 +214,7 @@ namespace XenobionicPatcher {
                 bool warnedAboutLargeSet = false;
                 foreach (BodyPartDef surgeryBodyPart in surgery.appliedOnFixedBodyParts) {
                     string sbpDefName = surgeryBodyPart.defName;
-                    if (!partToPartMapper.ContainsKey(sbpDefName)) partToPartMapper[sbpDefName] = new HashSet<BodyPartDef> {};
+                    partToPartMapper.NewIfNoKey(sbpDefName);
 
                     // Useful to warn when it's about to add a bunch of parts into a recipe at one time
                     HashSet<BodyPartDef> diff = pawnSurgeryBodyParts.Except(partToPartMapper[sbpDefName]).ToHashSet();
