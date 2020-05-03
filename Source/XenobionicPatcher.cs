@@ -271,6 +271,22 @@ namespace XenobionicPatcher {
             }
             stopwatch.Reset();
 
+            // Hand/foot clean up
+            if ( ((SettingHandle<bool>)config["CleanupHandFootSurgeries"]).Value ) {
+                if (IsDebug) Logger.Message("Cleaning up hand/foot surgical recipes");
+
+                var surgeryList = allSurgeryDefs.Where(
+                    s => s.label.ToLower() is string sl && (sl.Contains("hand") || sl.Contains("foot"))
+                ).ToList();
+
+                stopwatch.Start();
+                DefInjector.CleanupHandFootSurgeryRecipes(surgeryList);
+                stopwatch.Stop();
+
+                Logger.Message("Cleaning up hand/foot surgical recipes (took {0:F4}s)", stopwatch.ElapsedMilliseconds / 1000f);
+            }
+            stopwatch.Reset();
+
             // Clean up
             if (IsDebug) Logger.Message("Merging duplicate surgical recipes and sorting");
 
@@ -321,6 +337,10 @@ namespace XenobionicPatcher {
                 "PatchMechlikeToHumanlike",
 
                 "BlankHeader",
+                "CleanupHeader",
+                "CleanupHandFootSurgeries",
+
+                "BlankHeader",
                 "MoreDebug",
             };
             
@@ -362,5 +382,6 @@ namespace XenobionicPatcher {
             configVer                             = currentVer;
             configVerStr = configVerSetting.Value = currentVerStr;
         }
+
     }
 }

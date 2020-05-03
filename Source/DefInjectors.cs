@@ -137,6 +137,15 @@ namespace XenobionicPatcher {
                 { "Elytra",   new[] { "elytra", "wing"              } },
             };
 
+            /* It's futile to try to separate the hand/foot connection, as animals have "hands" which also
+             * sometimes double as feet.  We can try to clean this up later in CleanupHandFootSurgeryRecipes.
+             *
+             * We're still going to keep the bio-boundary below to keep out leg->hand connections.  That's still a
+             * bit off.  And mechs, of course.
+             */
+            staticPartGroups["Hand"].AddRangeToArray(staticPartGroups["Foot"]);
+            staticPartGroups["Foot"] = staticPartGroups["Hand"];
+
             // Initialize part mapper with the vanilla part
             foreach (string vanillaPartName in staticPartGroups.Keys) {
                 partToPartMapper.Add(
@@ -234,8 +243,6 @@ namespace XenobionicPatcher {
 
                 /* If this list is crossing a bunch of our static part group boundaries, we should skip it.
                  * RoM's Druid Regrowth recipe is one such example that tends to pollute the whole bunch.
-                 * This also fixes the hand/foot mixups that happen with Power Claws and the human/animal
-                 * boundary.
                  */
                 int partGroupMatches = staticPartGroups.Keys.Sum(k =>
                     partToPartMapper[k].Overlaps(pawnSurgeryBodyParts) || partToPartMapper[k].Overlaps(surgery.appliedOnFixedBodyParts) ? 1 : 0
@@ -339,6 +346,8 @@ namespace XenobionicPatcher {
                     // If it's an administer recipe, add it
                     if (!surgery.targetsBodyPart) shouldAddSurgery = true;
 
+                    // XXX: Despite my best efforts, this step is still mapping hand/foot surgeries together...
+
                     // If it targets any body parts that exist within the pawn, add it
                     else if (surgery.targetsBodyPart && surgery.appliedOnFixedBodyParts.Count() >= 1 && surgery.appliedOnFixedBodyParts.Any( sbp =>
                         doesPawnHaveBodyPart.Contains( pawnDef.defName + "|" + sbp.defName )
@@ -359,6 +368,27 @@ namespace XenobionicPatcher {
                     newSurgeriesAdded
                 );
                 stopwatch.Reset();
+            }
+        }
+
+        public void CleanupHandFootSurgeryRecipes (List<RecipeDef> surgeryList) {
+            Base XP = Base.Instance;
+
+            // Try to clean up the more obvious hand/foot cross-connections on humanlikes
+            foreach (RecipeDef surgery in surgeryList.Where(s => s.targetsBodyPart)) {
+                string surgeryLabelLower = surgery.label.ToLower();
+
+                if      (surgeryLabelLower.Contains(" foot ") || surgeryLabelLower.EndsWith(" foot")) {
+                    surgery.appliedOnFixedBodyParts.RemoveAll(sbp => Helpers.DoesBodyPartMatch(sbp, "hand"));
+                }
+                else if (surgeryLabelLower.Contains(" hand ") || surgeryLabelLower.EndsWith(" hand")) {
+                    surgery.appliedOnFixedBodyParts.RemoveAll(sbp => Helpers.DoesBodyPartMatch(sbp, "foot"));
+                }
+
+                // This shouldn't happen
+                if (surgery.appliedOnFixedBodyParts.Count == 0) {
+                    XP.ModLogger.Error("Cleaning up hand/foot surgeries for {0}, but ended up removing all the body parts!", surgery.LabelCap);
+                }
             }
         }
 
