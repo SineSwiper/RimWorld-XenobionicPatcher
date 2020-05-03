@@ -100,15 +100,17 @@ namespace XenobionicPatcher {
                 stopwatch.Reset();
             }
 
-            // Start with a hard-coded list, just in case any of these don't match.  This is especially helpful for
-            // animals, since they don't always have obvious humanlike analogues.
+            /* Start with a hard-coded list, just in case any of these don't match.  This is especially helpful for
+             * animals, since they don't always have obvious humanlike analogues.  This also works as a part group
+             * separator to ensure parts don't get mixed into the wrong groups.
+             */
             var staticPartGroups = new Dictionary<string, string[]> {
                 { "Arm",      new[] { "arm", "flipper"                           } },
                 { "Shoulder", new[] { "shoulder"                                 } },
-                { "Hand",     new[] { "hand", "hoof", "paw", "claw", "grasper", "pincer" } },
+                { "Hand",     new[] { "hand", "claw", "grasper", "pincer"        } },
                 { "Finger",   new[] { "finger", "thumb", "pinky"                 } },
                 { "Leg",      new[] { "leg"                                      } },
-                { "Foot",     new[] { "foot"                                     } },
+                { "Foot",     new[] { "foot", "hoof", "paw"                      } },
                 { "Toe",      new[] { "toe"                                      } },
                 { "Eye",      new[] { "eye", "sight", "seeing", "visual"         } },
                 { "Ear",      new[] { "ear", "antenna", "hear", "hearing", "sound" } },
@@ -123,14 +125,6 @@ namespace XenobionicPatcher {
                 { "Spine",    new[] { "spine"                       } },
                 { "Neck",     new[] { "neck", "pronotum"            } },
             };
-
-            /* It's futile to try to separate the hand/foot connection, as animals have "hands" which also
-             * sometimes double as feet.  We can try to clean this up later in CleanupHandFootSurgeryRecipes.
-             * 
-             * We're still going to keep the bio-boundary below to keep out leg->hand connections.  That's still a 
-             * bit off.  And mechs, of course.
-             */
-            staticPartGroups["Foot"] = staticPartGroups["Hand"];
 
             // Static part loop
             if (Base.IsDebug) stopwatch.Start();
@@ -208,15 +202,17 @@ namespace XenobionicPatcher {
                     SelectMany(s  => s.appliedOnFixedBodyParts).Distinct().
                     ToHashSet()
                 ;
+                if (pawnSurgeryBodyParts.Count == 0) continue;
 
-                // If this list is crossing a bunch of our static part group boundaries, we should skip it.
-                // RoM's Druid Regrowth recipe is one such example that tends to pollute the whole bunch.
-                if (pawnSurgeryBodyParts.Count() >= 3) {
-                    int partGroupMatches = staticPartGroups.Keys.Sum(k =>
-                        partToPartMapper[k].Overlaps(pawnSurgeryBodyParts) ? 1 : 0
-                    );
-                    if (partGroupMatches >= 3) continue;
-                }
+                /* If this list is crossing a bunch of our static part group boundaries, we should skip it.
+                 * RoM's Druid Regrowth recipe is one such example that tends to pollute the whole bunch.
+                 * This also fixes the hand/foot mixups that happen with Power Claws and the human/animal
+                 * boundary.
+                 */
+                int partGroupMatches = staticPartGroups.Keys.Sum(k =>
+                    partToPartMapper[k].Overlaps(pawnSurgeryBodyParts) || partToPartMapper[k].Overlaps(surgery.appliedOnFixedBodyParts) ? 1 : 0
+                );
+                if (partGroupMatches >= 2) continue;
 
                 // Look for matching surgery labels, and map them to similar body parts
                 bool warnedAboutLargeSet = false;
@@ -338,27 +334,6 @@ namespace XenobionicPatcher {
             }
         }
 
-        public void CleanupHandFootSurgeryRecipes (List<RecipeDef> surgeryList) {
-            Base XP = Base.Instance;
-
-            // Try to clean up the more obvious hand/foot cross-connections on humanlikes
-            foreach (RecipeDef surgery in surgeryList.Where(s => s.targetsBodyPart)) {
-                string surgeryLabelLower = surgery.label.ToLower();
-
-                if      (surgeryLabelLower.Contains(" foot ") || surgeryLabelLower.EndsWith(" foot")) {
-                    surgery.appliedOnFixedBodyParts.RemoveAll(sbp => Helpers.DoesBodyPartMatch(sbp, "hand"));
-                }
-                else if (surgeryLabelLower.Contains(" hand ") || surgeryLabelLower.EndsWith(" hand")) {
-                    surgery.appliedOnFixedBodyParts.RemoveAll(sbp => Helpers.DoesBodyPartMatch(sbp, "foot"));
-                }
-
-                // This shouldn't happen
-                if (surgery.appliedOnFixedBodyParts.Count == 0) {
-                    XP.ModLogger.Error("Cleaning up hand/foot surgeries for {0}, but ended up removing all the body parts!", surgery.LabelCap);
-                }
-            }
-        }
-
         public void CleanupSurgeryRecipes (List<RecipeDef> surgeryList, List<ThingDef> pawnList) {
             Base XP = Base.Instance;
 
@@ -379,7 +354,7 @@ namespace XenobionicPatcher {
             var partsSurgeryList = surgeryList.Where(s => s.targetsBodyPart).ToList();
             for (int ps = 0; ps < partsSurgeryList.Count(); ps++) {
                 RecipeDef surgery = partsSurgeryList[ps];
-                
+
                 if (surgery.recipeUsers == null) surgery.recipeUsers = new List<ThingDef> {};
 
                 // The other side of the "easy dupe" cleaning
