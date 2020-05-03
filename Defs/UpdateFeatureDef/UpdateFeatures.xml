@@ -7,6 +7,17 @@
     </HugsLib.UpdateFeatureDef>
 
     <HugsLib.UpdateFeatureDef ParentName="UpdateFeatureBase">
+        <defName>XenobionicPatcher_1_1_6</defName>
+        <assemblyVersion>1.1.6</assemblyVersion>
+        <content>&lt;b&gt;Additions:&lt;/b&gt;
+- Added compatibility for Torso/Body and Wing/Elytra surgeries
+
+&lt;b&gt;Fixes:&lt;/b&gt;
+- Tightened up part group boundary checks to filter out more cases of badly-mapped surgeries
+        </content>
+    </HugsLib.UpdateFeatureDef>
+
+    <HugsLib.UpdateFeatureDef ParentName="UpdateFeatureBase">
         <defName>XenobionicPatcher_1_1_5</defName>
         <assemblyVersion>1.1.5</assemblyVersion>
         <content>&lt;b&gt;Additions:&lt;/b&gt;
