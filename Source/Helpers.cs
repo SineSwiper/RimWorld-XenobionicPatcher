@@ -81,6 +81,7 @@ namespace XenobionicPatcher {
             "insect", "animal", "plant", "crocodile", "snake", "artificial", "skeletal", "sickle", "mech(anical)?", "xeno",
             "front", "back", "rear",
             "index", "middle", "ring",
+            "segment",  // + "ring"
             "left", "center", "right", "upper", "middle", "lower",
             "first", "second", "third", "fourth", "fifth",
             "1st", "2nd", "3rd", "4th", "5th"

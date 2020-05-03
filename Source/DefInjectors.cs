@@ -116,7 +116,8 @@ namespace XenobionicPatcher {
                 { "Ear",      new[] { "ear", "antenna", "hear", "hearing", "sound" } },
                 { "Nose",     new[] { "nose", "nostril", "smell", "smelling"     } },
                 { "Jaw",      new[] { "jaw", "beak", "mouth", "maw", "teeth"     } },
-                { "Ribcage",  new[] { "ribcage", "thorax"           } },
+                { "Torso",    new[] { "torso", "thorax", "body", "shell" } },
+                { "Ribcage",  new[] { "ribcage"                     } },
                 { "Heart",    new[] { "heart", "reactor"            } },
                 { "Lung",     new[] { "lung"                        } },
                 { "Kidney",   new[] { "kidney"                      } },
@@ -124,6 +125,8 @@ namespace XenobionicPatcher {
                 { "Stomach",  new[] { "stomach"                     } },
                 { "Spine",    new[] { "spine"                       } },
                 { "Neck",     new[] { "neck", "pronotum"            } },
+                // Wing should really be the base name, but there is no vanilla Wing part (even for birds!)
+                { "Elytra",   new[] { "elytra", "wing"              } },
             };
 
             // Static part loop
