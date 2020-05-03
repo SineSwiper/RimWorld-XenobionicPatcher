@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Diagnostics;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -7,6 +8,14 @@ using Verse;
 
 namespace XenobionicPatcher {
     public class DefInjectors {
+        enum partMatchType {
+            BodyPartRecord,
+            BodyPartDef,
+            DefName,
+            LabelShort,
+            Label,
+        };
+
         /* WARNING: Because of the sheer amount of combinations and loops we're dealing with, there is a LOT
          * of caching (both here and within Helpers), HashSets (for duplicate checks), and stopwatch timing.
          * Everything needs be optimized to the Nth degree to reduce as much overhead as possible.
@@ -128,23 +137,46 @@ namespace XenobionicPatcher {
                 { "Elytra",   new[] { "elytra", "wing"              } },
             };
 
+            // Initialize part mapper with the vanilla part
+            foreach (string vanillaPartName in staticPartGroups.Keys) {
+                partToPartMapper.Add(
+                    vanillaPartName,
+                    new HashSet<BodyPartDef> { DefDatabase<BodyPartDef>.GetNamed(vanillaPartName) }
+                );
+            }
+
             // Static part loop
             if (Base.IsDebug) stopwatch.Start();
-            foreach (var partDefName in staticPartGroups.Keys) {
-                BodyPartDef vanillaPart = DefDatabase<BodyPartDef>.GetNamed(partDefName);
+            foreach (BodyPartRecord raceBodyPart in raceBodyParts) {
+                // Try really hard to only match one vanilla part
+                foreach (partMatchType matchType in Enum.GetValues(typeof(partMatchType))) {
+                    var partGroupMatched = new Dictionary<string, bool> {};
+                    foreach (string vanillaPartName in staticPartGroups.Keys) {
+                        partGroupMatched.Add(
+                            vanillaPartName,
+                            staticPartGroups[vanillaPartName].Any( fuzzyPartName =>
+                                matchType == partMatchType.BodyPartRecord ? Helpers.DoesBodyPartMatch(raceBodyPart,             fuzzyPartName) :
+                                matchType == partMatchType.BodyPartDef    ? Helpers.DoesBodyPartMatch(raceBodyPart.def,         fuzzyPartName) :
+                                matchType == partMatchType.DefName        ? Helpers.DoesBodyPartMatch(raceBodyPart.def.defName, fuzzyPartName) :
+                                matchType == partMatchType.LabelShort     ? Helpers.DoesBodyPartMatch(raceBodyPart.LabelShort,  fuzzyPartName) :
+                                matchType == partMatchType.Label          ? Helpers.DoesBodyPartMatch(raceBodyPart.Label,       fuzzyPartName) :
+                                false  // ??? Forgot to add a partMatchType?
+                            )
+                        );
+                    }
 
-                var partGroup  = staticPartGroups[partDefName];
-                var groupParts = new List<BodyPartDef> { vanillaPart };
-                for (int i = 0; i < partGroup.Count(); i++) {
-                    string fuzzyPartName = partGroup[i];
-                    foreach (BodyPartDef raceBodyPart in
-                        raceBodyParts.Where(bpr => Helpers.DoesBodyPartMatch(bpr, fuzzyPartName)).Select(bpr => bpr.def)
-                    ) {
-                        groupParts.Add(raceBodyPart);
+                    // Only stop to add if there's a conclusive singular part matched
+                    int partGroupMatches = staticPartGroups.Keys.Sum(k => partGroupMatched[k] ? 1 : 0);
+                    if (partGroupMatches == 1) {
+                        string vanillaPartName = partGroupMatched.Keys.First(k => partGroupMatched[k]);
+                        partToPartMapper[vanillaPartName].Add(raceBodyPart.def);
+                        break;
+                    }
+                    else if (partGroupMatches == 0) {
+                        // It's never going to match on other loops, so just stop here
+                        break;
                     }
                 }
-
-                groupParts.ForEach( bpd => partToPartMapper.SetOrAddNestedRange(bpd.defName, groupParts) );
             }
             if (Base.IsDebug) {
                 stopwatch.Stop();
