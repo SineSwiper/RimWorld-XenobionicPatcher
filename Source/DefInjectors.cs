@@ -208,15 +208,21 @@ namespace XenobionicPatcher {
             // (This is actually fewer combinations than all of the duplicates within
             // surgeryList -> appliedOnFixedBodyParts.)
             if (Base.IsDebug) stopwatch.Start();
-            foreach (BodyPartRecord firstBodyPart in raceBodyParts) {
+            for (int i = 0; i < raceBodyParts.Count(); i++) {
+                BodyPartRecord firstBodyPart = raceBodyParts[i];
                 string fbpDefName = firstBodyPart.def.defName;
+                partToPartMapper.NewIfNoKey(fbpDefName);
 
                 // Looks for matching (or near-matching) body part labels
-                partToPartMapper.SetOrAddNestedRange(fbpDefName,
-                    raceBodyParts.
-                    Where (bpr => firstBodyPart.def != bpr.def && fbpDefName != bpr.def.defName && Helpers.DoesBodyPartMatch(bpr, firstBodyPart)).
-                    Select(bpr => bpr.def)
-                );
+                for (int j = i + 1; j < raceBodyParts.Count(); j++) {  // don't repeat previous checks
+                    BodyPartRecord secondBodyPart = raceBodyParts[j];
+                    string sbpDefName = secondBodyPart.def.defName;
+
+                    if (firstBodyPart.def != secondBodyPart.def && Helpers.DoesBodyPartMatch(firstBodyPart, secondBodyPart)) {
+                        partToPartMapper[fbpDefName].Add(secondBodyPart.def);
+                        partToPartMapper.SetOrAddNested(sbpDefName, firstBodyPart.def);
+                    }
+                }
             }
             if (Base.IsDebug) {
                 stopwatch.Stop();
