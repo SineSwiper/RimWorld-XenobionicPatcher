@@ -157,7 +157,7 @@ namespace XenobionicPatcher {
             // Static part loop
             if (Base.IsDebug) stopwatch.Start();
             foreach (BodyPartRecord raceBodyPart in raceBodyParts) {
-                // Try really hard to only match one vanilla part
+                // Try really hard to only match one vanilla part group
                 foreach (partMatchType matchType in Enum.GetValues(typeof(partMatchType))) {
                     var partGroupMatched = new Dictionary<string, bool> {};
                     foreach (string vanillaPartName in staticPartGroups.Keys) {
@@ -177,8 +177,15 @@ namespace XenobionicPatcher {
                     // Only stop to add if there's a conclusive singular part matched
                     int partGroupMatches = staticPartGroups.Keys.Sum(k => partGroupMatched[k] ? 1 : 0);
                     if (partGroupMatches == 1) {
-                        string vanillaPartName = partGroupMatched.Keys.First(k => partGroupMatched[k]);
-                        partToPartMapper[vanillaPartName].Add(raceBodyPart.def);
+                        string vanillaPartName  = partGroupMatched.Keys.First(k => partGroupMatched[k]);
+                        BodyPartDef racePartDef = raceBodyPart.def;
+
+                        // Add to both sides
+                        partToPartMapper[vanillaPartName].Add(racePartDef);
+                        partToPartMapper.SetOrAddNested(
+                            racePartDef.defName,
+                            partToPartMapper[vanillaPartName].First(bpd => bpd.defName == vanillaPartName)
+                        );
                         break;
                     }
                     else if (partGroupMatches == 0) {
