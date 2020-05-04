@@ -75,6 +75,7 @@ namespace XenobionicPatcher {
 
         // Sub-descriptors of body parts that might interfere with matching
         internal static string[] bodyPartAdjectives = new[] {
+            "a", "the",
             "tiny", "small", "little", "medium", "big", "large", "huge",
             "internal", "external", "appendix",
             "tentacle", "malformed", "pupula", "duplex", "spot", "sentient", "sensor", "set",
