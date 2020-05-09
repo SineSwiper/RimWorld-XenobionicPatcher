@@ -1,11 +1,11 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Configuration>
   <Excluded>
-    <exclude>C:\Program Files (x86)\Steam\steamapps\common\RimWorld\Mods\XenobionicPatcher\.git</exclude>
-    <exclude>C:\Program Files (x86)\Steam\steamapps\common\RimWorld\Mods\XenobionicPatcher\.gitattributes</exclude>
-    <exclude>C:\Program Files (x86)\Steam\steamapps\common\RimWorld\Mods\XenobionicPatcher\.gitignore</exclude>
-    <exclude>C:\Program Files (x86)\Steam\steamapps\common\RimWorld\Mods\XenobionicPatcher\.vs</exclude>
-    <exclude>C:\Program Files (x86)\Steam\steamapps\common\RimWorld\Mods\XenobionicPatcher\README.md</exclude>
-    <exclude>C:\Program Files (x86)\Steam\steamapps\common\RimWorld\Mods\XenobionicPatcher\Source\.vs</exclude>
+    <exclude>D:\Program Files (x86)\Steam\steamapps\common\RimWorld\Mods\XenobionicPatcher\.git</exclude>
+    <exclude>D:\Program Files (x86)\Steam\steamapps\common\RimWorld\Mods\XenobionicPatcher\.gitattributes</exclude>
+    <exclude>D:\Program Files (x86)\Steam\steamapps\common\RimWorld\Mods\XenobionicPatcher\.gitignore</exclude>
+    <exclude>D:\Program Files (x86)\Steam\steamapps\common\RimWorld\Mods\XenobionicPatcher\.vs</exclude>
+    <exclude>D:\Program Files (x86)\Steam\steamapps\common\RimWorld\Mods\XenobionicPatcher\README.md</exclude>
+    <exclude>D:\Program Files (x86)\Steam\steamapps\common\RimWorld\Mods\XenobionicPatcher\Source\.vs</exclude>
   </Excluded>
 </Configuration>

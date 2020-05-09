@@ -7,6 +7,19 @@
     </HugsLib.UpdateFeatureDef>
 
     <HugsLib.UpdateFeatureDef ParentName="UpdateFeatureBase">
+        <defName>XenobionicPatcher_1_1_7</defName>
+        <assemblyVersion>1.1.7</assemblyVersion>
+        <content>&lt;b&gt;Additions:&lt;/b&gt;
+- Added hyperlinks to surgeries that don't have them
+
+&lt;b&gt;Fixes:&lt;/b&gt;
+- Surgery duplication cleanup no longer removes similar recipes that target different removal hediffs (such as Cyber Fauna's "Heal body part" option)
+- Now patches surgeries that target all body parts (such as Cyber Fauna's "Heal body part" option)
+- Added brains to the static part group to strengthen part boundary checks
+        </content>
+    </HugsLib.UpdateFeatureDef>
+
+    <HugsLib.UpdateFeatureDef ParentName="UpdateFeatureBase">
         <defName>XenobionicPatcher_1_1_6</defName>
         <assemblyVersion>1.1.6</assemblyVersion>
         <content>&lt;b&gt;Additions:&lt;/b&gt;
