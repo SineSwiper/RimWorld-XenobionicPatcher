@@ -444,6 +444,8 @@ namespace XenobionicPatcher {
                     s.workerClass        == surgery.workerClass        &&
                     s.workerCounterClass == surgery.workerCounterClass &&
                     s.addsHediff         == surgery.addsHediff         &&
+                    s.removesHediff      == surgery.removesHediff      &&
+                    s.changesHediffLevel == surgery.changesHediffLevel &&
 
                     s.fixedIngredientFilter?.Summary == surgery.fixedIngredientFilter?.Summary
                 )) {
