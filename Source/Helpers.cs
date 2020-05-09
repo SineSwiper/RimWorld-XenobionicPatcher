@@ -78,7 +78,13 @@ namespace XenobionicPatcher {
             "a", "the",
             "tiny", "small", "little", "medium", "big", "large", "huge",
             "internal", "external", "appendix",
-            "tentacle", "malformed", "pupula", "duplex", "spot", "sentient", "sensor", "set",
+
+            // Cosmic Horror's colorful adjectives
+            "malformed", "pupula", "duplex", "recessed", "bulbous", "bloodshot", "dominant", "rapid-movement",
+            "over-developed", "split", "zipper-shaped", "overbite", "underbite", "toothless", "malformed",
+            "scissor-shaped", "elongated", "crooked", "gumless",
+
+            "spot", "sentient", "sensor", "set",
             "insect", "animal", "plant", "crocodile", "snake", "artificial", "skeletal", "sickle", "mech(anical)?", "xeno",
             "front", "back", "rear",
             "index", "middle", "ring",
