@@ -288,13 +288,13 @@ namespace XenobionicPatcher {
             stopwatch.Reset();
 
             // Clean up
-            if (IsDebug) Logger.Message("Merging duplicate surgical recipes and sorting");
+            if (IsDebug) Logger.Message("Merging duplicate surgical recipes, hyperlinking, and sorting");
 
             stopwatch.Start();
             DefInjector.CleanupSurgeryRecipes(allSurgeryDefs, allPawnDefs);
             stopwatch.Stop();
 
-            Logger.Message("Merged duplicate surgical recipes and sorting (took {0:F4}s)", stopwatch.ElapsedMilliseconds / 1000f);
+            Logger.Message("Merged duplicate surgical recipes, hyperlinking, and sorting (took {0:F4}s)", stopwatch.ElapsedMilliseconds / 1000f);
             stopwatch.Reset();
 
             // No need to occupy all of this memory

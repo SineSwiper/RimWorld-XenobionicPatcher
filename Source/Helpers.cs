@@ -221,6 +221,37 @@ namespace XenobionicPatcher {
             return baseType.IsAssignableFrom(currentType);
         }
 
+        public static List<DefHyperlink> SurgeryToHyperlinks (RecipeDef surgery) {
+            var defs = new HashSet<Def> {};
+
+            Predicate<string> checkWorkerType = delegate(string t) {
+                 return SafeTypeByName(t) is Type type && type != null && IsSupertypeOf(type, surgery.workerClass);
+            };
+
+            foreach (IngredientCount ingredientCount in surgery.ingredients.Where(i => i.IsFixedIngredient)) {
+                ThingDef part = ingredientCount.FixedIngredient;
+                if (
+                    // Exempt from this check
+                    !(checkWorkerType("Recipe_AdministerIngestible") || checkWorkerType("Recipe_AdministerUsableItem")) && (
+                        part.IsMedicine || part.IsStuff || part.defName.StartsWith("RepairKit")
+                    )
+                ) continue;
+
+                defs.Add(part);
+            }
+
+            var hediffChangers = new List<HediffDef> { surgery.addsHediff, surgery.removesHediff, surgery.changesHediffLevel };
+            foreach (HediffDef hediff in hediffChangers.Where(
+                hd => hd != null && defs.All(d => d.defName != hd.defName)
+            )) {
+                if      (!hediff.descriptionHyperlinks.NullOrEmpty()) defs.AddRange( hediff.descriptionHyperlinks.Select(dhl => dhl.def) );
+                else if (hediff.spawnThingOnRemoved != null)          defs.Add(hediff.spawnThingOnRemoved);
+                else                                                  defs.Add(hediff);
+            }
+
+            return defs.Select(d => new DefHyperlink(d)).ToList();
+        }
+
         internal static List<Type> surgeryTypeOrder = new List<Type> {
             SafeTypeByName("Androids.Recipe_Disassemble"),
             SafeTypeByName("Androids.Recipe_RepairKit"),

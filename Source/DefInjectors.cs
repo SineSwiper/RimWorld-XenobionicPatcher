@@ -498,6 +498,13 @@ namespace XenobionicPatcher {
                 toDelete.ForEach( s => partsSurgeryList.Remove(s) );
             }
 
+            // Add hyperlinks to surgeries, if they don't exist
+            foreach (RecipeDef surgery in surgeryList.Where(s => s.descriptionHyperlinks.NullOrEmpty())) {
+                List<DefHyperlink> hyperlinks = Helpers.SurgeryToHyperlinks(surgery);
+                if (hyperlinks.NullOrEmpty()) continue;
+                surgery.descriptionHyperlinks = hyperlinks;
+            }
+
             foreach (ThingDef pawnDef in pawnList.Where(p => p.recipes != null)) {
                 // Sort all of the recipes on the pawn side
                 pawnDef.recipes = pawnDef.recipes.
