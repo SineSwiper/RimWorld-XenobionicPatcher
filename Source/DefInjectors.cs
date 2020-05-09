@@ -359,6 +359,11 @@ namespace XenobionicPatcher {
                     // If it's an administer recipe, add it
                     if (!surgery.targetsBodyPart) shouldAddSurgery = true;
 
+                    // If it targets a body part, but nothing specific, add it
+                    else if (surgery.targetsBodyPart && surgery.appliedOnFixedBodyParts.Count() == 0 && surgery.appliedOnFixedBodyPartGroups.Count() == 0) {
+                        shouldAddSurgery = true;
+                    }
+
                     // XXX: Despite my best efforts, this step is still mapping hand/foot surgeries together...
 
                     // If it targets any body parts that exist within the pawn, add it
