@@ -102,6 +102,9 @@ namespace XenobionicPatcher {
 
                     // MegaCorp
                     "Recipe_ChangeImplantLevel",
+
+                    // Harpies
+                    "SyrHarpy.Recipe_InstallPart",
                 };
 
                 foreach (string workerName in moddedWorkerClassNames) {

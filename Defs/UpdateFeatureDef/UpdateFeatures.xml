@@ -7,6 +7,16 @@
     </HugsLib.UpdateFeatureDef>
 
     <HugsLib.UpdateFeatureDef ParentName="UpdateFeatureBase">
+        <defName>XenobionicPatcher_1_1_8</defName>
+        <assemblyVersion>1.1.8</assemblyVersion>
+        <content>&lt;b&gt;Fixes:&lt;/b&gt;
+- Added official version tags for RimWorld v1.2!
+- Added compatibility with Harpy surgeries
+- Added "mandible" to the static part group
+        </content>
+    </HugsLib.UpdateFeatureDef>
+
+    <HugsLib.UpdateFeatureDef ParentName="UpdateFeatureBase">
         <defName>XenobionicPatcher_1_1_7</defName>
         <assemblyVersion>1.1.7</assemblyVersion>
         <content>&lt;b&gt;Additions:&lt;/b&gt;

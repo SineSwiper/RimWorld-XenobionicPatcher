@@ -123,7 +123,7 @@ namespace XenobionicPatcher {
                 { "Eye",      new[] { "eye", "sight", "seeing", "visual"         } },
                 { "Ear",      new[] { "ear", "antenna", "hear", "hearing", "sound" } },
                 { "Nose",     new[] { "nose", "nostril", "smell", "smelling"     } },
-                { "Jaw",      new[] { "jaw", "beak", "mouth", "maw", "teeth"     } },
+                { "Jaw",      new[] { "jaw", "beak", "mouth", "maw", "teeth", "mandible" } },
                 { "Brain",    new[] { "brain"                       } },
                 { "Torso",    new[] { "torso", "thorax", "body", "shell" } },
                 { "Ribcage",  new[] { "ribcage"                     } },
