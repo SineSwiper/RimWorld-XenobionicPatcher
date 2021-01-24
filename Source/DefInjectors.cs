@@ -439,8 +439,8 @@ namespace XenobionicPatcher {
 
                 // EPOE Forked has these obsolete parts that still have surgery options, and they are called
                 // the same thing for some reason.  We have to detect and ignore these...
-                if (EPOERedundancy != null && surgery.fixedIngredientFilter != null && surgery.fixedIngredientFilter.AllowedThingDefs.Any(
-                    t => t.thingCategories.Contains(EPOERedundancy)
+                if (EPOERedundancy != null && surgery.fixedIngredientFilter?.AllowedThingDefs != null && surgery.fixedIngredientFilter.AllowedThingDefs.Any(
+                    t => t.thingCategories != null && t.thingCategories.Contains(EPOERedundancy)
                 )) continue;
 
                 var toDelete = new List<RecipeDef> {};
