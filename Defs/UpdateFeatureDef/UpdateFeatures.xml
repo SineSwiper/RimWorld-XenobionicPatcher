@@ -7,6 +7,14 @@
     </HugsLib.UpdateFeatureDef>
 
     <HugsLib.UpdateFeatureDef ParentName="UpdateFeatureBase">
+        <defName>XenobionicPatcher_1_1_9</defName>
+        <assemblyVersion>1.1.9</assemblyVersion>
+        <content>&lt;b&gt;Fixes:&lt;/b&gt;
+- Fixed NRE (red error) with CleanupSurgeryRecipes
+        </content>
+    </HugsLib.UpdateFeatureDef>
+
+    <HugsLib.UpdateFeatureDef ParentName="UpdateFeatureBase">
         <defName>XenobionicPatcher_1_1_8</defName>
         <assemblyVersion>1.1.8</assemblyVersion>
         <content>&lt;b&gt;Fixes:&lt;/b&gt;
