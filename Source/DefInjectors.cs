@@ -65,6 +65,7 @@ namespace XenobionicPatcher {
 
             List<BodyPartRecord> raceBodyParts =
                 pawnList.
+                Where     (p  => p.race?.body != null).  // no idea; NRE bulletproofing because of PawnMorpher?
                 Select    (p  => p.race.body).Distinct().
                 SelectMany(bd => bd.AllParts).Distinct().
                 ToList()
@@ -91,7 +92,7 @@ namespace XenobionicPatcher {
                         s => pawn.defName + "|" + s.label.ToLower()
                     )
                 );
-                doesPawnHaveBodyPart.AddRange(
+                if (pawn.race?.body != null) doesPawnHaveBodyPart.AddRange(
                     pawn.race.body.AllParts.Distinct().Select(
                         bpr => pawn.defName + "|" + bpr.def.defName
                     )
