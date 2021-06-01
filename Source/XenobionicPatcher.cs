@@ -74,6 +74,12 @@ namespace XenobionicPatcher {
                     "MSE2.Recipe_InstallNaturalBodyPartWithChildren",
                     "MSE2.Recipe_InstallArtificialBodyPartWithChildren",
 
+                    // Cyber Fauna
+                    "SurgeryCF_Simple",
+                    "SurgeryCF_Bionic",
+                    "SurgeryCF_Archo",
+                    "SurgeryCF_Battle",
+
                     // Chj's Androids
                     "Androids.Recipe_Disassemble",
                     "Androids.Recipe_RepairKit",
