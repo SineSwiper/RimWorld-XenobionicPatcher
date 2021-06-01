@@ -332,6 +332,14 @@ namespace XenobionicPatcher {
         internal static void NewIfNoKey<K, V> (this Dictionary<K, V> dict, K key) where V : new() {
             if (!dict.ContainsKey(key)) dict.Add(key, new V());
         }
+        internal static void NewIfNoKey<K, V> (this Dictionary<K, V[]> dict, K key) where V : new() {
+            if (!dict.ContainsKey(key)) dict.Add(key, new V[] {});
+        }
+
+        internal static void SetOrAddNested<K, V> (this Dictionary<K, V[]> dict, K key, V value) {
+            if (!dict.ContainsKey(key)) dict.Add(key, new V[] { value });
+            else                        dict[key].AddItem(value);
+        }
 
         internal static void SetOrAddNested<K, V> (this Dictionary<K, List<V>> dict, K key, V value) {
             dict.NewIfNoKey(key);
@@ -341,6 +349,13 @@ namespace XenobionicPatcher {
         internal static void SetOrAddNested<K, V> (this Dictionary<K, HashSet<V>> dict, K key, V value) {
             dict.NewIfNoKey(key);
             dict[key].Add(value);
+        }
+
+        internal static void SetOrAddNestedRange<K, V> (this Dictionary<K, V[]> dict, K key, IEnumerable<V> value) {
+            if (dict.ContainsKey(key))
+                dict[key].AddRangeToArray(value.ToArray());
+            else
+                dict.Add(key, value.ToArray());
         }
 
         internal static void SetOrAddNestedRange<K, V> (this Dictionary<K, List<V>> dict, K key, IEnumerable<V> value) {

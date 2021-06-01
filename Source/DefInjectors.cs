@@ -113,31 +113,34 @@ namespace XenobionicPatcher {
              * animals, since they don't always have obvious humanlike analogues.  This also works as a part group
              * separator to ensure parts don't get mixed into the wrong groups.
              */
-            var staticPartGroups = new Dictionary<string, string[]> {
-                { "Arm",      new[] { "arm", "flipper"                           } },
-                { "Shoulder", new[] { "shoulder"                                 } },
-                { "Hand",     new[] { "hand", "claw", "grasper", "pincer"        } },
-                { "Finger",   new[] { "finger", "thumb", "pinky"                 } },
-                { "Leg",      new[] { "leg"                                      } },
-                { "Foot",     new[] { "foot", "hoof", "paw"                      } },
-                { "Toe",      new[] { "toe"                                      } },
-                { "Eye",      new[] { "eye", "sight", "seeing", "visual"         } },
-                { "Ear",      new[] { "ear", "antenna", "hear", "hearing", "sound" } },
-                { "Nose",     new[] { "nose", "nostril", "smell", "smelling"     } },
-                { "Jaw",      new[] { "jaw", "beak", "mouth", "maw", "teeth", "mandible" } },
-                { "Brain",    new[] { "brain"                       } },
-                { "Torso",    new[] { "torso", "thorax", "body", "shell" } },
-                { "Ribcage",  new[] { "ribcage"                     } },
-                { "Heart",    new[] { "heart", "reactor"            } },
-                { "Lung",     new[] { "lung"                        } },
-                { "Kidney",   new[] { "kidney"                      } },
-                { "Liver",    new[] { "liver"                       } },
-                { "Stomach",  new[] { "stomach"                     } },
-                { "Spine",    new[] { "spine"                       } },
-                { "Neck",     new[] { "neck", "pronotum"            } },
+            string staticPartSetString =
+                // Basics
+                "Arm Shoulder Hand Finger Foot Toe Eye Ear Nose Jaw Head Brain Torso Heart Lung Kidney Liver Stomach Neck" + ' ' +
+                // Animal parts
+                "Elytra Tail Horn Tusk Trunk" + ' ' +
+                // Bones
+                "Skull Ribcage Spine Clavicle Sternum Humerus Radius Pelvis Femur Tibia"
+            ;
+            Dictionary<string, string[]> staticPartGroups = staticPartSetString.Split(' ').ToDictionary(k => k, k => new[] { k.ToLower() });
+            
+            var additionalStaticPartGroups = new Dictionary<string, string[]> {
+                { "Arm",      new[] { "flipper"                                   } },
+                { "Hand",     new[] { "claw", "grasper", "pincer"                 } },
+                { "Finger",   new[] { "thumb", "pinky"                            } },
+                { "Foot",     new[] { "hoof", "paw"                               } },
+                { "Eye",      new[] { "sight", "seeing", "visual"                 } },
+                { "Ear",      new[] { "antenna", "hear", "hearing", "sound"       } },
+                { "Nose",     new[] { "nostril", "smell", "smelling"              } },
+                { "Jaw",      new[] { "beak", "mouth", "maw", "teeth", "mandible" } },
+                { "Torso",    new[] { "thorax", "body", "shell"                   } },
+                { "Heart",    new[] { "reactor"                                   } },
+                { "Neck",     new[] { "pronotum"                                  } },
                 // Wing should really be the base name, but there is no vanilla Wing part (even for birds!)
-                { "Elytra",   new[] { "elytra", "wing"              } },
+                { "Elytra",   new[] { "elytra", "wing" } },
             };
+            foreach (string vanillaPartName in additionalStaticPartGroups.Keys) {
+                staticPartGroups.SetOrAddNestedRange(vanillaPartName, additionalStaticPartGroups[vanillaPartName]);
+            }
 
             /* It's futile to try to separate the hand/foot connection, as animals have "hands" which also
              * sometimes double as feet.  We can try to clean this up later in CleanupHandFootSurgeryRecipes.
