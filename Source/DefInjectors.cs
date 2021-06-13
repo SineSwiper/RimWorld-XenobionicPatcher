@@ -169,11 +169,11 @@ namespace XenobionicPatcher {
                         partGroupMatched.Add(
                             vanillaPartName,
                             staticPartGroups[vanillaPartName].Any( fuzzyPartName =>
-                                matchType == partMatchType.BodyPartRecord ? Helpers.DoesBodyPartMatch(raceBodyPart,             fuzzyPartName) :
-                                matchType == partMatchType.BodyPartDef    ? Helpers.DoesBodyPartMatch(raceBodyPart.def,         fuzzyPartName) :
-                                matchType == partMatchType.DefName        ? Helpers.DoesBodyPartMatch(raceBodyPart.def.defName, fuzzyPartName) :
-                                matchType == partMatchType.LabelShort     ? Helpers.DoesBodyPartMatch(raceBodyPart.LabelShort,  fuzzyPartName) :
-                                matchType == partMatchType.Label          ? Helpers.DoesBodyPartMatch(raceBodyPart.Label,       fuzzyPartName) :
+                                matchType == partMatchType.BodyPartRecord ? BodyPartMatcher.DoesBodyPartMatch(raceBodyPart,             fuzzyPartName) :
+                                matchType == partMatchType.BodyPartDef    ? BodyPartMatcher.DoesBodyPartMatch(raceBodyPart.def,         fuzzyPartName) :
+                                matchType == partMatchType.DefName        ? BodyPartMatcher.DoesBodyPartMatch(raceBodyPart.def.defName, fuzzyPartName) :
+                                matchType == partMatchType.LabelShort     ? BodyPartMatcher.DoesBodyPartMatch(raceBodyPart.LabelShort,  fuzzyPartName) :
+                                matchType == partMatchType.Label          ? BodyPartMatcher.DoesBodyPartMatch(raceBodyPart.Label,       fuzzyPartName) :
                                 false  // ??? Forgot to add a partMatchType?
                             )
                         );
@@ -223,7 +223,7 @@ namespace XenobionicPatcher {
                     BodyPartRecord secondBodyPart = raceBodyParts[j];
                     string sbpDefName = secondBodyPart.def.defName;
 
-                    if (firstBodyPart.def != secondBodyPart.def && Helpers.DoesBodyPartMatch(firstBodyPart, secondBodyPart)) {
+                    if (firstBodyPart.def != secondBodyPart.def && BodyPartMatcher.DoesBodyPartMatch(firstBodyPart, secondBodyPart)) {
                         partToPartMapper[fbpDefName].Add(secondBodyPart.def);
                         partToPartMapper.SetOrAddNested(sbpDefName, firstBodyPart.def);
                     }
@@ -402,10 +402,10 @@ namespace XenobionicPatcher {
                 string surgeryLabelLower = surgery.label.ToLower();
 
                 if      (surgeryLabelLower.Contains(" foot ") || surgeryLabelLower.EndsWith(" foot")) {
-                    surgery.appliedOnFixedBodyParts.RemoveAll(sbp => Helpers.DoesBodyPartMatch(sbp, "hand"));
+                    surgery.appliedOnFixedBodyParts.RemoveAll(sbp => BodyPartMatcher.DoesBodyPartMatch(sbp, "hand"));
                 }
                 else if (surgeryLabelLower.Contains(" hand ") || surgeryLabelLower.EndsWith(" hand")) {
-                    surgery.appliedOnFixedBodyParts.RemoveAll(sbp => Helpers.DoesBodyPartMatch(sbp, "foot"));
+                    surgery.appliedOnFixedBodyParts.RemoveAll(sbp => BodyPartMatcher.DoesBodyPartMatch(sbp, "foot"));
                 }
 
                 // This shouldn't happen
