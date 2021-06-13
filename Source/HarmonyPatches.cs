@@ -1,5 +1,6 @@
 ﻿using HarmonyLib;
 using System.Collections.Generic;
+using RimWorld;
 using Verse;
 
 namespace XenobionicPatcher {
@@ -25,5 +26,34 @@ namespace XenobionicPatcher {
                 hasRemovedDupesFromRecipeCache.Add(__instance.GetHashCode());
             }
         }
+
+        // Override the RecipeDef.SpecialDisplayStats method to display our own surgery stats.
+        [HarmonyPatch(typeof(RecipeDef), "SpecialDisplayStats")]
+        private static class RecipeDef_SpecialDisplayStats_Postfix {
+            [HarmonyPostfix]
+            static IEnumerable<StatDrawEntry> Postfix(IEnumerable<StatDrawEntry> values, RecipeDef __instance, StatRequest req) {
+                // Cycle through the entries
+                foreach (StatDrawEntry value in values) yield return value;
+                
+                // Add our own
+                if (__instance.IsSurgery) {
+                    foreach (StatDrawEntry value in ExtraSurgeryStats.SpecialDisplayStats(__instance, req)) yield return value;
+                }
+            }
+        }
+
+        // Ditto for HediffDif
+        [HarmonyPatch(typeof(HediffDef), "SpecialDisplayStats")]
+        private static class HediffDef_SpecialDisplayStats_Postfix {
+            [HarmonyPostfix]
+            static IEnumerable<StatDrawEntry> Postfix(IEnumerable<StatDrawEntry> values, HediffDef __instance, StatRequest req) {
+                // Cycle through the entries
+                foreach (StatDrawEntry value in values) yield return value;
+                
+                // Add our own
+                foreach (StatDrawEntry value in ExtraHediffStats.SpecialDisplayStats(__instance, req)) yield return value;
+            }
+        }
+
     }
 }
