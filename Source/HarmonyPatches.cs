@@ -27,6 +27,8 @@ namespace XenobionicPatcher {
             }
         }
 
+        // NOTE: Sadly, the StatRequest object is basically useless here, because Def stats don't get additional context, like Pawn objects.
+
         // Override the RecipeDef.SpecialDisplayStats method to display our own surgery stats.
         [HarmonyPatch(typeof(RecipeDef), "SpecialDisplayStats")]
         private static class RecipeDef_SpecialDisplayStats_Postfix {
@@ -42,7 +44,7 @@ namespace XenobionicPatcher {
             }
         }
 
-        // Ditto for HediffDif
+        // Ditto for HediffDef
         [HarmonyPatch(typeof(HediffDef), "SpecialDisplayStats")]
         private static class HediffDef_SpecialDisplayStats_Postfix {
             [HarmonyPostfix]
@@ -55,5 +57,19 @@ namespace XenobionicPatcher {
             }
         }
 
+        // BodyPartDef doesn't have a SpecialDisplayStats, so we'll have to tie this to the base method, unfortunately
+        [HarmonyPatch(typeof(Def), "SpecialDisplayStats")]
+        private static class Def_SpecialDisplayStats_Postfix {
+            [HarmonyPostfix]
+            static IEnumerable<StatDrawEntry> Postfix(IEnumerable<StatDrawEntry> values, Def __instance, StatRequest req) {
+                // Cycle through the entries (probably nothing here)
+                foreach (StatDrawEntry value in values) yield return value;
+
+                if (!(__instance is BodyPartDef)) yield break;
+                
+                // Add our own
+                foreach (StatDrawEntry value in ExtraBodyPartStats.SpecialDisplayStats((BodyPartDef)__instance, req)) yield return value;
+            }
+        }
     }
 }
