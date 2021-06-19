@@ -68,6 +68,10 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ExtraBodyPartStats.cs" />
+    <Compile Include="ExtraHediffStats.cs" />
+    <Compile Include="ExtraSurgeryStats.cs" />
+    <Compile Include="BodyPartMatcher.cs" />
     <Compile Include="Helpers.cs" />
     <Compile Include="DefInjectors.cs" />
     <Compile Include="HarmonyPatches.cs" />
