@@ -84,20 +84,29 @@ namespace XenobionicPatcher {
 
         public static StatDrawEntry WorkerModStat (RecipeDef surgery) {
             // Attempt to figure out which mod the workerClass belongs to
-            string moddedTitle          = null;
+            string moddedTitle = null;
 
             string         surgeryWorkerNamespace = surgery.workerClass.Namespace;
             Assembly       surgeryWorkerAssembly  = surgery.workerClass.Assembly;
             List<Assembly> surgeryDefAssemblies   = surgery.modContentPack?.assemblies?.loadedAssemblies;
 
-            if (surgeryDefAssemblies == null || surgeryWorkerAssembly == null) return null;
+            if (
+                // Assembies on both sides must exist
+                surgeryDefAssemblies == null || surgeryWorkerAssembly == null ||
+                // If it's a core worker or core surgery, skip it
+                surgeryWorkerNamespace == "RimWorld" || (bool)surgery.modContentPack?.IsCoreMod
+            ) return null;
 
             // Diving into assembly properties, especially ones that didn't load correctly, might run into exceptions...
             try {
                 ModContentPack surgeryWorkerModPack = LoadedModManager.RunningModsListForReading.FirstOrFallback( mcp =>
+                    mcp.assemblies.loadedAssemblies.SelectMany( a => a.GetTypes() ).Any( t => t.Namespace == surgeryWorkerNamespace ) ||
                     mcp.assemblies.GetType().Namespace == surgeryWorkerNamespace
                 );
-                moddedTitle = surgeryWorkerModPack != null ? surgeryWorkerModPack.Name : surgeryWorkerNamespace;
+                moddedTitle =
+                    surgeryWorkerModPack != null ? surgeryWorkerModPack.Name :
+                    surgeryWorkerNamespace.Translate().ToString()  // force zalgo text in dev mode
+                ;
             }
             catch (Exception e) {
                 Base.Instance.ModLogger.Warning(
@@ -107,8 +116,7 @@ namespace XenobionicPatcher {
                 return null;
             };
 
-            // Only look for cases where surgery's workerClass is non-core
-            if (moddedTitle == null || moddedTitle == "RimWorld") return null;
+            if (moddedTitle == null) return null;
 
             string moddedTitleFormatted = "<i>" + moddedTitle + "</i>";
 
