@@ -13,14 +13,12 @@ namespace XenobionicPatcher {
         public static IEnumerable<StatDrawEntry> SpecialDisplayStats(RecipeDef surgery, StatRequest req) {
             category = DefDatabase<StatCategoryDef>.GetNamed("Surgery");
 
-            // FIXME: Translate all the strings
-
             yield return SurgeryCategoryStat(surgery);
 
             yield return new StatDrawEntry(
                 category:    category,
-                label:       "Anesthetize",
-                reportText:  "Whether this surgery requires anesthetic.",
+                label:       "Stat_Recipe_Surgery_Anesthetize_Name".Translate(),
+                reportText:  "Stat_Recipe_Surgery_Anesthetize_Desc".Translate(),
                 valueString: surgery.anesthetize.ToStringYesNo(),
                 hyperlinks:  new[] { new Dialog_InfoCard.Hyperlink(HediffDefOf.Anesthetic) },
                 displayPriorityWithinCategory: 4950
@@ -31,24 +29,24 @@ namespace XenobionicPatcher {
                 
             if (surgery.addsHediff != null) yield return new StatDrawEntry(
                 category:    category,
-                label:       "Adds health condition",
-                reportText:  "The health condition this surgery adds when complete.",
+                label:       "Stat_Recipe_Surgery_AddsHediff_Name".Translate(),
+                reportText:  "Stat_Recipe_Surgery_AddsHediff_Desc".Translate(),
                 valueString: surgery.addsHediff.LabelCap,
                 hyperlinks:  new[] { new Dialog_InfoCard.Hyperlink(surgery.addsHediff) },
                 displayPriorityWithinCategory: 4859
             );
             if (surgery.removesHediff != null) yield return new StatDrawEntry(
                 category:    category,
-                label:       "Removes health condition",
-                reportText:  "The health condition this surgery removes when complete.",
+                label:       "Stat_Recipe_Surgery_RemovesHediff_Name".Translate(),
+                reportText:  "Stat_Recipe_Surgery_RemovesHediff_Desc".Translate(),
                 valueString: surgery.removesHediff.LabelCap,
                 hyperlinks:  new[] { new Dialog_InfoCard.Hyperlink(surgery.removesHediff) },
                 displayPriorityWithinCategory: 4858
             );
             if (surgery.changesHediffLevel != null) yield return new StatDrawEntry(
                 category:    category,
-                label:       "Augments health condition",
-                reportText:  "The health condition this surgery enhances when complete.",
+                label:       "Stat_Recipe_Surgery_ChangesHediffLevel_Name".Translate(),
+                reportText:  "Stat_Recipe_Surgery_ChangesHediffLevel_Desc".Translate(),
                 valueString: surgery.changesHediffLevel.LabelCap,
                 hyperlinks:  new[] { new Dialog_InfoCard.Hyperlink(surgery.changesHediffLevel) },
                 displayPriorityWithinCategory: 4857
@@ -56,11 +54,12 @@ namespace XenobionicPatcher {
         }
 
         public static StatDrawEntry SurgeryCategoryStat (RecipeDef surgery) {
-            string workerClassName = surgery.workerClass.Name;
-            string categoryLangKey = "Stat_Recipe_SurgeryCategory_" + workerClassName;
+            string workerClassKey = surgery.workerClass.Name;
+            workerClassKey = Regex.Replace(workerClassKey, @"Recipe(Worker)?_", "");
+            workerClassKey = Regex.Replace(workerClassKey, @"_(\w)", m => m.Groups[1].Value.ToUpper());  // SnakeCase to CamelCase
 
-            string backupText = Regex.Replace(workerClassName, @"Recipe(Worker)?_", "");
-            backupText = GenText.CapitalizeFirst( GenText.SplitCamelCase(backupText).ToLower() );
+            string categoryLangKey = "Stat_Recipe_Surgery_SurgeryCategory_" + workerClassKey;
+            string backupText      = GenText.CapitalizeFirst( GenText.SplitCamelCase(workerClassKey).ToLower() );
 
             /* If the language key doesn't exist, it will try to form an English-friendly type based on the
              * workerClass name.  In this case, the backupText.Translate() will fail and then call
@@ -72,8 +71,8 @@ namespace XenobionicPatcher {
 
             return new StatDrawEntry(
                 category:    category,
-                label:       "Surgery category",
-                reportText:  "The basic type of surgery.",
+                label:       "Stat_Recipe_Surgery_SurgeryCategory_Name".Translate(),
+                reportText:  "Stat_Recipe_Surgery_SurgeryCategory_Desc".Translate(),
                 valueString: surgeryCategory,
                 displayPriorityWithinCategory: 4999
             );
@@ -86,9 +85,8 @@ namespace XenobionicPatcher {
 
             if (surgery.targetsBodyPart) {
                 bodyParts  = surgery.appliedOnFixedBodyParts.ListFullCopy();
-                reportText = "The body parts this surgery can target.";
+                reportText = "Stat_Recipe_Surgery_AffectedBodyParts_Desc".Translate();
 
-                // XXX: Is this slow?
                 var sBPG = surgery.appliedOnFixedBodyPartGroups;
                 if (!surgery.appliedOnFixedBodyPartGroups.NullOrEmpty()) {
                     bodyParts.AddRange(
@@ -118,13 +116,12 @@ namespace XenobionicPatcher {
 
             if      (bodyPartLabels.Count == 0) {
                 if (surgery.targetsBodyPart) {
-                    // FIXME: Not really an appropriate translation string
-                    title      = "NoDrugUseRequirement".Translate();
-                    reportText = "This surgery can target any body part.";
+                    title      = "Any".Translate();
+                    reportText = "Stat_Recipe_Surgery_AffectedBodyParts_Desc_Any".Translate();
                 }
                 else {
                     title      = "None".Translate();
-                    reportText = "This surgery affects the whole body.";
+                    reportText = "Stat_Recipe_Surgery_AffectedBodyParts_Desc_None".Translate();
                 }
             }
             else if (bodyPartLabels.Count <= 5) {
@@ -142,7 +139,7 @@ namespace XenobionicPatcher {
 
             var sde = new StatDrawEntry(
                 category:    category,
-                label:       "Affected body parts",
+                label:       "Stat_Recipe_Surgery_AffectedBodyParts_Name".Translate(),
                 reportText:  reportText,
                 valueString: title,
                 hyperlinks:  bodyParts.Select(bpd => new Dialog_InfoCard.Hyperlink(bpd)),
@@ -161,8 +158,8 @@ namespace XenobionicPatcher {
 
             return new StatDrawEntry(
                 category:    category,
-                label:       "Incompatible with",
-                reportText:  "Health conditions that are incompatible with this surgery.",
+                label:       "Stat_Recipe_Surgery_IncompatibleWithHediffTags_Name".Translate(),
+                reportText:  "Stat_Recipe_Surgery_IncompatibleWithHediffTags_Desc".Translate(),
                 valueString: title,
                 hyperlinks:  incompatibleHediffs.Select(hd => new Dialog_InfoCard.Hyperlink(hd)),
                 displayPriorityWithinCategory: 4870

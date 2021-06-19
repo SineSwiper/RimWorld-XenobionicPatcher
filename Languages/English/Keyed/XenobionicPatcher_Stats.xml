@@ -1,0 +1,212 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<LanguageData>
+
+    <!--
+        Surgery RecipeDefs
+    -->
+
+    <!-- Surgery categories -->
+    <Stat_Recipe_Surgery_SurgeryCategory_Name>Surgery category</Stat_Recipe_Surgery_SurgeryCategory_Name>
+    <Stat_Recipe_Surgery_SurgeryCategory_Desc>The basic type of surgery.</Stat_Recipe_Surgery_SurgeryCategory_Desc>
+
+    <!-- vanilla -->
+    <Stat_Recipe_Surgery_SurgeryCategory_AdministerIngestible     >Administer ingestible</Stat_Recipe_Surgery_SurgeryCategory_AdministerIngestible>
+    <Stat_Recipe_Surgery_SurgeryCategory_AdministerUsableItem     >Administer usable item</Stat_Recipe_Surgery_SurgeryCategory_AdministerUsableItem>
+    <Stat_Recipe_Surgery_SurgeryCategory_ChangeImplantLevel       >Change implant level</Stat_Recipe_Surgery_SurgeryCategory_ChangeImplantLevel>
+    <Stat_Recipe_Surgery_SurgeryCategory_ExecuteByCut             >Execute by cut</Stat_Recipe_Surgery_SurgeryCategory_ExecuteByCut>
+    <Stat_Recipe_Surgery_SurgeryCategory_InstallArtificialBodyPart>Install artificial body part</Stat_Recipe_Surgery_SurgeryCategory_InstallArtificialBodyPart>
+    <Stat_Recipe_Surgery_SurgeryCategory_InstallImplant           >Install implant</Stat_Recipe_Surgery_SurgeryCategory_InstallImplant>
+    <Stat_Recipe_Surgery_SurgeryCategory_InstallNaturalBodyPart   >Install natural body part</Stat_Recipe_Surgery_SurgeryCategory_InstallNaturalBodyPart>
+    <Stat_Recipe_Surgery_SurgeryCategory_RemoveBodyPart           >Remove body part</Stat_Recipe_Surgery_SurgeryCategory_RemoveBodyPart>
+    <Stat_Recipe_Surgery_SurgeryCategory_RemoveHediff             >Remove health condition</Stat_Recipe_Surgery_SurgeryCategory_RemoveHediff>
+    <Stat_Recipe_Surgery_SurgeryCategory_RemoveImplant            >Remove implant</Stat_Recipe_Surgery_SurgeryCategory_RemoveImplant>
+    <Stat_Recipe_Surgery_SurgeryCategory_Surgery                  >Surgery</Stat_Recipe_Surgery_SurgeryCategory_Surgery>
+
+    <!-- modded -->
+    <Stat_Recipe_Surgery_SurgeryCategory_RemoveScarHediff     >Remove scar</Stat_Recipe_Surgery_SurgeryCategory_RemoveScarHediff>
+    <Stat_Recipe_Surgery_SurgeryCategory_RemoveBrainScarHediff>Remove brain scar</Stat_Recipe_Surgery_SurgeryCategory_RemoveBrainScarHediff>
+    <Stat_Recipe_Surgery_SurgeryCategory_RemoveHediffNoBrain  >Remove health condition</Stat_Recipe_Surgery_SurgeryCategory_RemoveHediffNoBrain>
+    <Stat_Recipe_Surgery_SurgeryCategory_InstallBodyPartModule>Install body part module</Stat_Recipe_Surgery_SurgeryCategory_InstallBodyPartModule>
+    <Stat_Recipe_Surgery_SurgeryCategory_InstallImplantSystem >Install implant system</Stat_Recipe_Surgery_SurgeryCategory_InstallImplantSystem>
+    <Stat_Recipe_Surgery_SurgeryCategory_RemoveImplantSystem  >Remove implant system</Stat_Recipe_Surgery_SurgeryCategory_RemoveImplantSystem>
+
+    <Stat_Recipe_Surgery_SurgeryCategory_InstallModule                        >Install module</Stat_Recipe_Surgery_SurgeryCategory_InstallModule>
+    <Stat_Recipe_Surgery_SurgeryCategory_RemoveModules                        >Remove module</Stat_Recipe_Surgery_SurgeryCategory_RemoveModules>
+    <Stat_Recipe_Surgery_SurgeryCategory_InstallNaturalBodyPartWithChildren   >Install natural body part</Stat_Recipe_Surgery_SurgeryCategory_InstallNaturalBodyPartWithChildren>
+    <Stat_Recipe_Surgery_SurgeryCategory_InstallArtificialBodyPartWithChildren>Install artificial body part</Stat_Recipe_Surgery_SurgeryCategory_InstallArtificialBodyPartWithChildren>
+
+    <Stat_Recipe_Surgery_SurgeryCategory_SurgeryCFSimple>Install simple part</Stat_Recipe_Surgery_SurgeryCategory_SurgeryCFSimple>
+    <Stat_Recipe_Surgery_SurgeryCategory_SurgeryCFBionic>Install bionic part</Stat_Recipe_Surgery_SurgeryCategory_SurgeryCFBionic>
+    <Stat_Recipe_Surgery_SurgeryCategory_SurgeryCFArcho >Install archotech part</Stat_Recipe_Surgery_SurgeryCategory_SurgeryCFArcho>
+    <Stat_Recipe_Surgery_SurgeryCategory_SurgeryCFBattle>Install battle booster</Stat_Recipe_Surgery_SurgeryCategory_SurgeryCFBattle>
+
+    <Stat_Recipe_Surgery_SurgeryCategory_Disassemble>Disassemble</Stat_Recipe_Surgery_SurgeryCategory_Disassemble>
+    <Stat_Recipe_Surgery_SurgeryCategory_RepairKit  >Use repair kit</Stat_Recipe_Surgery_SurgeryCategory_RepairKit>
+
+    <Stat_Recipe_Surgery_SurgeryCategory_AndroidRewireSurgery            >Rewire surgery</Stat_Recipe_Surgery_SurgeryCategory_AndroidRewireSurgery>
+    <Stat_Recipe_Surgery_SurgeryCategory_RemoveSentience                 >Remove sentience</Stat_Recipe_Surgery_SurgeryCategory_RemoveSentience>
+    <Stat_Recipe_Surgery_SurgeryCategory_RerollTraits                    >Reroll traits</Stat_Recipe_Surgery_SurgeryCategory_RerollTraits>
+    <Stat_Recipe_Surgery_SurgeryCategory_InstallImplantAndroid           >Install (android) implant</Stat_Recipe_Surgery_SurgeryCategory_InstallImplantAndroid>
+    <Stat_Recipe_Surgery_SurgeryCategory_InstallArtificialBodyPartAndroid>Install (android) artificial body part</Stat_Recipe_Surgery_SurgeryCategory_InstallArtificialBodyPartAndroid>
+    <Stat_Recipe_Surgery_SurgeryCategory_InstallArtificialBrain          >Install artificial brain</Stat_Recipe_Surgery_SurgeryCategory_InstallArtificialBrain>
+    <Stat_Recipe_Surgery_SurgeryCategory_ApplyHydraulicNaniteBank        >Apply hydraulic nanite bank</Stat_Recipe_Surgery_SurgeryCategory_ApplyHydraulicNaniteBank>
+    <Stat_Recipe_Surgery_SurgeryCategory_ApplyHealFrameworkSystem        >Apply heal framework system</Stat_Recipe_Surgery_SurgeryCategory_ApplyHealFrameworkSystem>
+    <Stat_Recipe_Surgery_SurgeryCategory_ApplyHealCoolingSystem          >Apply heal cooling system</Stat_Recipe_Surgery_SurgeryCategory_ApplyHealCoolingSystem>
+    <Stat_Recipe_Surgery_SurgeryCategory_ApplyHealCPUSerum               >Apply heal CPU serum</Stat_Recipe_Surgery_SurgeryCategory_ApplyHealCPUSerum>
+
+    <Stat_Recipe_Surgery_SurgeryCategory_RemoveGauntlet  >Remove Gauntlet</Stat_Recipe_Surgery_SurgeryCategory_RemoveGauntlet>
+    <Stat_Recipe_Surgery_SurgeryCategory_RemoveHugger    >Remove facehugger</Stat_Recipe_Surgery_SurgeryCategory_RemoveHugger>
+
+    <Stat_Recipe_Surgery_SurgeryCategory_CreateBrainScan >Create brain scan</Stat_Recipe_Surgery_SurgeryCategory_CreateBrainScan>
+    <Stat_Recipe_Surgery_SurgeryCategory_GenomeSequencing>Genome sequencing</Stat_Recipe_Surgery_SurgeryCategory_GenomeSequencing>
+    <Stat_Recipe_Surgery_SurgeryCategory_NerveStapling   >Nerve stapling</Stat_Recipe_Surgery_SurgeryCategory_NerveStapling>
+
+    <Stat_Recipe_Surgery_SurgeryCategory_InstallPart     >Install part</Stat_Recipe_Surgery_SurgeryCategory_InstallPart>
+
+
+    <!-- The rest of the stats -->
+    <Stat_Recipe_Surgery_WorkerMod_Name>Worker mod</Stat_Recipe_Surgery_SurgeryCategory_Name>
+    <Stat_Recipe_Surgery_WorkerMod_Desc>The mod in which the surgery's worker class (aka surgery category) came from. This isn't always the same as the surgery's mod.</Stat_Recipe_Surgery_SurgeryCategory_Desc>
+
+    <Stat_Recipe_Surgery_Anesthetize_Name>Anesthetize</Stat_Recipe_Surgery_Anesthetize_Name>
+    <Stat_Recipe_Surgery_Anesthetize_Desc>Whether this surgery requires anesthetic.</Stat_Recipe_Surgery_Anesthetize_Desc>
+
+    <Stat_Recipe_Surgery_AffectedBodyParts_Name>Affected body parts</Stat_Recipe_Surgery_AffectedBodyParts_Name>
+    <Stat_Recipe_Surgery_AffectedBodyParts_Desc>The body parts this surgery can target.</Stat_Recipe_Surgery_AffectedBodyParts_Desc>
+    <Stat_Recipe_Surgery_AffectedBodyParts_Desc_Any>This surgery can target any body part.</Stat_Recipe_Surgery_AffectedBodyParts_Desc_Any>
+    <Stat_Recipe_Surgery_AffectedBodyParts_Desc_None>This surgery affects the whole body.</Stat_Recipe_Surgery_AffectedBodyParts_Desc_None>
+
+    <Any>Any</Any>
+
+    <Stat_Recipe_Surgery_IncompatibleWithHediffTags_Name>Incompatible with</Stat_Recipe_Surgery_IncompatibleWithHediffTags_Name>
+    <Stat_Recipe_Surgery_IncompatibleWithHediffTags_Desc>Health conditions (ie: installed body parts) that are incompatible with this surgery.</Stat_Recipe_Surgery_IncompatibleWithHediffTags_Desc>
+
+    <Stat_Recipe_Surgery_AddsHediff_Name>Adds health condition</Stat_Recipe_Surgery_AddsHediff_Name>
+    <Stat_Recipe_Surgery_AddsHediff_Desc>The health condition this surgery adds when complete.</Stat_Recipe_Surgery_AddsHediff_Desc>
+    <Stat_Recipe_Surgery_RemovesHediff_Name>Removes health condition</Stat_Recipe_Surgery_RemovesHediff_Name>
+    <Stat_Recipe_Surgery_RemovesHediff_Desc>The health condition this surgery removes when complete.</Stat_Recipe_Surgery_RemovesHediff_Desc>
+    <Stat_Recipe_Surgery_ChangesHediffLevel_Name>Augments health condition</Stat_Recipe_Surgery_ChangesHediffLevel_Name>
+    <Stat_Recipe_Surgery_ChangesHediffLevel_Desc>The health condition this surgery enhances when complete.</Stat_Recipe_Surgery_ChangesHediffLevel_Desc>
+
+    <!--
+        HediffDefs
+    -->
+
+    <Stat_Hediff_HediffType_Name>Health condition type</Stat_Hediff_HediffType_Name>
+    <Stat_Hediff_HediffType_Desc>The basic type of health condition.</Stat_Hediff_HediffType_Desc>
+
+    <Stat_Hediff_HediffType_BodyAugment>Body Augment</Stat_Hediff_HediffType_BodyAugment>
+    <Stat_Hediff_HediffType_Wound>Wound</Stat_Hediff_HediffType_Wound>
+    <Stat_Hediff_HediffType_ChronicDisease>Chronic Disease</Stat_Hediff_HediffType_ChronicDisease>
+    <Stat_Hediff_HediffType_Sickness>Sickness</Stat_Hediff_HediffType_Sickness>
+    <Stat_Hediff_HediffType_Affliction>Affliction</Stat_Hediff_HediffType_Affliction>
+    <Stat_Hediff_HediffType_Condition>Condition</Stat_Hediff_HediffType_Condition>
+
+    <Stat_Hediff_Tendable_Name>Tendable</Stat_Hediff_Tendable_Name>
+    <Stat_Hediff_Tendable_Desc>Whether this condition can be cured with medicine.</Stat_Hediff_Tendable_Desc>
+
+    <Stat_Hediff_Immunizable_Name>Immunizable</Stat_Hediff_Immunizable_Name>
+    <Stat_Hediff_Immunizable_Desc>Whether a pawn can naturally develop an immunity to this condition.</Stat_Hediff_Immunizable_Desc>
+
+    <Stat_Hediff_Lethal_Name>Potentially lethal</Stat_Hediff_Lethal_Name>
+    <Stat_Hediff_Lethal_Desc>Whether this condition has a chance to be fatal.</Stat_Hediff_Lethal_Desc>
+
+    <Stat_Hediff_RelatedPart_Name>Related part</Stat_Hediff_RelatedPart_Name>
+    <Stat_Hediff_RelatedPart_Desc>The body augment installed as part of this health condition.</Stat_Hediff_RelatedPart_Desc>
+
+    <Stat_Hediff_BetterThanNatural_Name>Better than natural</Stat_Hediff_BetterThanNatural_Name>
+    <Stat_Hediff_BetterThanNatural_Desc>Whether this augment is better than a natural part.</Stat_Hediff_BetterThanNatural_Desc>
+
+    <Stat_Hediff_Solid_Name>Solid</Stat_Hediff_Solid_Name>
+    <Stat_Hediff_Solid_Desc>Whether this augment is solid enough to resist certain types of damage.</Stat_Hediff_Solid_Desc>
+
+    <Stat_Hediff_PriceOffset_Name>Price offset</Stat_Hediff_PriceOffset_Name>
+    <Stat_Hediff_PriceOffset_Desc>How much this adds to a creature's market value.</Stat_Hediff_PriceOffset_Desc>
+
+    <!--
+        BodyPartDefs
+    -->
+
+    <Stat_BodyPart_RemovedPart_Name>Removed part</Stat_BodyPart_RemovedPart_Name>
+    <Stat_BodyPart_RemovedPart_Desc>The body part, as it appears removed from the body.</Stat_BodyPart_RemovedPart_Desc>
+
+    <Stat_BodyPart_PermanentInjuryChanceFactor_Name>Permanent injury chance factor</Stat_BodyPart_PermanentInjuryChanceFactor_Name>
+    <Stat_BodyPart_PermanentInjuryChanceFactor_Desc>A multiplier on the chance this part will acquire a permanent injury when damaged. This is also impacted by the kind of injury and whether it's a delicate part or not.</Stat_BodyPart_PermanentInjuryChanceFactor_Desc>
+
+    <Stat_BodyPart_BleedRate_Name>Bleed rate</Stat_BodyPart_BleedRate_Name>
+    <Stat_BodyPart_BleedRate_Desc>A multiplier applied to the rate of blood loss on this body part.</Stat_BodyPart_BleedRate_Desc>
+
+    <Stat_BodyPart_FrostbiteVulnerability_Name>Frostbite vulnerability</Stat_BodyPart_FrostbiteVulnerability_Name>
+    <Stat_BodyPart_FrostbiteVulnerability_Desc>The chance that this part succumbs to frostbite in freezing temperatures.</Stat_BodyPart_FrostbiteVulnerability_Desc>
+
+    <Stat_BodyPart_Vital_Name>Vital</Stat_BodyPart_Vital_Name>
+    <Stat_BodyPart_Vital_Desc>Whether this body part is vital to the mortality of the creature.</Stat_BodyPart_Vital_Desc>
+
+    <Stat_BodyPart_Alive_Name>Alive</Stat_BodyPart_Alive_Name>
+    <Stat_BodyPart_Alive_Desc>Whether this body part is alive (ie: fleshy). Living parts may be subject to certain health conditions.</Stat_BodyPart_Alive_Desc>
+
+    <Stat_BodyPart_SkinCovered_Name>Skin-covered</Stat_BodyPart_SkinCovered_Name>
+    <Stat_BodyPart_SkinCovered_Desc>Whether this body part is covered in skin. Skin-covered parts provide (very) light protection against damage. These properties may change when replaced with other parts, such as bionics.</Stat_BodyPart_SkinCovered_Desc>
+
+    <Stat_BodyPart_Solid_Name>Solid</Stat_BodyPart_Solid_Name>
+    <Stat_BodyPart_Solid_Desc>Whether this body part is solid. Solid parts provide a much higher protection against damage. These properties may change when replaced with other parts, such as bionics.</Stat_BodyPart_Solid_Desc>
+
+    <Stat_BodyPart_Invulnerable_Name>Invulnerable</Stat_BodyPart_Invulnerable_Name>
+    <Stat_BodyPart_Invulnerable_Desc>Whether this body part is invulnerable to damage.</Stat_BodyPart_Invulnerable_Desc>
+
+    <Stat_BodyPart_Delicate_Name>Delicate</Stat_BodyPart_Delicate_Name>
+    <Stat_BodyPart_Delicate_Desc>Whether this body part is delicate. Delicate parts have a higher risk of permanent injury.</Stat_BodyPart_Delicate_Desc>
+
+    <Stat_BodyPart_BeautyRelated_Name>Beauty-related</Stat_BodyPart_BeautyRelated_Name>
+    <Stat_BodyPart_BeautyRelated_Desc>Whether this body part is a factor of the creature's beauty. These parts may impact relations if they are injured or destroyed.</Stat_BodyPart_BeautyRelated_Desc>
+
+    <Stat_BodyPart_Amputatable_Name>Amputatable</Stat_BodyPart_Amputatable_Name>
+    <Stat_BodyPart_Amputatable_Desc>Whether this body part can be amputated to save a patient from an infection.</Stat_BodyPart_Amputatable_Desc>
+
+    <!-- Body part properties -->
+    <Stat_BodyPart_BodyPartProperties_Name>Body part properties</Stat_BodyPart_BodyPartProperties_Name>
+    <Stat_BodyPart_BodyPartProperties_Desc>Essential properties that are tied to the body part.</Stat_BodyPart_BodyPartProperties_Desc>
+
+    <!-- vanilla -->
+    <Stat_BodyPart_BodyPartProperties_BloodFiltrationSource  >Blood Filtration Source</Stat_BodyPart_BodyPartProperties_BloodFiltrationSource>
+    <Stat_BodyPart_BodyPartProperties_BloodFiltrationLiver   >Blood Filtration Liver</Stat_BodyPart_BodyPartProperties_BloodFiltrationLiver>
+    <Stat_BodyPart_BodyPartProperties_BloodFiltrationKidney  >Blood Filtration Kidney</Stat_BodyPart_BodyPartProperties_BloodFiltrationKidney>
+    <Stat_BodyPart_BodyPartProperties_BloodPumpingSource     >Blood Pumping Source</Stat_BodyPart_BodyPartProperties_BloodPumpingSource>
+    <Stat_BodyPart_BodyPartProperties_BreathingSource        >Breathing Source</Stat_BodyPart_BodyPartProperties_BreathingSource>
+    <Stat_BodyPart_BodyPartProperties_BreathingSourceCage    >Breathing Source Cage</Stat_BodyPart_BodyPartProperties_BreathingSourceCage>
+    <Stat_BodyPart_BodyPartProperties_BreathingPathway       >Breathing Pathway</Stat_BodyPart_BodyPartProperties_BreathingPathway>
+    <Stat_BodyPart_BodyPartProperties_ConsciousnessSource    >Consciousness Source</Stat_BodyPart_BodyPartProperties_ConsciousnessSource>
+    <Stat_BodyPart_BodyPartProperties_EatingSource           >Eating Source</Stat_BodyPart_BodyPartProperties_EatingSource>
+    <Stat_BodyPart_BodyPartProperties_EatingPathway          >Eating Pathway</Stat_BodyPart_BodyPartProperties_EatingPathway>
+    <Stat_BodyPart_BodyPartProperties_HearingSource          >Hearing Source</Stat_BodyPart_BodyPartProperties_HearingSource>
+    <Stat_BodyPart_BodyPartProperties_MetabolismSource       >Metabolism Source</Stat_BodyPart_BodyPartProperties_MetabolismSource>
+    <Stat_BodyPart_BodyPartProperties_ManipulationLimbCore   >Manipulation Limb Core</Stat_BodyPart_BodyPartProperties_ManipulationLimbCore>
+    <Stat_BodyPart_BodyPartProperties_ManipulationLimbSegment>Manipulation Limb Segment</Stat_BodyPart_BodyPartProperties_ManipulationLimbSegment>
+    <Stat_BodyPart_BodyPartProperties_ManipulationLimbDigit  >Manipulation Limb Digit</Stat_BodyPart_BodyPartProperties_ManipulationLimbDigit>
+    <Stat_BodyPart_BodyPartProperties_MovingLimbCore         >Moving Limb Core</Stat_BodyPart_BodyPartProperties_MovingLimbCore>
+    <Stat_BodyPart_BodyPartProperties_MovingLimbSegment      >Moving Limb Segment</Stat_BodyPart_BodyPartProperties_MovingLimbSegment>
+    <Stat_BodyPart_BodyPartProperties_MovingLimbDigit        >Moving Limb Digit</Stat_BodyPart_BodyPartProperties_MovingLimbDigit>
+    <Stat_BodyPart_BodyPartProperties_Pelvis                 >Pelvis</Stat_BodyPart_BodyPartProperties_Pelvis>
+    <Stat_BodyPart_BodyPartProperties_SightSource            >Sight Source</Stat_BodyPart_BodyPartProperties_SightSource>
+    <Stat_BodyPart_BodyPartProperties_Spine                  >Spine</Stat_BodyPart_BodyPartProperties_Spine>
+    <Stat_BodyPart_BodyPartProperties_TalkingSource          >Talking Source</Stat_BodyPart_BodyPartProperties_TalkingSource>
+    <Stat_BodyPart_BodyPartProperties_TalkingPathway         >Talking Pathway</Stat_BodyPart_BodyPartProperties_TalkingPathway>
+
+    <!-- modded -->
+
+    <!-- XXX: From Android Tiers... I have no idea... Don't think they are even being used. -->
+    <Stat_BodyPart_BodyPartProperties_CPSource >CP Source</Stat_BodyPart_BodyPartProperties_CPSource>
+    <Stat_BodyPart_BodyPartProperties_HVSource >HV Source</Stat_BodyPart_BodyPartProperties_HVSource>
+    <Stat_BodyPart_BodyPartProperties_EVKidney >Kidney</Stat_BodyPart_BodyPartProperties_EVKidney>
+    <Stat_BodyPart_BodyPartProperties_EVLiver  >Liver</Stat_BodyPart_BodyPartProperties_EVLiver>
+    <Stat_BodyPart_BodyPartProperties_HVPathway>HV Pathway</Stat_BodyPart_BodyPartProperties_HVPathway>
+
+    <Stat_BodyPart_BodyPartProperties_PilotSeat    >Pilot Seat</Stat_BodyPart_BodyPartProperties_PilotSeat>
+    <Stat_BodyPart_BodyPartProperties_GunnerSeat   >Gunner Seat</Stat_BodyPart_BodyPartProperties_GunnerSeat>
+    <Stat_BodyPart_BodyPartProperties_PassengerSeat>Passenger Seat</Stat_BodyPart_BodyPartProperties_PassengerSeat>
+
+
+    <Stat_BodyPart_BodyPartUsers_Name>Contained in</Stat_BodyPart_BodyPartUsers_Name>
+    <Stat_BodyPart_BodyPartUsers_Desc>Creature bodies that use this body part.</Stat_BodyPart_BodyPartUsers_Desc>
+
+</LanguageData>

@@ -13,8 +13,6 @@ namespace XenobionicPatcher {
         public static IEnumerable<StatDrawEntry> SpecialDisplayStats(BodyPartDef bodyPart, StatRequest req) {
             category = DefDatabase<StatCategoryDef>.GetNamed("Basics");
 
-            // FIXME: Translate all the strings
-
             yield return new StatDrawEntry(
                 category:    category,
                 label:       "HitPointsBasic".Translate(),
@@ -23,11 +21,10 @@ namespace XenobionicPatcher {
                 displayPriorityWithinCategory: StatDisplayOrder.HitPointsBasic
             );
 
-            // XXX: Is this too far into the guts?
             if (bodyPart.spawnThingOnRemoved != null) yield return new StatDrawEntry(
                 category:    category,
-                label:       "Related thing",
-                reportText:  "The external thing related to this body part.",
+                label:       "Stat_BodyPart_RemovedPart_Name".Translate(),
+                reportText:  "Stat_BodyPart_RemovedPart_Desc".Translate(),
                 valueString: bodyPart.spawnThingOnRemoved.LabelCap,
                 hyperlinks:  new[] { new Dialog_InfoCard.Hyperlink(bodyPart.spawnThingOnRemoved) },
                 displayPriorityWithinCategory: 5000
@@ -40,22 +37,22 @@ namespace XenobionicPatcher {
 
             yield return new StatDrawEntry(
                 category:    category,
-                label:       "Permanent injury chance factor",
-                reportText:  "A multiplier on the chance this part will acquire a permanent injury when damaged. This is also impacted by the kind of injury and whether it's a delicate part or not.",
+                label:       "Stat_BodyPart_PermanentInjuryChanceFactor_Name".Translate(),
+                reportText:  "Stat_BodyPart_PermanentInjuryChanceFactor_Desc".Translate(),
                 valueString: permanentInjuryChanceFactorString,
                 displayPriorityWithinCategory: 4890
             );
             yield return new StatDrawEntry(
                 category:    category,
-                label:       "Bleed rate",
-                reportText:  "A multiplier applied to the rate of blood loss on this body part.",
+                label:       "Stat_BodyPart_BleedRate_Name".Translate(),
+                reportText:  "Stat_BodyPart_BleedRate_Desc".Translate(),
                 valueString: bodyPart.bleedRate.ToStringPercent(),
                 displayPriorityWithinCategory: 4880
             );
             yield return new StatDrawEntry(
                 category:    category,
-                label:       "Frostbite vulnerability",
-                reportText:  "The chance that this part succumbs to frostbite in freezing temperatures.",
+                label:       "Stat_BodyPart_FrostbiteVulnerability_Name".Translate(),
+                reportText:  "Stat_BodyPart_FrostbiteVulnerability_Desc".Translate(),
                 valueString: bodyPart.frostbiteVulnerability.ToStringPercent(),
                 hyperlinks:  new[] { new Dialog_InfoCard.Hyperlink( DefDatabase<HediffDef>.GetNamed("Frostbite") ) },
                 displayPriorityWithinCategory: 4870
@@ -63,71 +60,76 @@ namespace XenobionicPatcher {
 
             yield return new StatDrawEntry(
                 category:    category,
-                label:       "Vital",
-                reportText:  "Whether this body part is vital to the mortality of the creature.",
+                label:       "Stat_BodyPart_Vital_Name".Translate(),
+                reportText:  "Stat_BodyPart_Vital_Desc".Translate(),
                 valueString: bodyPart.tags.Any( bptd => bptd.vital ).ToStringYesNo(),
                 displayPriorityWithinCategory: 4795
             );
             yield return new StatDrawEntry(
                 category:    category,
-                label:       "Alive",
-                reportText:  "Whether this body part is alive. Living parts may be subject to certain health conditions.",
+                label:       "Stat_BodyPart_Alive_Name".Translate(),
+                reportText:  "Stat_BodyPart_Alive_Desc".Translate(),
                 valueString: bodyPart.alive.ToStringYesNo(),
                 displayPriorityWithinCategory: 4790
             );
             yield return new StatDrawEntry(
                 category:    category,
-                label:       "Skin-covered",
-                reportText:  "Whether this body part is covered in skin. Skin-covered parts provide (very) light protection against damage. These properties may change when replaced with other parts, such as bionics.",
+                label:       "Stat_BodyPart_SkinCovered_Name".Translate(),
+                reportText:  "Stat_BodyPart_SkinCovered_Desc".Translate(),
                 valueString: bodyPart.IsSkinCoveredInDefinition_Debug.ToStringYesNo(),  // they really don't want you to use this property...
                 displayPriorityWithinCategory: 4780
             );
             yield return new StatDrawEntry(
                 category:    category,
-                label:       "Solid",
-                reportText:  "Whether this body part is solid. Solid parts provide a much higher protection against damage. These properties may change when replaced with other parts, such as bionics.",
+                label:       "Stat_BodyPart_Solid_Name".Translate(),
+                reportText:  "Stat_BodyPart_Solid_Desc".Translate(),
                 valueString: bodyPart.IsSolidInDefinition_Debug.ToStringYesNo(),  // they really don't want you to use this property...
                 displayPriorityWithinCategory: 4770
             );
             yield return new StatDrawEntry(
                 category:    category,
-                label:       "Invulnerable",
-                reportText:  "Whether this body part is invulnerable to damage.",
+                label:       "Stat_BodyPart_Invulnerable_Name".Translate(),
+                reportText:  "Stat_BodyPart_Invulnerable_Desc".Translate(),
                 valueString: (!bodyPart.destroyableByDamage).ToStringYesNo(),
                 displayPriorityWithinCategory: 4765
             );
             yield return new StatDrawEntry(
                 category:    category,
-                label:       "Delicate",
-                reportText:  "Whether this body part is delicate. Delicate parts have a higher risk of permanent injury.",
+                label:       "Stat_BodyPart_Delicate_Name".Translate(),
+                reportText:  "Stat_BodyPart_Delicate_Desc".Translate(),
                 valueString: bodyPart.delicate.ToStringYesNo(),
                 displayPriorityWithinCategory: 4760
             );
             yield return new StatDrawEntry(
                 category:    category,
-                label:       "Beauty-related",
-                reportText:  "Whether this body part is a factor of the creature's beauty. These parts may impact relations if they are injured or destroyed.",
+                label:       "Stat_BodyPart_BeautyRelated_Name".Translate(),
+                reportText:  "Stat_BodyPart_BeautyRelated_Desc".Translate(),
                 valueString: bodyPart.delicate.ToStringYesNo(),
                 displayPriorityWithinCategory: 4750
             );
 
             yield return new StatDrawEntry(
                 category:    category,
-                label:       "Amputatable",
-                reportText:  "Whether this body part can be amputated to save a patient from an infection.",
+                label:       "Stat_BodyPart_Amputatable_Name".Translate(),
+                reportText:  "Stat_BodyPart_Amputatable_Desc".Translate(),
                 valueString: bodyPart.canSuggestAmputation.ToStringYesNo(),
                 displayPriorityWithinCategory: 4690
             );
 
-            // FIXME: Tie to a language key list
             string bodyPartProperties = string.Join("\n",
-                bodyPart.tags.Select( bptd => GenText.CapitalizeFirst( GenText.SplitCamelCase(bptd.defName).ToLower() ) )
+                bodyPart.tags.Select( bptd => {
+                    string tagLangKey = "Stat_BodyPart_BodyPartProperties_" + bptd.defName;
+                    string backupText = GenText.SplitCamelCase(bptd.defName);
+
+                    // See big comment on SurgeryCategoryStat
+                    return tagLangKey.CanTranslate() ? tagLangKey.Translate() : backupText.Translate();
+                } )
             );
 
-            yield return new StatDrawEntry(
+            if (!bodyPartProperties.NullOrEmpty()) yield return new StatDrawEntry(
                 category:    category,
-                label:       "Body part properties",
-                reportText:  "Essential properties that are tied to the body part.",
+                label:       "Stat_BodyPart_BodyPartProperties_Name".Translate(),
+                reportText:  "Stat_BodyPart_BodyPartProperties_Desc".Translate(),
                 valueString: bodyPartProperties,
                 displayPriorityWithinCategory: 4500
             );
@@ -143,8 +145,8 @@ namespace XenobionicPatcher {
 
             yield return new StatDrawEntry(
                 category:    category,
-                label:       "Contained in",
-                reportText:  "Creature bodies that use this body part.",
+                label:       "Stat_BodyPart_BodyPartUsers_Name".Translate(),
+                reportText:  "Stat_BodyPart_BodyPartUsers_Desc".Translate(),
                 valueString: "VariousLabel".Translate(),
                 hyperlinks:  bodyPartUsersHyperlinks,
                 displayPriorityWithinCategory: 4200

@@ -10,23 +10,21 @@ namespace XenobionicPatcher {
         public static IEnumerable<StatDrawEntry> SpecialDisplayStats(HediffDef hediff, StatRequest req) {
             category = DefDatabase<StatCategoryDef>.GetNamed("Basics");
 
-            // FIXME: Translate all the strings
-
             yield return HediffCategoryStat(hediff);
 
             if (hediff.isBad) {
                 yield return new StatDrawEntry(
                     category:    category,
-                    label:       "Tendable",
-                    reportText:  "Whether this condition can be cured with medicine.",
+                    label:       "Stat_Hediff_Tendable_Name".Translate(),
+                    reportText:  "Stat_Hediff_Tendable_Desc".Translate(),
                     valueString: hediff.tendable.ToStringYesNo(),
                     displayPriorityWithinCategory: 4975
                 );
 
                 yield return new StatDrawEntry(
                     category:    category,
-                    label:       "Immunizable",
-                    reportText:  "Whether a pawn can naturally develop an immunity to this condition.",
+                    label:       "Stat_Hediff_Immunizable_Name".Translate(),
+                    reportText:  "Stat_Hediff_Immunizable_Desc".Translate(),
                     valueString: hediff.PossibleToDevelopImmunityNaturally().ToStringYesNo(),
                     displayPriorityWithinCategory: 4970
                 );
@@ -35,8 +33,8 @@ namespace XenobionicPatcher {
 
                 yield return new StatDrawEntry(
                     category:    category,
-                    label:       "Potentially lethal",
-                    reportText:  "Whether this condition has a chance to be fatal.",
+                    label:       "Stat_Hediff_Lethal_Name".Translate(),
+                    reportText:  "Stat_Hediff_Lethal_Desc".Translate(),
                     valueString: canBeLethal.ToStringYesNo(),
                     displayPriorityWithinCategory: 4965
                 );
@@ -46,10 +44,10 @@ namespace XenobionicPatcher {
                 StatCategoryDef implantCategory = DefDatabase<StatCategoryDef>.GetNamed("Implant");
                 var props = hediff.addedPartProps;
 
-                yield return new StatDrawEntry(
+                if (hediff.spawnThingOnRemoved != null) yield return new StatDrawEntry(
                     category:    implantCategory,
-                    label:       "Related part",
-                    reportText:  "The body augment installed as part of this health condition.",
+                    label:       "Stat_Hediff_RelatedPart_Name".Translate(),
+                    reportText:  "Stat_Hediff_RelatedPart_Desc".Translate(),
                     valueString: hediff.spawnThingOnRemoved.LabelCap,
                     hyperlinks:  new[] { new Dialog_InfoCard.Hyperlink(hediff.spawnThingOnRemoved) },
                     displayPriorityWithinCategory: 5000
@@ -63,15 +61,15 @@ namespace XenobionicPatcher {
                 );
                 yield return new StatDrawEntry(
                     category:    implantCategory,
-                    label:       "Better than natural",
-                    reportText:  "Whether this augment is better than a natural part.",
+                    label:       "Stat_Hediff_BetterThanNatural_Name".Translate(),
+                    reportText:  "Stat_Hediff_BetterThanNatural_Desc".Translate(),
                     valueString: props.betterThanNatural.ToStringYesNo(),
                     displayPriorityWithinCategory: 4920
                 );
                 yield return new StatDrawEntry(
                     category:    implantCategory,
-                    label:       "Solid",
-                    reportText:  "Whether this augment is solid enough to resist certain types of damage.",
+                    label:       "Stat_Hediff_Solid_Name".Translate(),
+                    reportText:  "Stat_Hediff_Solid_Desc".Translate(),
                     valueString: props.solid.ToStringYesNo(),
                     displayPriorityWithinCategory: 4900
                 );
@@ -84,8 +82,8 @@ namespace XenobionicPatcher {
                 
                 if (priceOffset >= 1.0 || priceOffset <= -1.0) yield return new StatDrawEntry(
                     category:    category,
-                    label:       "Price offset",
-                    reportText:  "How much this adds to a creature's market value.",
+                    label:       "Stat_Hediff_PriceOffset_Name".Translate(),
+                    reportText:  "Stat_Hediff_PriceOffset_Desc".Translate(),
                     valueString: priceOffset.ToStringMoneyOffset(),
                     displayPriorityWithinCategory: 5500
                 );
@@ -94,18 +92,19 @@ namespace XenobionicPatcher {
 
         public static StatDrawEntry HediffCategoryStat (HediffDef hediff) {
             string type = 
-                hediff.countsAsAddedPartOrImplant || hediff.addedPartProps != null ? "Body Augment" :
+                hediff.countsAsAddedPartOrImplant || hediff.addedPartProps != null ? "BodyAugment" :
                 hediff.displayWound     ? "Wound" :
-                hediff.chronic          ? "Chronic Disease" :
+                hediff.chronic          ? "ChronicDisease" :
                 hediff.makesSickThought ? "Sickness" :
                 hediff.isBad            ? "Affliction" :
                 "Condition"
             ;
+            type = ("Stat_Hediff_HediffType_" + type).Translate();
 
             return new StatDrawEntry(
                 category:    category,
-                label:       "Health condition type",
-                reportText:  "The basic type of health condition.",
+                label:       "Stat_Hediff_HediffType_Name".Translate(),
+                reportText:  "Stat_Hediff_HediffType_Desc".Translate(),
                 valueString: type,
                 displayPriorityWithinCategory: 4999
             );
