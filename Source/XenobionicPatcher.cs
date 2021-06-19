@@ -43,8 +43,8 @@ namespace XenobionicPatcher {
                 { "Adminster",                 new[] { typeof(Recipe_AdministerIngestible), typeof(Recipe_AdministerUsableItem) } },
                 { "InstallNaturalBodyPart",    new[] { typeof(Recipe_InstallNaturalBodyPart)    } },
                 { "InstallArtificialBodyPart", new[] { typeof(Recipe_InstallArtificialBodyPart) } },
-                { "InstallImplant",            new[] { typeof(Recipe_InstallImplant)            } },
-                { "VanillaRemoval",            new[] { typeof(Recipe_RemoveHediff), AccessTools.TypeByName("RimWorld.Recipe_RemoveBodyPart") } }, 
+                { "InstallImplant",            new[] { typeof(Recipe_InstallImplant), typeof(Recipe_ChangeImplantLevel) } },
+                { "VanillaRemoval",            new[] { typeof(Recipe_RemoveHediff), AccessTools.TypeByName("RimWorld.Recipe_RemoveBodyPart"), typeof(Recipe_RemoveImplant) } }, 
             };
             foreach (string cName in searchConfigMapper.Keys) {
                 if ( ((SettingHandle<bool>)config["Search" + cName + "Recipes"]).Value ) surgeryWorkerClassesFilter.AddRange( searchConfigMapper[cName] );
@@ -105,9 +105,6 @@ namespace XenobionicPatcher {
                     "QEthics.RecipeWorker_GenomeSequencing",
                     "QEthics.RecipeWorker_InstallNaturalBodyPart",
                     "QEthics.RecipeWorker_NerveStapling",
-
-                    // MegaCorp
-                    "Recipe_ChangeImplantLevel",
 
                     // Harpies
                     "SyrHarpy.Recipe_InstallPart",
