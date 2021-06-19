@@ -108,6 +108,42 @@ namespace XenobionicPatcher {
 
                     // Harpies
                     "SyrHarpy.Recipe_InstallPart",
+
+                    // A RimWorld of Magic
+                    "TorannMagic.Recipe_RegrowBodyPart",
+                    "TorannMagic.Recipe_RegrowUniversalBodyPart",
+
+                    // PolarisBloc
+                    "Polarisbloc.Recipe_MakeCartridgeSurgery",
+                    "Polarisbloc.Recipe_InstallCombatChip",
+                    "Polarisbloc.Recipe_RemoveHediffIsOld",
+                    "Polarisbloc.Recipe_RestoreMissingPart",
+                    "Polarisbloc.Recipe_RemoveImplant",
+                    "Polarisbloc.Recipe_TransgenderSurgery",
+                    "Polarisbloc.Recipe_SurgeryChangeBioAge",
+                    "Polarisbloc.Recipe_ExtractAbility",
+
+                    // What the Hack
+                    "WhatTheHack.Recipes.Recipe_ExtractBrainData",
+                    // The rest of them are really only for mechanoids
+
+                    // CyberNet
+                    "CyberNet.Recipe_InstallCyberNetBrainImplant",
+
+                    // Cybernetic Organism and Neural Network
+                    "CONN.Recipe_InstallArtificialBodyPartAndClearPawnFromCache",
+
+                    // Vanilla Factions Expanded: Insectoids
+                    "VFEI.Other.Recipe_AddMutationHediff",
+
+                    // Deathrattle
+                    "DeathRattle.Recipe_AdministerComaDrug",
+
+                    // RimWorld of Madness: Vampires
+                    "Vampire.Recipe_ExtractBloodVial",
+                    "Vampire.Recipe_ExtractBloodPack",
+                    "Vampire.Recipe_ExtractBloodWine",
+                    "Vampire.Recipe_TransferBlood",
                 };
 
                 foreach (string workerName in moddedWorkerClassNames) {

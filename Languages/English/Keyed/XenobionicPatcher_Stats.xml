@@ -54,7 +54,7 @@
     <Stat_Recipe_Surgery_SurgeryCategory_ApplyHealCoolingSystem          >Apply heal cooling system</Stat_Recipe_Surgery_SurgeryCategory_ApplyHealCoolingSystem>
     <Stat_Recipe_Surgery_SurgeryCategory_ApplyHealCPUSerum               >Apply heal CPU serum</Stat_Recipe_Surgery_SurgeryCategory_ApplyHealCPUSerum>
 
-    <Stat_Recipe_Surgery_SurgeryCategory_RemoveGauntlet  >Remove Gauntlet</Stat_Recipe_Surgery_SurgeryCategory_RemoveGauntlet>
+    <Stat_Recipe_Surgery_SurgeryCategory_RemoveGauntlet  >Remove gauntlet</Stat_Recipe_Surgery_SurgeryCategory_RemoveGauntlet>
     <Stat_Recipe_Surgery_SurgeryCategory_RemoveHugger    >Remove facehugger</Stat_Recipe_Surgery_SurgeryCategory_RemoveHugger>
 
     <Stat_Recipe_Surgery_SurgeryCategory_CreateBrainScan >Create brain scan</Stat_Recipe_Surgery_SurgeryCategory_CreateBrainScan>
@@ -63,10 +63,42 @@
 
     <Stat_Recipe_Surgery_SurgeryCategory_InstallPart     >Install part</Stat_Recipe_Surgery_SurgeryCategory_InstallPart>
 
+    <Stat_Recipe_Surgery_SurgeryCategory_RegrowBodyPart>Regrow body part</Stat_Recipe_Surgery_SurgeryCategory_RegrowBodyPart>
+    <Stat_Recipe_Surgery_SurgeryCategory_RegrowUniversalBodyPart>Regrow universal body part</Stat_Recipe_Surgery_SurgeryCategory_RegrowUniversalBodyPart>
+
+    <Stat_Recipe_Surgery_SurgeryCategory_MakeCartridgeSurgery>Make cartridge surgery</Stat_Recipe_Surgery_SurgeryCategory_MakeCartridgeSurgery>
+    <Stat_Recipe_Surgery_SurgeryCategory_InstallCombatChip>Install combat chip</Stat_Recipe_Surgery_SurgeryCategory_InstallCombatChip>
+    <Stat_Recipe_Surgery_SurgeryCategory_RemoveHediffIsOld>Remove old scar</Stat_Recipe_Surgery_SurgeryCategory_RemoveHediffIsOld>
+    <Stat_Recipe_Surgery_SurgeryCategory_RestoreMissingPart>Restore missing part</Stat_Recipe_Surgery_SurgeryCategory_RestoreMissingPart>
+    <Stat_Recipe_Surgery_SurgeryCategory_TransgenderSurgery>Transgender surgery</Stat_Recipe_Surgery_SurgeryCategory_TransgenderSurgery>
+    <Stat_Recipe_Surgery_SurgeryCategory_SurgeryChangeBioAge>Change bio-age surgery</Stat_Recipe_Surgery_SurgeryCategory_SurgeryChangeBioAge>
+    <Stat_Recipe_Surgery_SurgeryCategory_ExtractAbility>Extract ability</Stat_Recipe_Surgery_SurgeryCategory_ExtractAbility>
+
+    <Stat_Recipe_Surgery_SurgeryCategory_ExtractBrainData>Extract brain data</Stat_Recipe_Surgery_SurgeryCategory_ExtractBrainData>
+    <Stat_Recipe_Surgery_SurgeryCategory_HackMechanoid>Hack mechanoid</Stat_Recipe_Surgery_SurgeryCategory_HackMechanoid>
+    <Stat_Recipe_Surgery_SurgeryCategory_InduceEmergencySignal>Induce emergency signal</Stat_Recipe_Surgery_SurgeryCategory_InduceEmergencySignal>
+    <Stat_Recipe_Surgery_SurgeryCategory_ModifyMechanoid>Modify mechanoid</Stat_Recipe_Surgery_SurgeryCategory_ModifyMechanoid>
+    <Stat_Recipe_Surgery_SurgeryCategory_ModifyMechanoidWorkModule>Modify mechanoid (work module)</Stat_Recipe_Surgery_SurgeryCategory_ModifyMechanoidWorkModule>
+    <Stat_Recipe_Surgery_SurgeryCategory_BeltModule>Belt module</Stat_Recipe_Surgery_SurgeryCategory_BeltModule>
+    <Stat_Recipe_Surgery_SurgeryCategory_ShutDown>Shut down</Stat_Recipe_Surgery_SurgeryCategory_ShutDown>
+
+    <Stat_Recipe_Surgery_SurgeryCategory_InstallCyberNetBrainImplant>Install CyberNet brain implant</Stat_Recipe_Surgery_SurgeryCategory_InstallCyberNetBrainImplant>
+
+    <Stat_Recipe_Surgery_SurgeryCategory_InstallArtificialBodyPartAndClearPawnFromCache>Install artificial body part</Stat_Recipe_Surgery_SurgeryCategory_InstallArtificialBodyPartAndClearPawnFromCache>
+
+    <Stat_Recipe_Surgery_SurgeryCategory_AddMutationHediff>Add mutation</Stat_Recipe_Surgery_SurgeryCategory_AddMutationHediff>
+
+    <Stat_Recipe_Surgery_SurgeryCategory_AdministerComaDrug>Administer coma drug</Stat_Recipe_Surgery_SurgeryCategory_AdministerComaDrug>
+
+    <Stat_Recipe_Surgery_SurgeryCategory_ExtractBloodVial>Extract blood vial</Stat_Recipe_Surgery_SurgeryCategory_ExtractBloodVial>
+    <Stat_Recipe_Surgery_SurgeryCategory_ExtractBloodPack>Extract blood pack</Stat_Recipe_Surgery_SurgeryCategory_ExtractBloodPack>
+    <Stat_Recipe_Surgery_SurgeryCategory_ExtractBloodWine>Extract blood wine</Stat_Recipe_Surgery_SurgeryCategory_ExtractBloodWine>
+    <Stat_Recipe_Surgery_SurgeryCategory_TransferBlood>Transfer blood</Stat_Recipe_Surgery_SurgeryCategory_TransferBlood>
+
 
     <!-- The rest of the stats -->
-    <Stat_Recipe_Surgery_WorkerMod_Name>Worker mod</Stat_Recipe_Surgery_SurgeryCategory_Name>
-    <Stat_Recipe_Surgery_WorkerMod_Desc>The mod in which the surgery's worker class (aka surgery category) came from. This isn't always the same as the surgery's mod.</Stat_Recipe_Surgery_SurgeryCategory_Desc>
+    <Stat_Recipe_Surgery_WorkerMod_Name>Worker mod</Stat_Recipe_Surgery_WorkerMod_Name>
+    <Stat_Recipe_Surgery_WorkerMod_Desc>The mod in which the surgery's worker class (aka surgery category) came from. This isn't always the same as the surgery's mod.</Stat_Recipe_Surgery_WorkerMod_Desc>
 
     <Stat_Recipe_Surgery_Anesthetize_Name>Anesthetize</Stat_Recipe_Surgery_Anesthetize_Name>
     <Stat_Recipe_Surgery_Anesthetize_Desc>Whether this surgery requires anesthetic.</Stat_Recipe_Surgery_Anesthetize_Desc>
