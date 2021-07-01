@@ -121,7 +121,10 @@ namespace XenobionicPatcher {
                 // Bones
                 "Skull Ribcage Spine Clavicle Sternum Humerus Radius Pelvis Femur Tibia"
             ;
-            Dictionary<string, string[]> staticPartGroups = staticPartSetString.Split(' ').ToDictionary(k => k, k => new[] { k.ToLower() });
+            Dictionary<string, string[]> staticPartGroups = staticPartSetString.Split(' ').ToDictionary(
+                keySelector:     k => k,
+                elementSelector: k => new[] { k.ToLower() }
+            );
             
             var additionalStaticPartGroups = new Dictionary<string, string[]> {
                 { "Arm",      new[] { "flipper"                                   } },
@@ -136,7 +139,7 @@ namespace XenobionicPatcher {
                 { "Heart",    new[] { "reactor"                                   } },
                 { "Neck",     new[] { "pronotum"                                  } },
                 // Wing should really be the base name, but there is no vanilla Wing part (even for birds!)
-                { "Elytra",   new[] { "elytra", "wing" } },
+                { "Elytra",   new[] { "wing" } },
             };
             foreach (string vanillaPartName in additionalStaticPartGroups.Keys) {
                 staticPartGroups.SetOrAddNestedRange(vanillaPartName, additionalStaticPartGroups[vanillaPartName]);
@@ -301,7 +304,7 @@ namespace XenobionicPatcher {
             // Clear out empty lists
             if (Base.IsDebug) stopwatch.Start();
 
-            foreach (string part in partToPartMapper.Keys.ToArray()) {
+            foreach (string part in partToPartMapper.Keys) {
                 if (partToPartMapper[part].Count < 1) partToPartMapper.Remove(part);
             }
 
