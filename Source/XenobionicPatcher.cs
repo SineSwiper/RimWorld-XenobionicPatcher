@@ -139,11 +139,14 @@ namespace XenobionicPatcher {
                     // Deathrattle
                     "DeathRattle.Recipe_AdministerComaDrug",
 
-                    // RimWorld of Madness: Vampires
+                    // Rim of Madness: Vampires has blood recipes, but who knows which blood is compatible to a vampire?
+                    // Just leave them alone.
+                    /*
                     "Vampire.Recipe_ExtractBloodVial",
                     "Vampire.Recipe_ExtractBloodPack",
                     "Vampire.Recipe_ExtractBloodWine",
                     "Vampire.Recipe_TransferBlood",
+                    */
                 };
 
                 foreach (string workerName in moddedWorkerClassNames) {
