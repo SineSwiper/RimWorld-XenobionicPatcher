@@ -186,6 +186,7 @@ namespace XenobionicPatcher {
             stopwatch.Stop();
 
             Logger.Message("Prep work / pre-caching (took {0:F4}s; {1:N0} defs)", stopwatch.ElapsedMilliseconds / 1000f, allSurgeryDefs.Count() + allPawnDefs.Count());
+            stopwatch.Reset();
 
             // Animal/Animal
             if ( ((SettingHandle<bool>)config["PatchAnimalToAnimal"]).Value ) {
