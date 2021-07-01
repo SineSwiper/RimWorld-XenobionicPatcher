@@ -395,7 +395,7 @@ namespace XenobionicPatcher {
             Base XP = Base.Instance;
 
             // Try to clean up the more obvious hand/foot cross-connections on humanlikes
-            foreach (RecipeDef surgery in surgeryList.Where(s => s.targetsBodyPart)) {
+            foreach (RecipeDef surgery in surgeryList.Where(s => s.targetsBodyPart && s.appliedOnFixedBodyParts.Count > 0)) {
                 string surgeryLabelLower = surgery.label.ToLower();
 
                 if      (surgeryLabelLower.Contains(" foot ") || surgeryLabelLower.EndsWith(" foot")) {
