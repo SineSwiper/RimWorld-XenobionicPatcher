@@ -43,6 +43,8 @@ namespace XenobionicPatcher {
         internal static Dictionary<string, string> simplifyCache = new Dictionary<string, string>() {};
 
         internal static BodyPartStringEqualityComparer StringEqualityComparer = new BodyPartStringEqualityComparer {};
+        internal static BodyPartRecordEqualityComparer    BPREqualityComparer = new BodyPartRecordEqualityComparer {};
+        internal static    BodyPartDefEqualityComparer    BPDEqualityComparer = new    BodyPartDefEqualityComparer {};
 
         public static string SimplifyBodyPartLabel (string label) {
             if (label == null) return null;  // dodge exceptions
@@ -72,69 +74,15 @@ namespace XenobionicPatcher {
             simplifyCache[label] = newLabel;
             return newLabel;
         }
-
-        // Zero strings
-        public static bool DoesBodyPartMatch (BodyPartRecord bprFirst, BodyPartRecord bprSecond) {
-            return (
-                DoesBodyPartMatch(bprFirst, bprSecond.def.defName) ||
-                DoesBodyPartMatch(bprFirst, bprSecond.LabelShort)  ||
-                DoesBodyPartMatch(bprFirst, bprSecond.Label)
-            );
+        public static string SimplifyBodyPartLabel (BodyPartRecord bpr) {
+            string bprS = bpr.LabelShort ?? bpr.Label ?? bpr.def.defName;
+            return SimplifyBodyPartLabel(bprS);
         }
-        public static bool DoesBodyPartMatch (BodyPartRecord bpr, BodyPartDef bpd) {
-            return (
-                DoesBodyPartMatch(bpr, bpd.defName)    ||
-                DoesBodyPartMatch(bpr, bpd.LabelShort)
-            );
-        }
-        public static bool DoesBodyPartMatch (BodyPartDef bpd, BodyPartRecord bpr) {
-            return (
-                DoesBodyPartMatch(bpr, bpd.defName)    ||
-                DoesBodyPartMatch(bpr, bpd.LabelShort)
-            );
-        }
-        public static bool DoesBodyPartMatch (BodyPartDef bpdFirst, BodyPartDef bpdSecond) {
-            return (
-                DoesBodyPartMatch(bpdFirst, bpdSecond.defName) ||
-                DoesBodyPartMatch(bpdFirst, bpdSecond.LabelShort)
-            );
-        }
-        // One string
-        public static bool DoesBodyPartMatch (BodyPartRecord bpr, string match) {
-            if (match == null) return false;
-            string cleanMatch = SimplifyBodyPartLabel(match);
-        
-            return (
-                SimplifyBodyPartLabel(bpr.def.defName) == cleanMatch ||
-                SimplifyBodyPartLabel(bpr.LabelShort)  == cleanMatch ||
-                SimplifyBodyPartLabel(bpr.Label)       == cleanMatch
-            );
-        }
-        public static bool DoesBodyPartMatch (string match, BodyPartRecord bpr) {
-            return DoesBodyPartMatch(bpr, match);
-        }
-        public static bool DoesBodyPartMatch (BodyPartDef bpd, string match) {
-            if (match == null) return false;
-            string cleanMatch = SimplifyBodyPartLabel(match);
-        
-            return (
-                SimplifyBodyPartLabel(bpd.defName)    == cleanMatch ||
-                SimplifyBodyPartLabel(bpd.LabelShort) == cleanMatch
-            );
-        }
-        public static bool DoesBodyPartMatch (string match, BodyPartDef bpd) {
-            return DoesBodyPartMatch(bpd, match);
-        }
-        // Two strings
-        public static bool DoesBodyPartMatch (string matchFirst, string matchSecond) {
-            if (matchFirst == null || matchSecond == null) return false;
-            return SimplifyBodyPartLabel(matchFirst) == SimplifyBodyPartLabel(matchSecond);
+        public static string SimplifyBodyPartLabel (BodyPartDef bpd) {
+            string bpdS = bpd.LabelShort ?? bpd.defName;
+            return SimplifyBodyPartLabel(bpdS);
         }
 
-        // TODO: Compare the speed of using IEqualityComparer over DoesBodyPartMatch checks
-        // TODO: Create BPR/BPD versions by eliminating near-duplicate OR checks
-        //    BPR: LabelShort, Label, def.defName
-        //    BPD: LabelShort, defName
 
         public class BodyPartStringEqualityComparer : IEqualityComparer<string> {
             public bool Equals (string s1, string s2) {
@@ -148,5 +96,30 @@ namespace XenobionicPatcher {
                 return SimplifyBodyPartLabel(s).GetHashCode();
             }
         }
+        public class BodyPartRecordEqualityComparer : IEqualityComparer<BodyPartRecord> {
+            public bool Equals (BodyPartRecord bpr1, BodyPartRecord bpr2) {
+                if      (bpr1 == null && bpr2 == null) return true;
+                else if (bpr1 == null || bpr2 == null) return false;
+
+                return SimplifyBodyPartLabel(bpr1) == SimplifyBodyPartLabel(bpr2);
+            }
+
+            public int GetHashCode (BodyPartRecord bpr) {
+                return SimplifyBodyPartLabel(bpr).GetHashCode();
+            }
+        }
+        public class BodyPartDefEqualityComparer : IEqualityComparer<BodyPartDef> {
+            public bool Equals (BodyPartDef bpd1, BodyPartDef bpd2) {
+                if      (bpd1 == null && bpd2 == null) return true;
+                else if (bpd1 == null || bpd2 == null) return false;
+
+                return SimplifyBodyPartLabel(bpd1) == SimplifyBodyPartLabel(bpd2);
+            }
+
+            public int GetHashCode (BodyPartDef bpd) {
+                return SimplifyBodyPartLabel(bpd).GetHashCode();
+            }
+        }
+
     }
 }

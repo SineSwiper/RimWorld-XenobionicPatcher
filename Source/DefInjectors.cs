@@ -168,14 +168,14 @@ namespace XenobionicPatcher {
                     foreach (string vanillaPartName in staticPartGroups.Keys) {
                         partGroupMatched.Add(
                             vanillaPartName,
-                            staticPartGroups[vanillaPartName].Any( fuzzyPartName =>
-                                matchType == partMatchType.BodyPartRecord ? BodyPartMatcher.DoesBodyPartMatch(raceBodyPart,             fuzzyPartName) :
-                                matchType == partMatchType.BodyPartDef    ? BodyPartMatcher.DoesBodyPartMatch(raceBodyPart.def,         fuzzyPartName) :
-                                matchType == partMatchType.DefName        ? BodyPartMatcher.DoesBodyPartMatch(raceBodyPart.def.defName, fuzzyPartName) :
-                                matchType == partMatchType.LabelShort     ? BodyPartMatcher.DoesBodyPartMatch(raceBodyPart.LabelShort,  fuzzyPartName) :
-                                matchType == partMatchType.Label          ? BodyPartMatcher.DoesBodyPartMatch(raceBodyPart.Label,       fuzzyPartName) :
-                                false  // ??? Forgot to add a partMatchType?
-                            )
+                            staticPartGroups[vanillaPartName].Any( fuzzyPartName => fuzzyPartName == (
+                                matchType == partMatchType.BodyPartRecord ? BodyPartMatcher.SimplifyBodyPartLabel(raceBodyPart            ) :
+                                matchType == partMatchType.BodyPartDef    ? BodyPartMatcher.SimplifyBodyPartLabel(raceBodyPart.def        ) :
+                                matchType == partMatchType.DefName        ? BodyPartMatcher.SimplifyBodyPartLabel(raceBodyPart.def.defName) :
+                                matchType == partMatchType.LabelShort     ? BodyPartMatcher.SimplifyBodyPartLabel(raceBodyPart.LabelShort ) :
+                                matchType == partMatchType.Label          ? BodyPartMatcher.SimplifyBodyPartLabel(raceBodyPart.Label      ) :
+                                ""  // ??? Forgot to add a partMatchType?
+                            ) )
                         );
                     }
 
@@ -213,22 +213,19 @@ namespace XenobionicPatcher {
             // (This is actually fewer combinations than all of the duplicates within
             // surgeryList -> appliedOnFixedBodyParts.)
             if (Base.IsDebug) stopwatch.Start();
-            for (int i = 0; i < raceBodyParts.Count(); i++) {
-                BodyPartRecord firstBodyPart = raceBodyParts[i];
-                string fbpDefName = firstBodyPart.def.defName;
-                partToPartMapper.NewIfNoKey(fbpDefName);
+            var simpleLabelToBPDMapping = new Dictionary<string, HashSet<BodyPartDef>> {};
+            raceBodyParts.ForEach( bpr => simpleLabelToBPDMapping.SetOrAddNested(
+                key:   BodyPartMatcher.SimplifyBodyPartLabel(bpr),
+                value: bpr.def
+            ) );
 
-                // Looks for matching (or near-matching) body part labels
-                for (int j = i + 1; j < raceBodyParts.Count(); j++) {  // don't repeat previous checks
-                    BodyPartRecord secondBodyPart = raceBodyParts[j];
-                    string sbpDefName = secondBodyPart.def.defName;
-
-                    if (firstBodyPart.def != secondBodyPart.def && BodyPartMatcher.DoesBodyPartMatch(firstBodyPart, secondBodyPart)) {
-                        partToPartMapper[fbpDefName].Add(secondBodyPart.def);
-                        partToPartMapper.SetOrAddNested(sbpDefName, firstBodyPart.def);
-                    }
-                }
+            foreach (HashSet<BodyPartDef> similarBPDs in simpleLabelToBPDMapping.Values.Where( hs => hs.Count() >= 2 ) ) {
+                similarBPDs.
+                    Select( bpd     => bpd.defName ).
+                    Do    ( defName => partToPartMapper.SetOrAddNestedRange(defName, similarBPDs) )
+                ;
             }
+
             if (Base.IsDebug) {
                 stopwatch.Stop();
                 XP.ModLogger.Message(
@@ -402,10 +399,10 @@ namespace XenobionicPatcher {
                 string surgeryLabelLower = surgery.label.ToLower();
 
                 if      (surgeryLabelLower.Contains(" foot ") || surgeryLabelLower.EndsWith(" foot")) {
-                    surgery.appliedOnFixedBodyParts.RemoveAll(sbp => BodyPartMatcher.DoesBodyPartMatch(sbp, "hand"));
+                    surgery.appliedOnFixedBodyParts.RemoveAll(sbp => BodyPartMatcher.SimplifyBodyPartLabel(sbp) == "hand");
                 }
                 else if (surgeryLabelLower.Contains(" hand ") || surgeryLabelLower.EndsWith(" hand")) {
-                    surgery.appliedOnFixedBodyParts.RemoveAll(sbp => BodyPartMatcher.DoesBodyPartMatch(sbp, "foot"));
+                    surgery.appliedOnFixedBodyParts.RemoveAll(sbp => BodyPartMatcher.SimplifyBodyPartLabel(sbp) == "foot");
                 }
 
                 // This shouldn't happen
