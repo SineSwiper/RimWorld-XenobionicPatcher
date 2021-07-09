@@ -8,6 +8,7 @@
         <li>1.0</li>
         <li>1.1</li>
         <li>1.2</li>
+        <li>1.3</li>
     </supportedVersions>
 	<modDependencies>
 		<li>
@@ -29,76 +30,82 @@
 		<li>brrainz.harmony</li>
         <li>UnlimitedHugs.HugsLib</li>
         <li>erdelf.HumanoidAlienRaces</li>
+        <li>Jecrell.JecsTools</li>
 
+        <li>Abraxas.MSERevived</li>
+        <li>albion.sparklingworlds.full</li>
         <li>Atlas.AndroidTiers</li>
+        <li>chaosknight.kilhnrace</li>
         <li>ChJees.Androids</li>
         <li>Daniledman.CyberFauna</li>
-        <li>fluffy.pharmacist</li>
+        <li>fenn.floodrace</li>
         <li>fluffy.medicaltab</li>
+        <li>fluffy.pharmacist</li>
+        <li>foggymorning.starwarsraces</li>
+        <li>forsakens.fauna</li>
+        <li>frozensnowfox.advancedbionicsexpansion</li>
         <li>frozensnowfox.vanillabionicsexpansion</li>
         <li>GloomyLynx.DragonianRace</li>
         <li>GT.Sam.GlitterTech</li>
-        <li>Horo.MechaniteForge.11</li>
+        <li>guy.starwarsanimalcollection</li>
         <li>Haplo.Miscellaneous.Robots</li>
+        <li>heymyteamrules.beastmantribes</li>
+        <li>Horo.MechaniteForge.11</li>
+        <li>jackaufenhand.sergals</li>
+        <li>kikohi.cybernetic</li>
+        <li>kikohi.forsakens</li>
+        <li>k.psitech</li>
+        <li>mlie.callofcthulhucosmichorrors</li>
+        <li>mlie.horrors</li>
+        <li>mlie.logannrace</li>
+        <li>mlie.starwarsfactions</li>
         <li>Oblitus.AnimalsLogic</li>
+        <li>ogliss.alienvspredator</li>
+        <li>onyxae.dragonsdescent</li>
         <li>Orion.MoreMechanoids</li>
-        <li>sarg.alphabiomes</li>
+        <li>OskarPotocki.VFE.Insectoid</li>
+        <li>OskarPotocki.VFE.Mechanoid</li>
+        <li>Rah.RBSE</li>
+        <li>regrowth.botr.extinctanimalspack</li>
+        <li>regrowth.botr.wastelandfauna</li>
+        <li>rh.faction.void</li>
+        <li>rimeffect.core</li>
+        <li>rimeffect.extendedcut</li>
+        <li>rimsenal.federation</li>
+        <li>rimsenal.feral</li>
         <li>sarg.alphaanimals</li>
-        <li>sarg.geneticrim</li>
+        <li>sarg.alphabiomes</li>
         <li>sarg.geneticrimalphaanimals</li>
+        <li>sarg.geneticrimcosmichorrors</li>
+        <li>sarg.geneticrimdinosauria</li>
+        <li>sarg.geneticrim</li>
+        <li>sarg.geneticrimmegafauna</li>
+        <li>sarg.jorisexperience</li>
+        <li>sarg.magicalmenagerie</li>
         <li>Sig.MantodeanRace</li>
         <li>SineSwiper.FactionBlender</li>
         <li>Solaris.RatkinRaceMod</li>
+        <li>spincrus.dinosauria</li>
+        <li>spino.megafauna</li>
         <li>spoonshortage.ADogSaidAnimalProsthetics</li>
-        <li>Rah.RBSE</li>
-        <li>rimsenal.federation</li>
-        <li>rimsenal.feral</li>
-        <li>uuugggg.smartmedicine</li>
+        <li>syrchalis.harpy</li>
+        <li>tarojun.thrumboianrace</li>
+        <li>torann.arimworldofmagic</li>
+        <li>troopersmith1.rimeffectraces</li>
+        <li>VanillaExpanded.VAEAS</li>
+        <li>VanillaExpanded.VAEAU</li>
+        <li>VanillaExpanded.VAEBF</li>
+        <li>VanillaExpanded.VAECD</li>
+        <li>VanillaExpanded.VAED</li>
+        <li>VanillaExpanded.VAEED</li>
+        <li>VanillaExpanded.VAEIS</li>
+        <li>VanillaExpanded.VAET</li>
+        <li>VanillaExpanded.VAETR</li>
+        <li>VanillaExpanded.VAETS</li>
+        <li>VanillaExpanded.VCEF</li>
+        <li>vanya.polarisbloc.corelab</li>
+        <li>vanya.polarisbloc.mechenemy</li>
         <li>Ykara.EPOE</li>
-
-        <!-- Need full packageId for these...
-        <li>ARimWorldofMagic</li>
-        <li>AdvancedBiomes</li>
-        <li>AlienVsPredator</li>
-        <li>AnimalCollabProj</li>
-        <li>BeastManTribes</li>
-        <li>CallofCthulhu-CosmicHorrors</li>
-        <li>CallofCthulhu-ElderThings</li>
-        <li>CallofCthulhu-Factions</li>
-        <li>CrudeBionics</li>
-        <li>CuproPanda'sDrinks</li>
-        <li>DeathRattle</li>
-        <li>Dinosauria</li>
-        <li>EnhancedRaiders1.0</li>
-        <li>ExtendedHumanBodySimulation</li>
-        <li>GeneticRimCosmicHorrorsPatch</li>
-        <li>GeneticRimDinosauriaPatch</li>
-        <li>GeneticRimMegafaunaPatch</li>
-        <li>JurassicRimworld1.0</li>
-        <li>LBE'sADogSaidEasyPatcher</li>
-        <li>LessArbitrarySurgery</li>
-        <li>LifeSupport</li>
-        <li>LordoftheRims-Dwarves</li>
-        <li>LordoftheRims-Elves</li>
-        <li>LordoftheRims-Hobbits</li>
-        <li>LordoftheRims-TheThirdAge</li>
-        <li>LordoftheRims-Unlimited</li>
-        <li>Megafauna</li>
-        <li>Psychology</li>
-        <li>QuestionableEthics</li>
-        <li>QuestionableEthicsEnhanced</li>
-        <li>RBSEHardcoreEdition</li>
-        <li>Raiderpedes</li>
-        <li>RimEffect-AsarioftheRims</li>
-        <li>RimofMadness-Arachnophobia</li>
-        <li>RimofMadness-Vampires</li>
-        <li>RimofMadness-Werewolves</li>
-        <li>Spidercamp'sDogPack(1.0)</li>
-        <li>StarWarsAnimalCollection</li>
-        <li>ThrumboRace</li>
-        <li>VGPGardenMedicine</li>
-        <li>[O21]Rimhammer40K</li>
-        -->
     </loadAfter>
 <description>This patcher mod looks through most of the surgery operations, and matches your modded surgeries (like new bionics) with your modded races and animals.  In other words, if you have a bionic expansion mod like FSF's Vanilla Bionics Expansion, EPOE, or RBSE, and a set of modded races or animals, this patcher will match them together a few different ways (examples in quotes):
 
