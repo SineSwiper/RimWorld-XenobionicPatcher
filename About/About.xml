@@ -107,6 +107,9 @@
         <li>vanya.polarisbloc.mechenemy</li>
         <li>Ykara.EPOE</li>
     </loadAfter>
+    <loadBefore>
+        <li>krkr.Rocketman</li>
+    </loadBefore>
 <description>This patcher mod looks through most of the surgery operations, and matches your modded surgeries (like new bionics) with your modded races and animals.  In other words, if you have a bionic expansion mod like FSF's Vanilla Bionics Expansion, EPOE, or RBSE, and a set of modded races or animals, this patcher will match them together a few different ways (examples in quotes):
 
 1. If the surgery works against a "Leg", and your pawn has a "Leg", your pawn gets the operation option.
