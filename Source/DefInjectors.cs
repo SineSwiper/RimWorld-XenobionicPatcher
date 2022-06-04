@@ -436,7 +436,8 @@ namespace XenobionicPatcher {
             for (int ps = 0; ps < partsSurgeryList.Count(); ps++) {
                 RecipeDef surgery = partsSurgeryList[ps];
 
-                if (surgery.recipeUsers == null) surgery.recipeUsers = new List<ThingDef> {};
+                if (surgery.recipeUsers             == null) surgery.recipeUsers             = new List<ThingDef>    {};
+                if (surgery.appliedOnFixedBodyParts == null) surgery.appliedOnFixedBodyParts = new List<BodyPartDef> {};
 
                 // The other side of the "easy dupe" cleaning
                 surgery.recipeUsers.RemoveDuplicates();
@@ -459,43 +460,55 @@ namespace XenobionicPatcher {
 
                     s.fixedIngredientFilter?.Summary == surgery.fixedIngredientFilter?.Summary
                 )) {
-                    surgery.appliedOnFixedBodyParts.AddRange(otherSurgery.appliedOnFixedBodyParts);
-                    surgery.appliedOnFixedBodyParts.RemoveDuplicates();
+                    try {
+                        if (!otherSurgery.appliedOnFixedBodyParts.NullOrEmpty()) {
+                            surgery.appliedOnFixedBodyParts.AddRange(otherSurgery.appliedOnFixedBodyParts);
+                            surgery.appliedOnFixedBodyParts.RemoveDuplicates();
+                        }
 
-                    List<ThingDef> otherSurgeryPawns = new List<ThingDef> {};
-                    if (otherSurgery.recipeUsers != null && otherSurgery.recipeUsers.Count > 0) {
-                        surgery.recipeUsers.AddRange(otherSurgery.recipeUsers);
-                        surgery.recipeUsers.RemoveDuplicates();
+                        List<ThingDef> otherSurgeryPawns = new List<ThingDef> {};
+                        if (!otherSurgery.recipeUsers.NullOrEmpty()) {
+                            surgery.recipeUsers.AddRange(otherSurgery.recipeUsers);
+                            surgery.recipeUsers.RemoveDuplicates();
 
-                        // This is like pawnDef.AllRecipes, without actually initializing the permanent cache.  We aren't going
-                        // to trust that every def is actually injected in both sides (pawn.recipes + surgery.recipeUsers).
-                        otherSurgeryPawns.AddRange(otherSurgery.recipeUsers);
-                    }
-                    pawnList.Where(p => p.recipes != null && p.recipes.Contains(otherSurgery)).Do( p => otherSurgeryPawns.AddDistinct(p) );
+                            // This is like pawnDef.AllRecipes, without actually initializing the permanent cache.  We aren't going
+                            // to trust that every def is actually injected in both sides (pawn.recipes + surgery.recipeUsers).
+                            otherSurgeryPawns.AddRange(otherSurgery.recipeUsers);
+                        }
+                        pawnList.Where( p => p.recipes != null && p.recipes.Contains(otherSurgery) ).Do( p => otherSurgeryPawns.AddDistinct(p) );
                     
-                    foreach (ThingDef pawnDef in otherSurgeryPawns) {
-                        surgery.recipeUsers.AddDistinct(pawnDef);
+                        foreach (ThingDef pawnDef in otherSurgeryPawns) {
+                            surgery.recipeUsers.AddDistinct(pawnDef);
                         
-                        // Try to keep the same index in the replacement
-                        var recipes = pawnDef.recipes;
-                        int i = recipes.IndexOf(otherSurgery);
-                        if (i != -1) {
-                            recipes[i] = surgery;
+                            if (pawnDef.recipes == null) pawnDef.recipes = new List<RecipeDef> {};
+
+                            // Try to keep the same index in the replacement
+                            var recipes = pawnDef.recipes;
+                            int i = recipes.IndexOf(otherSurgery);
+                            if (i != -1) {
+                                recipes[i] = surgery;
+                            }
+                            else {
+                                // XXX: How would we even get here???  It didn't exist and was only found in surgery.recipeUsers?
+                                recipes.Add(surgery);
+                                recipes.Remove(otherSurgery);
+                            }
                         }
-                        else {
-                            // XXX: How would we even get here???
-                            recipes.Add(surgery);
-                            recipes.Remove(otherSurgery);
-                        }
+
+                        // XXX: Well, of course it's a private method.  Guess we reflect now...
+
+                        // Time to die!
+                        MethodInfo removeMethod = AccessTools.Method(typeof(DefDatabase<RecipeDef>), "Remove");
+                        removeMethod.Invoke(null, new object[] { otherSurgery });  // static method: first arg is null
+
+                        toDelete.Add(otherSurgery);  // don't re-merge in the other direction on our main loop
                     }
-
-                    // XXX: Well, of course it's a private method.  Guess we reflect now...
-
-                    // Time to die!
-                    MethodInfo removeMethod = AccessTools.Method(typeof(DefDatabase<RecipeDef>), "Remove");
-                    removeMethod.Invoke(null, new object[] { otherSurgery });  // static method: first arg is null
-
-                    toDelete.Add(otherSurgery);  // don't re-merge in the other direction on our main loop
+                    catch (Exception ex) {
+                        throw new Exception(
+                            string.Format("Triggered exception while merging surgeries {0} and {1}", surgery.defName, otherSurgery.defName),
+                            ex
+                        );
+                    }
                 }
 
                 // Second loop is still an enumerator, so delete here
@@ -504,24 +517,40 @@ namespace XenobionicPatcher {
 
             // Add hyperlinks to surgeries, if they don't exist
             foreach (RecipeDef surgery in surgeryList.Where(s => s.descriptionHyperlinks.NullOrEmpty())) {
-                List<DefHyperlink> hyperlinks = Helpers.SurgeryToHyperlinks(surgery);
-                if (hyperlinks.NullOrEmpty()) continue;
-                surgery.descriptionHyperlinks = hyperlinks;
+                try {
+                    List<DefHyperlink> hyperlinks = Helpers.SurgeryToHyperlinks(surgery);
+                    if (hyperlinks.NullOrEmpty()) continue;
+                    surgery.descriptionHyperlinks = hyperlinks;
+                }
+                catch (Exception ex) {
+                    throw new Exception(
+                        string.Format("Triggered exception while adding hyperlinks to {0}", surgery.defName),
+                        ex
+                    );
+                }
             }
 
             foreach (ThingDef pawnDef in pawnList.Where(p => p.recipes != null)) {
-                // Sort all of the recipes on the pawn side
-                pawnDef.recipes = pawnDef.recipes.
-                    OrderBy(s => Helpers.SurgerySort(s)).
-                    ThenBy (s => s.label.ToLower()).
-                    ToList()
-                ;
+                try {
+                    // Sort all of the recipes on the pawn side
+                    pawnDef.recipes = pawnDef.recipes.
+                        OrderBy(s => Helpers.SurgerySort(s)).
+                        ThenBy (s => s.label.ToLower()).
+                        ToList()
+                    ;
 
-                /* One of the mods before us may have called AllRecipes, which sets up a permanent cache.  This
-                 * means that our new additions might never show up.  Force clear the cache, punching through
-                 * the private field via reflection.
-                 */
-                 Traverse.Create(pawnDef).Field("allRecipesCached").SetValue(null);
+                    /* One of the mods before us may have called AllRecipes, which sets up a permanent cache.  This
+                     * means that our new additions might never show up.  Force clear the cache, punching through
+                     * the private field via reflection.
+                     */
+                    Traverse.Create(pawnDef).Field("allRecipesCached").SetValue(null);
+                }
+                catch (Exception ex) {
+                    throw new Exception(
+                        string.Format("Triggered exception while sorting recipes for {0}", pawnDef.defName),
+                        ex
+                    );
+                }
             }
 
         }
