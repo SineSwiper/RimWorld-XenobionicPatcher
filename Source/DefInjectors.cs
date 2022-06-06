@@ -418,9 +418,25 @@ namespace XenobionicPatcher {
         public void CleanupSurgeryRecipes (List<RecipeDef> surgeryList, List<ThingDef> pawnList) {
             Base XP = Base.Instance;
 
+            Stopwatch stopwatch = Stopwatch.StartNew();
+
             // Just in case we have some easy dupes to clean
+            if (Base.IsDebug) stopwatch.Start();
+            int recipesCount = 0;
+
             foreach (ThingDef pawnDef in pawnList) {
-                pawnDef.recipes?.RemoveDuplicates();
+                if (pawnDef.recipes == null) continue;
+                recipesCount += pawnDef.recipes.Count();
+                pawnDef.recipes.RemoveDuplicates();
+            }
+
+            if (Base.IsDebug) {
+                stopwatch.Stop();
+                XP.ModLogger.Message(
+                    "    Remove dupes from PawnDefs: took {0:F4}s; {1:N0} surgeries total",
+                    stopwatch.ElapsedMilliseconds / 1000f, recipesCount
+                );
+                stopwatch.Reset();
             }
 
             /* XXX: Given that Core and other "important" modules are loaded first, we'll assume the first recipe
@@ -428,6 +444,9 @@ namespace XenobionicPatcher {
              * 
              * Of course, I say that right before we resort the surgery list...
              */
+
+            int surgeryDeletions = 0;
+            if (Base.IsDebug) stopwatch.Start();
 
             ThingCategoryDef EPOERedundancy = DefDatabase<ThingCategoryDef>.GetNamed("EPOE_Redundancy", false);
 
@@ -512,11 +531,25 @@ namespace XenobionicPatcher {
                 }
 
                 // Second loop is still an enumerator, so delete here
+                surgeryDeletions += toDelete.Count();
                 toDelete.ForEach( s => partsSurgeryList.Remove(s) );
             }
 
+            if (Base.IsDebug) {
+                stopwatch.Stop();
+                XP.ModLogger.Message(
+                    "    Merge surgeries: took {0:F4}s; {1:N0} surgeries merged; {2:N0} surgeries total",
+                    stopwatch.ElapsedMilliseconds / 1000f, surgeryDeletions, partsSurgeryList.Count()
+                );
+                stopwatch.Reset();
+            }
+
             // Add hyperlinks to surgeries, if they don't exist
+            if (Base.IsDebug) stopwatch.Start();
+            int surgeriesNeedingHyperlinks = 0;
+
             foreach (RecipeDef surgery in surgeryList.Where(s => s.descriptionHyperlinks.NullOrEmpty())) {
+                surgeriesNeedingHyperlinks++;
                 try {
                     List<DefHyperlink> hyperlinks = Helpers.SurgeryToHyperlinks(surgery);
                     if (hyperlinks.NullOrEmpty()) continue;
@@ -530,9 +563,20 @@ namespace XenobionicPatcher {
                 }
             }
 
+            if (Base.IsDebug) {
+                stopwatch.Stop();
+                XP.ModLogger.Message(
+                    "    Add hyperlinks to surgeries: took {0:F4}s; {1:N0} surgeries with new hyperlinks",
+                    stopwatch.ElapsedMilliseconds / 1000f, surgeriesNeedingHyperlinks
+                );
+                stopwatch.Reset();
+            }
+
+            // Sort all of the recipes on the pawn side
+            if (Base.IsDebug) stopwatch.Start();
+
             foreach (ThingDef pawnDef in pawnList.Where(p => p.recipes != null)) {
                 try {
-                    // Sort all of the recipes on the pawn side
                     pawnDef.recipes = pawnDef.recipes.
                         OrderBy(s => Helpers.SurgerySort(s)).
                         ThenBy (s => s.label.ToLower()).
@@ -551,6 +595,15 @@ namespace XenobionicPatcher {
                         ex
                     );
                 }
+            }
+
+            if (Base.IsDebug) {
+                stopwatch.Stop();
+                XP.ModLogger.Message(
+                    "    Sort surgeries: took {0:F4}s; {1:N0} surgeries total",
+                    stopwatch.ElapsedMilliseconds / 1000f, pawnList.Where( p => p.recipes != null ).Sum( p => p.recipes.Count() )
+                );
+                stopwatch.Reset();
             }
 
         }
