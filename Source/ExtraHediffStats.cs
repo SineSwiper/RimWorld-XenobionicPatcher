@@ -1,6 +1,7 @@
 ﻿using RimWorld;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using Verse;
 
 namespace XenobionicPatcher {
@@ -91,7 +92,20 @@ namespace XenobionicPatcher {
         }
 
         public static StatDrawEntry HediffCategoryStat (HediffDef hediff) {
-            string type = 
+            string typeLangKey = null;
+            foreach (System.Type categoryType in new[] {
+                // Not all of the base types, but most of them that fit a broader category
+                typeof(Hediff_Addiction), typeof(Hediff_High), typeof(Hediff_AddedPart), typeof(Hediff_Implant), typeof(Hediff_Injury), typeof(Hediff_MissingPart), typeof(Hediff_Psylink),
+            } ) {
+                if (Helpers.IsSupertypeOf(categoryType, hediff.hediffClass)) {
+                    typeLangKey = categoryType.Name;
+                    typeLangKey = Regex.Replace(typeLangKey, @"Hediff_", "");
+                    typeLangKey = Regex.Replace(typeLangKey, @"_(\w)", m => m.Groups[1].Value.ToUpper());  // snake_case to CamelCase
+                    break;
+                }
+            }
+
+            if (typeLangKey == null) typeLangKey =
                 hediff.countsAsAddedPartOrImplant || hediff.addedPartProps != null ? "BodyAugment" :
                 hediff.displayWound     ? "Wound" :
                 hediff.chronic          ? "ChronicDisease" :
@@ -99,7 +113,12 @@ namespace XenobionicPatcher {
                 hediff.isBad            ? "Affliction" :
                 "Condition"
             ;
-            type = ("Stat_Hediff_HediffType_" + type).Translate();
+
+            // See comment on ExtraSurgeryStats.SurgeryCategoryStat
+            string backupText = GenText.CapitalizeFirst( GenText.SplitCamelCase(typeLangKey).ToLower() );
+
+            typeLangKey = "Stat_Hediff_HediffType_" + typeLangKey;
+            string type = typeLangKey.CanTranslate() ? typeLangKey.Translate() : backupText.Translate();
 
             return new StatDrawEntry(
                 category:    category,

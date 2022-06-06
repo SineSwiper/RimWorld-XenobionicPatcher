@@ -60,7 +60,7 @@ namespace XenobionicPatcher {
         public static StatDrawEntry SurgeryCategoryStat (RecipeDef surgery) {
             string workerClassKey = surgery.workerClass.Name;
             workerClassKey = Regex.Replace(workerClassKey, @"Recipe(Worker)?_", "");
-            workerClassKey = Regex.Replace(workerClassKey, @"_(\w)", m => m.Groups[1].Value.ToUpper());  // SnakeCase to CamelCase
+            workerClassKey = Regex.Replace(workerClassKey, @"_(\w)", m => m.Groups[1].Value.ToUpper());  // snake_case to CamelCase
 
             string categoryLangKey = "Stat_Recipe_Surgery_SurgeryCategory_" + workerClassKey;
             string backupText      = GenText.CapitalizeFirst( GenText.SplitCamelCase(workerClassKey).ToLower() );

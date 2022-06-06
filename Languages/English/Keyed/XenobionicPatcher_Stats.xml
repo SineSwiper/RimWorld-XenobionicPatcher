@@ -134,6 +134,14 @@
     <Stat_Hediff_HediffType_Affliction>Affliction</Stat_Hediff_HediffType_Affliction>
     <Stat_Hediff_HediffType_Condition>Condition</Stat_Hediff_HediffType_Condition>
 
+    <Stat_Hediff_HediffType_Addiction>Addiction</Stat_Hediff_HediffType_Addiction>
+    <Stat_Hediff_HediffType_High>High</Stat_Hediff_HediffType_High>
+    <Stat_Hediff_HediffType_AddedPart>Added Part</Stat_Hediff_HediffType_AddedPart>
+    <Stat_Hediff_HediffType_Implant>Implant</Stat_Hediff_HediffType_Implant>
+    <Stat_Hediff_HediffType_Injury>Injury</Stat_Hediff_HediffType_Injury>
+    <Stat_Hediff_HediffType_MissingPart>Missing Part</Stat_Hediff_HediffType_MissingPart>
+    <Stat_Hediff_HediffType_Psylink>Psylink</Stat_Hediff_HediffType_Psylink>
+
     <Stat_Hediff_Tendable_Name>Tendable</Stat_Hediff_Tendable_Name>
     <Stat_Hediff_Tendable_Desc>Whether this condition can be cured with medicine.</Stat_Hediff_Tendable_Desc>
 
