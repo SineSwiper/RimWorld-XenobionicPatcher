@@ -8,6 +8,23 @@
     </HugsLib.UpdateFeatureDef>
 
     <HugsLib.UpdateFeatureDef ParentName="XP_UpdateFeatureBase">
+        <defName>XenobionicPatcher_1_2_3</defName>
+        <assemblyVersion>1.2.3</assemblyVersion>
+        <content>&lt;b&gt;Additions:&lt;/b&gt;
+- Added each stage to Health Condition stats page
+- Added more severity stats to Health Condition stats page
+
+&lt;b&gt;Fixes:&lt;/b&gt;
+- Fixed red error during the cleanup phase
+
+&lt;b&gt;Tweaks:&lt;/b&gt;
+- Added several additional categories to Health Condition type
+- Added debug timers to CleanupSurgeryRecipes
+- Added Rocketman to loading rules
+        </content>
+    </HugsLib.UpdateFeatureDef>
+
+    <HugsLib.UpdateFeatureDef ParentName="XP_UpdateFeatureBase">
         <defName>XenobionicPatcher_1_2_2</defName>
         <assemblyVersion>1.2.2</assemblyVersion>
         <content>&lt;b&gt;Additions:&lt;/b&gt;
