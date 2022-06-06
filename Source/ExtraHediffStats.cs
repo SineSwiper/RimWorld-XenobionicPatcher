@@ -89,6 +89,62 @@ namespace XenobionicPatcher {
                     displayPriorityWithinCategory: 5500
                 );
             }
+
+            /* TODO: New stats:
+             *
+             * Breakdown of HediffGivers
+             * socialFightChanceFactor
+             * mentalBreakMtbDays
+             * mentalStateGivers
+             * destroyPart
+             *
+             * TODO: Move these to HediffStatsUtility.SpecialDisplayStats
+             */
+
+
+            // NOTE: Core RimWorld already adds the effects of single stage Hediffs
+
+            // Multi-stage stats
+            if (!hediff.stages.NullOrEmpty() && hediff.stages.Count > 1) {
+
+                for (int i = 0; i < hediff.stages.Count; i++) {
+                    HediffStage stage = hediff.stages[i];
+
+                    // If a stage wants to be invisible, keep it that way
+                    if (!stage.becomeVisible) continue;
+
+                    string stageLabelCap   = stage.label?.CapitalizeFirst() ?? "";
+                    string categoryDefName = hediff.defName + "-" + stageLabelCap + i;
+                    string minSeverityPer  = stage.minSeverity.ToStringPercent();
+
+                    // List each stage as its own StatCategoryDef
+                    var categoryDef = DefDatabase<StatCategoryDef>.GetNamed(categoryDefName, false);
+                    if (categoryDef == null) {
+                        categoryDef = new StatCategoryDef {
+                            defName        = categoryDefName,
+                            displayOrder   = 201 + i,
+                            modContentPack = XenobionicPatcher.Base.Instance.ModContentPack,
+                        };
+
+                        // We need to make sure these are distinct strings, even if the defName is unique.
+                        // XXX: This is kind of dirty from an I18N POV.
+                        string label     = StatCategoryDefOf.CapacityEffects.label;
+                        string minPerStr = " (" + minSeverityPer + ")";
+
+                        if (stageLabelCap.Length > 0) label += " - " + stageLabelCap;
+                        label += minPerStr;
+                        categoryDef.label = label;
+
+                        DefGenerator.AddImpliedDef(categoryDef);
+                    }
+
+                    // Blend stage stats into the category
+                    foreach (StatDrawEntry value in stage.SpecialDisplayStats()) {
+                        value.category = categoryDef;
+                        yield return value;
+                    }
+                }
+            }
         }
 
         public static StatDrawEntry HediffCategoryStat (HediffDef hediff) {
