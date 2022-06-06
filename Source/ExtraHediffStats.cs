@@ -11,6 +11,8 @@ namespace XenobionicPatcher {
         public static IEnumerable<StatDrawEntry> SpecialDisplayStats(HediffDef hediff, StatRequest req) {
             category = DefDatabase<StatCategoryDef>.GetNamed("Basics");
 
+            // TODO: Breakdown of comps / HediffGivers
+
             yield return HediffCategoryStat(hediff);
 
             if (hediff.isBad) {
@@ -39,7 +41,78 @@ namespace XenobionicPatcher {
                     valueString: canBeLethal.ToStringYesNo(),
                     displayPriorityWithinCategory: 4965
                 );
+
+                yield return new StatDrawEntry(
+                    category:    category,
+                    label:       "Stat_Hediff_Curable_Name".Translate(),
+                    reportText:  "Stat_Hediff_Curable_Desc".Translate(),
+                    valueString: 
+                        hediff.everCurableByItem && hediff.cureAllAtOnceIfCuredByItem ?
+                        "Stat_Hediff_CurableAllAtOnce".Translate().ToString() :
+                        hediff.everCurableByItem.ToStringYesNo()
+                    ,
+                    displayPriorityWithinCategory: 4960
+                );
             }
+
+            if ((!hediff.stages.NullOrEmpty() && hediff.stages.Count > 1) || hediff.maxSeverity < float.MaxValue) {
+                if (hediff.minSeverity > 0) yield return new StatDrawEntry(
+                    category:    category,
+                    label:       "Stat_Hediff_MinSeverity_Name".Translate(),
+                    reportText:  "Stat_Hediff_MinSeverity_Desc".Translate(),
+                    valueString: hediff.minSeverity.ToStringPercent(),
+                    displayPriorityWithinCategory: 4955
+                );
+
+                if (hediff.initialSeverity != 0.5f) yield return new StatDrawEntry(
+                    category:    category,
+                    label:       "Stat_Hediff_InitialSeverity_Name".Translate(),
+                    reportText:  "Stat_Hediff_InitialSeverity_Desc".Translate(),
+                    valueString: hediff.initialSeverity.ToStringPercent(),
+                    displayPriorityWithinCategory: 4950
+                );
+
+                if (hediff.lethalSeverity > 0) yield return new StatDrawEntry(
+                    category:    category,
+                    label:       "Stat_Hediff_LethalSeverity_Name".Translate(),
+                    reportText:  "Stat_Hediff_LethalSeverity_Desc".Translate(),
+                    valueString: hediff.lethalSeverity.ToStringPercent(),
+                    displayPriorityWithinCategory: 4945
+                );
+                else if (hediff.maxSeverity < float.MaxValue) yield return new StatDrawEntry(
+                    category:    category,
+                    label:       "Stat_Hediff_MaxSeverity_Name".Translate(),
+                    reportText:  "Stat_Hediff_MaxSeverity_Desc".Translate(),
+                    valueString: hediff.maxSeverity.ToStringPercent(),
+                    displayPriorityWithinCategory: 4945
+                );
+            }
+
+            if (hediff.chanceToCauseNoPain > 0) yield return new StatDrawEntry(
+                category:    category,
+                label:       "Stat_Hediff_ChanceToCauseNoPain_Name".Translate(),
+                reportText:  "Stat_Hediff_ChanceToCauseNoPain_Desc".Translate(),
+                valueString: hediff.chanceToCauseNoPain.ToStringPercent(),
+                displayPriorityWithinCategory: 4940
+            );
+
+            if (hediff.causesNeed != null) yield return new StatDrawEntry(
+                category:    category,
+                label:       "CreatesNeed".Translate(),
+                reportText:  "Stat_Hediff_CausesNeed_Desc".Translate(),
+                valueString: hediff.causesNeed.LabelCap,
+                hyperlinks:  new[] { new Dialog_InfoCard.Hyperlink(hediff.causesNeed) },
+                displayPriorityWithinCategory: 4935
+            );
+
+            if (!hediff.disablesNeeds.NullOrEmpty()) yield return new StatDrawEntry(
+                category:    category,
+                label:       "Stat_Hediff_DisablesNeeds_Name".Translate(),
+                reportText:  "Stat_Hediff_DisablesNeeds_Desc".Translate(),
+                valueString: GenText.ToCommaList( hediff.disablesNeeds.Select(nd => nd.LabelCap.ToString()) ),
+                hyperlinks:  hediff.disablesNeeds.Select(nd => new Dialog_InfoCard.Hyperlink(nd)).ToArray(),
+                displayPriorityWithinCategory: 4930
+            );
 
             if (hediff.addedPartProps != null) {
                 StatCategoryDef implantCategory = DefDatabase<StatCategoryDef>.GetNamed("Implant");
@@ -91,13 +164,13 @@ namespace XenobionicPatcher {
             }
 
             /* TODO: New stats:
-             *
+             * 
              * Breakdown of HediffGivers
              * socialFightChanceFactor
              * mentalBreakMtbDays
              * mentalStateGivers
              * destroyPart
-             *
+             * 
              * TODO: Move these to HediffStatsUtility.SpecialDisplayStats
              */
 
@@ -106,10 +179,10 @@ namespace XenobionicPatcher {
 
             // Multi-stage stats
             if (!hediff.stages.NullOrEmpty() && hediff.stages.Count > 1) {
-
+                
                 for (int i = 0; i < hediff.stages.Count; i++) {
                     HediffStage stage = hediff.stages[i];
-
+                    
                     // If a stage wants to be invisible, keep it that way
                     if (!stage.becomeVisible) continue;
 
@@ -169,7 +242,7 @@ namespace XenobionicPatcher {
                 hediff.isBad            ? "Affliction" :
                 "Condition"
             ;
-
+            
             // See comment on ExtraSurgeryStats.SurgeryCategoryStat
             string backupText = GenText.CapitalizeFirst( GenText.SplitCamelCase(typeLangKey).ToLower() );
 

@@ -151,17 +151,44 @@
     <Stat_Hediff_Lethal_Name>Potentially lethal</Stat_Hediff_Lethal_Name>
     <Stat_Hediff_Lethal_Desc>Whether this condition has a chance to be fatal.</Stat_Hediff_Lethal_Desc>
 
+    <Stat_Hediff_Curable_Name>Curable</Stat_Hediff_Curable_Name>
+    <Stat_Hediff_Curable_Desc>Whether the condition can be cured with medicine or some other item.</Stat_Hediff_Curable_Desc>
+    <Stat_Hediff_CurableAllAtOnce>Yes, in one dose</Stat_Hediff_CurableAllAtOnce>
+
+    <Stat_Hediff_MinSeverity_Name>Minimum severity</Stat_Hediff_MinSeverity_Name>
+    <Stat_Hediff_MinSeverity_Desc>The minimum severity of the health condition.</Stat_Hediff_MinSeverity_Desc>
+
+    <Stat_Hediff_InitialSeverity_Name>Initial severity</Stat_Hediff_InitialSeverity_Name>
+    <Stat_Hediff_InitialSeverity_Desc>The starting severity of this health condition.</Stat_Hediff_InitialSeverity_Desc>
+
+    <Stat_Hediff_LethalSeverity_Name>Lethal severity</Stat_Hediff_LethalSeverity_Name>
+    <Stat_Hediff_LethalSeverity_Desc>The severity of this condition when it kills the pawn.</Stat_Hediff_LethalSeverity_Desc>
+
+    <Stat_Hediff_MaxSeverity_Name>Maximum severity</Stat_Hediff_MaxSeverity_Name>
+    <Stat_Hediff_MaxSeverity_Desc>The maximum severity of the health condition.</Stat_Hediff_MaxSeverity_Desc>
+
+    <Stat_Hediff_ChanceToCauseNoPain_Name>Chance to cause no pain</Stat_Hediff_ChanceToCauseNoPain_Name>
+    <Stat_Hediff_ChanceToCauseNoPain_Desc>The chance that the pawn ignores the pain caused by this health condition. This lasts until the stage of the condition changes.</Stat_Hediff_ChanceToCauseNoPain_Desc>
+
+    <Stat_Hediff_CausesNeed_Desc>Creates a need for the pawn.</Stat_Hediff_CausesNeed_Desc>
+
+    <Stat_Hediff_DisablesNeeds_Name>Prevents needs</Stat_Hediff_DisablesNeeds_Name>
+    <Stat_Hediff_DisablesNeeds_Desc>Prevents certain needs from the pawn.</Stat_Hediff_DisablesNeeds_Desc>
+
     <Stat_Hediff_RelatedPart_Name>Related part</Stat_Hediff_RelatedPart_Name>
     <Stat_Hediff_RelatedPart_Desc>The body augment installed as part of this health condition.</Stat_Hediff_RelatedPart_Desc>
 
     <Stat_Hediff_BetterThanNatural_Name>Better than natural</Stat_Hediff_BetterThanNatural_Name>
-    <Stat_Hediff_BetterThanNatural_Desc>Whether this augment is better than a natural part.</Stat_Hediff_BetterThanNatural_Desc>
+    <Stat_Hediff_BetterThanNatural_Desc>Whether this augment is better than a natural part. If not, other factions may not appreciate swapping out the part from their pawns.</Stat_Hediff_BetterThanNatural_Desc>
 
     <Stat_Hediff_Solid_Name>Solid</Stat_Hediff_Solid_Name>
     <Stat_Hediff_Solid_Desc>Whether this augment is solid enough to resist certain types of damage.</Stat_Hediff_Solid_Desc>
 
     <Stat_Hediff_PriceOffset_Name>Price offset</Stat_Hediff_PriceOffset_Name>
     <Stat_Hediff_PriceOffset_Desc>How much this adds to a creature's market value.</Stat_Hediff_PriceOffset_Desc>
+
+    <Stat_Hediff_MinSeverity_Name>Min Severity</Stat_Hediff_MinSeverity_Name>
+    <Stat_Hediff_MinSeverity_Desc>The minimum severity of the condition this stage starts in.</Stat_Hediff_MinSeverity_Desc>
 
     <!--
         BodyPartDefs
