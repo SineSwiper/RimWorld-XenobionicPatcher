@@ -304,9 +304,7 @@ namespace XenobionicPatcher {
             // Clear out empty lists
             if (Base.IsDebug) stopwatch.Start();
 
-            foreach (string part in partToPartMapper.Keys) {
-                if (partToPartMapper[part].Count < 1) partToPartMapper.Remove(part);
-            }
+            partToPartMapper.RemoveAll( kvp => kvp.Value.Count < 1 );
 
             if (Base.IsDebug) {
                 stopwatch.Stop();
@@ -322,7 +320,7 @@ namespace XenobionicPatcher {
             if (Base.IsDebug) stopwatch.Start();
 
             int newPartsAdded = 0;
-            foreach (RecipeDef surgery in surgeryList.Where(s => s.targetsBodyPart)) {
+            foreach (RecipeDef surgery in surgeryList.Where( s => s.targetsBodyPart && !s.appliedOnFixedBodyParts.NullOrEmpty() )) {
                 var newPartSet = new HashSet<BodyPartDef> {};
                 foreach (BodyPartDef surgeryBodyPart in surgery.appliedOnFixedBodyParts) {
                     if (partToPartMapper.ContainsKey(surgeryBodyPart.defName)) {
