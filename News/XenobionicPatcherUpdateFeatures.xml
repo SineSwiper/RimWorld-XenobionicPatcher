@@ -8,6 +8,14 @@
     </HugsLib.UpdateFeatureDef>
 
     <HugsLib.UpdateFeatureDef ParentName="XP_UpdateFeatureBase">
+        <defName>XenobionicPatcher_1_2_4</defName>
+        <assemblyVersion>1.2.4</assemblyVersion>
+        <content>&lt;b&gt;Fixes:&lt;/b&gt;
+- Fixed another few red errors, including the "Collection was modified" bug
+        </content>
+    </HugsLib.UpdateFeatureDef>
+
+    <HugsLib.UpdateFeatureDef ParentName="XP_UpdateFeatureBase">
         <defName>XenobionicPatcher_1_2_3</defName>
         <assemblyVersion>1.2.3</assemblyVersion>
         <content>&lt;b&gt;Additions:&lt;/b&gt;

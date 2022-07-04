@@ -23,7 +23,7 @@ namespace XenobionicPatcher {
 
         public Base() {
             Instance    = this;
-            DefInjector = new XenobionicPatcher.DefInjectors();
+            DefInjector = new DefInjectors();
             ModLogger   = this.Logger;
             IsDebug     = false;
         }
