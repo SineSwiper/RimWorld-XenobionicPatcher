@@ -234,7 +234,7 @@ namespace XenobionicPatcher {
 
         internal static void SetOrAddNestedRange<K, V> (this Dictionary<K, V[]> dict, K key, IEnumerable<V> value) {
             if (dict.ContainsKey(key))
-                dict[key].AddRangeToArray(value.ToArray());
+                dict[key] = dict[key].Concat(value).ToArray();
             else
                 dict.Add(key, value.ToArray());
         }
