@@ -121,25 +121,25 @@ namespace XenobionicPatcher {
                 // Bones
                 "Skull Ribcage Spine Clavicle Sternum Humerus Radius Pelvis Femur Tibia"
             ;
-            Dictionary<string, string[]> staticPartGroups = staticPartSetString.Split(' ').ToDictionary(
+            Dictionary<string, List<string>> staticPartGroups = staticPartSetString.Split(' ').ToDictionary(
                 keySelector:     k => k,
-                elementSelector: k => new[] { k.ToLower() }
+                elementSelector: k => new List<string> { k.ToLower() }
             );
             
-            var additionalStaticPartGroups = new Dictionary<string, string[]> {
-                { "Arm",      new[] { "flipper"                                   } },
-                { "Hand",     new[] { "claw", "grasper", "pincer"                 } },
-                { "Finger",   new[] { "thumb", "pinky"                            } },
-                { "Foot",     new[] { "hoof", "paw"                               } },
-                { "Eye",      new[] { "sight", "seeing", "visual"                 } },
-                { "Ear",      new[] { "antenna", "hear", "hearing", "sound"       } },
-                { "Nose",     new[] { "nostril", "smell", "smelling"              } },
-                { "Jaw",      new[] { "beak", "mouth", "maw", "teeth", "mandible" } },
-                { "Torso",    new[] { "thorax", "body", "shell"                   } },
-                { "Heart",    new[] { "reactor"                                   } },
-                { "Neck",     new[] { "pronotum"                                  } },
+            Dictionary<string, List<string>> additionalStaticPartGroups = new() {
+                { "Arm",      new() { "flipper"                                   } },
+                { "Hand",     new() { "claw", "grasper", "pincer"                 } },
+                { "Finger",   new() { "thumb", "pinky"                            } },
+                { "Foot",     new() { "hoof", "paw"                               } },
+                { "Eye",      new() { "sight", "seeing", "visual"                 } },
+                { "Ear",      new() { "antenna", "hear", "hearing", "sound"       } },
+                { "Nose",     new() { "nostril", "smell", "smelling"              } },
+                { "Jaw",      new() { "beak", "mouth", "maw", "teeth", "mandible" } },
+                { "Torso",    new() { "thorax", "body", "shell"                   } },
+                { "Heart",    new() { "reactor"                                   } },
+                { "Neck",     new() { "pronotum"                                  } },
                 // Wing should really be the base name, but there is no vanilla Wing part (even for birds!)
-                { "Elytra",   new[] { "wing" } },
+                { "Elytra",   new() { "wing" } },
             };
             foreach (string vanillaPartName in additionalStaticPartGroups.Keys) {
                 staticPartGroups.SetOrAddNestedRange(vanillaPartName, additionalStaticPartGroups[vanillaPartName]);
@@ -151,7 +151,7 @@ namespace XenobionicPatcher {
              * We're still going to keep the bio-boundary below to keep out leg->hand connections.  That's still a
              * bit off.  And mechs, of course.
              */
-            staticPartGroups["Hand"].AddRangeToArray(staticPartGroups["Foot"]);
+            staticPartGroups["Hand"].AddRange(staticPartGroups["Foot"]);
             staticPartGroups["Foot"] = staticPartGroups["Hand"];
 
             // Initialize part mapper with the vanilla part
