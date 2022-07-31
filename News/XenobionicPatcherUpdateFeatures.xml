@@ -8,6 +8,15 @@
     </HugsLib.UpdateFeatureDef>
 
     <HugsLib.UpdateFeatureDef ParentName="XP_UpdateFeatureBase">
+        <defName>XenobionicPatcher_1_2_5</defName>
+        <assemblyVersion>1.2.5</assemblyVersion>
+        <content>&lt;b&gt;Fixes:&lt;/b&gt;
+- Fixed a major bug with the static part mapper not including all of its static parts.  (This mostly impacted animals.)
+- Reduced restrictions in surgery collections for animals/humanlikes
+        </content>
+    </HugsLib.UpdateFeatureDef>
+
+    <HugsLib.UpdateFeatureDef ParentName="XP_UpdateFeatureBase">
         <defName>XenobionicPatcher_1_2_4</defName>
         <assemblyVersion>1.2.4</assemblyVersion>
         <content>&lt;b&gt;Fixes:&lt;/b&gt;
