@@ -16,6 +16,11 @@ namespace XenobionicPatcher {
             Label,
         };
 
+        // For personal debugging only
+        private const string debugVanillaPartName = null;
+        private const string debugSurgeryDefName  = null;
+        private const string debugPawnKindDefName = null;
+
         /* WARNING: Because of the sheer amount of combinations and loops we're dealing with, there is a LOT
          * of caching (both here and within Helpers), HashSets (for duplicate checks), and stopwatch timing.
          * Everything needs be optimized to the Nth degree to reduce as much overhead as possible.
@@ -237,6 +242,11 @@ namespace XenobionicPatcher {
                     partToPartMapper.Keys.Count(), partToPartMapper.Values.Sum(h => h.Count())
                 );
                 stopwatch.Reset();
+
+                if (debugVanillaPartName != null) XP.ModLogger.Message(
+                    "      StaticParts[{0}] = {1}",
+                    debugVanillaPartName, string.Join(", ", staticPartGroups[debugVanillaPartName])
+                );
             }
 
             // Surgery-to-part mapping
@@ -245,7 +255,12 @@ namespace XenobionicPatcher {
             foreach (RecipeDef surgery in surgeryList.Where(s => s.targetsBodyPart)) {
                 string surgeryBioType    = Helpers.GetSurgeryBioType(surgery);
                 string surgeryLabelLower = surgery.label.ToLower();
+                bool   defnameDebug      = Base.IsDebug && debugSurgeryDefName != null && surgery.defName == debugSurgeryDefName;
 
+                if (defnameDebug) XP.ModLogger.Message(
+                    "      {0}: BioType = {1}, is in BioType cache = {2}",
+                    debugSurgeryDefName, surgeryBioType, pawnSurgeriesByBioType.ContainsKey(surgeryBioType).ToStringYesNo()
+                );
                 if (!pawnSurgeriesByBioType.ContainsKey(surgeryBioType)) continue;
 
                 // Compose this list outside of the surgeryBodyPart loop
@@ -257,6 +272,8 @@ namespace XenobionicPatcher {
                     SelectMany(s  => s.appliedOnFixedBodyParts).Distinct().
                     ToHashSet()
                 ;
+
+                if (defnameDebug) XP.ModLogger.Message("      {0}: pawnSurgeryBodyParts = {1}", debugSurgeryDefName, string.Join(", ", pawnSurgeryBodyParts) );
                 if (pawnSurgeryBodyParts.Count == 0) continue;
 
                 /* If this list is crossing a bunch of our static part group boundaries, we should skip it.
@@ -265,6 +282,7 @@ namespace XenobionicPatcher {
                 int partGroupMatches = staticPartGroups.Keys.Sum(k =>
                     partToPartMapper[k].Overlaps(pawnSurgeryBodyParts) || partToPartMapper[k].Overlaps(surgery.appliedOnFixedBodyParts) ? 1 : 0
                 );
+                if (defnameDebug) XP.ModLogger.Message("      {0}: partGroupMatches = {1}", debugSurgeryDefName, partGroupMatches );
                 if (partGroupMatches >= 2) continue;
 
                 // Look for matching surgery labels, and map them to similar body parts
@@ -285,6 +303,11 @@ namespace XenobionicPatcher {
                         );
                         warnedAboutLargeSet = true;
                     }
+
+                    if (defnameDebug) XP.ModLogger.Message(
+                        "        -> {0}: current partToPartMapper = {1}\n          diff = {2}",
+                        sbpDefName, string.Join(", ", partToPartMapper[sbpDefName]), string.Join(", ", diff)
+                    );
 
                     partToPartMapper[sbpDefName].AddRange(
                         pawnSurgeryBodyParts.Where(bp => bp != surgeryBodyPart && bp.defName != sbpDefName)
@@ -334,6 +357,11 @@ namespace XenobionicPatcher {
                     AOFBP.AddRange(newPartSet);
                     newPartsAdded += newPartSet.Count();
                 }
+
+                if (Base.IsDebug && debugSurgeryDefName != null && surgery.defName == debugSurgeryDefName) XP.ModLogger.Message(
+                    "      {0}: new AOFBP = {1}",
+                    debugSurgeryDefName, string.Join(", ", surgery.appliedOnFixedBodyParts)
+                );
             }
 
             if (Base.IsDebug) {
@@ -373,6 +401,11 @@ namespace XenobionicPatcher {
                     else if (surgery.targetsBodyPart && surgery.appliedOnFixedBodyParts.Count() >= 1 && surgery.appliedOnFixedBodyParts.Any( sbp =>
                         doesPawnHaveBodyPart.Contains( pawnDef.defName + "|" + sbp.defName )
                     )) shouldAddSurgery = true;
+
+                    if (Base.IsDebug && debugSurgeryDefName != null && debugPawnKindDefName != null && surgery.defName == debugSurgeryDefName && pawnDef.defName == debugPawnKindDefName) XP.ModLogger.Message(
+                        "      {0} -> {1}: shouldAddSurgery = {2}",
+                        debugSurgeryDefName, debugPawnKindDefName, shouldAddSurgery.ToStringYesNo()
+                    );
 
                     if (shouldAddSurgery) {
                         newSurgeriesAdded++;
