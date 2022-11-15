@@ -178,7 +178,7 @@ namespace XenobionicPatcher {
                     allSurgeryDefs.Where(s => s.recipeUsers != null && s.recipeUsers.Contains(pawn))
                 );
                 pawn.recipes.RemoveDuplicates();
-            }            
+            }
 
             // Pre-caching
             allSurgeryDefs.ForEach(s => Helpers.GetSurgeryBioType(s));
