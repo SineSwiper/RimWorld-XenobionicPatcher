@@ -28,7 +28,8 @@ namespace XenobionicPatcher {
             IsDebug     = false;
         }
 
-        internal Dictionary<string, SettingHandle> config = new Dictionary<string, SettingHandle>();
+        internal Dictionary<string, SettingHandle> config      = new();
+        internal Dictionary<string, bool>          configCache = new();  // XXX: Relying on the fact that all of our config entries are boolean
 
         internal List<Type> surgeryWorkerClassesFilter = new List<Type> {};
 
@@ -36,7 +37,7 @@ namespace XenobionicPatcher {
             ProcessSettings();
 
             // Set the debug flag
-            IsDebug = ((SettingHandle<bool>)config["MoreDebug"]).Value;
+            IsDebug = configCache["MoreDebug"];
 
             // Curate the surgery worker class list before building allSurgeryDefs
             Dictionary<string, Type[]> searchConfigMapper = new Dictionary<string, Type[]> {
@@ -47,11 +48,11 @@ namespace XenobionicPatcher {
                 { "VanillaRemoval",            new[] { typeof(Recipe_RemoveHediff), AccessTools.TypeByName("RimWorld.Recipe_RemoveBodyPart"), typeof(Recipe_RemoveImplant) } }, 
             };
             foreach (string cName in searchConfigMapper.Keys) {
-                if ( ((SettingHandle<bool>)config["Search" + cName + "Recipes"]).Value ) surgeryWorkerClassesFilter.AddRange( searchConfigMapper[cName] );
+                if (configCache["Search" + cName + "Recipes"]) surgeryWorkerClassesFilter.AddRange( searchConfigMapper[cName] );
             }
 
             // Add additional search types for modded surgery classes
-            if ( ((SettingHandle<bool>)config["SearchModdedSurgeryClasses"]).Value ) {
+            if (configCache["SearchModdedSurgeryClasses"]) {
                 List<string> moddedWorkerClassNames = new List<string> {
                     // (EPOE doesn't have any custom worker classes)
 
@@ -189,7 +190,7 @@ namespace XenobionicPatcher {
             stopwatch.Reset();
 
             // Animal/Animal
-            if ( ((SettingHandle<bool>)config["PatchAnimalToAnimal"]).Value ) {
+            if (configCache["PatchAnimalToAnimal"]) {
                 if (IsDebug) Logger.Message(beforeMsg, "animal", "other animals");
 
                 var surgeryList = allSurgeryDefs.Where(s => Regex.IsMatch( Helpers.GetSurgeryBioType(s), "animal|fleshlike|mixed" )).ToList();
@@ -204,7 +205,7 @@ namespace XenobionicPatcher {
             stopwatch.Reset();
 
             // Humanlike/Humanlike
-            if ( ((SettingHandle<bool>)config["PatchHumanlikeToHumanlike"]).Value ) {
+            if (configCache["PatchHumanlikeToHumanlike"]) {
                 if (IsDebug) Logger.Message(beforeMsg, "humanlike", "other humanlikes");
 
                 var surgeryList = allSurgeryDefs.Where(s => Regex.IsMatch( Helpers.GetSurgeryBioType(s), "(?:human|flesh)like|mixed" )).ToList();
@@ -219,7 +220,7 @@ namespace XenobionicPatcher {
             stopwatch.Reset();
 
             // */Mech (artificial+mech only)
-            if ( ((SettingHandle<bool>)config["PatchArtificialToMech"]).Value ) {
+            if (configCache["PatchArtificialToMech"]) {
                 if (IsDebug) Logger.Message(beforeMsg, "artificial part", "mechs");
 
                 var surgeryList = allSurgeryDefs.Where(s => 
@@ -240,7 +241,7 @@ namespace XenobionicPatcher {
             stopwatch.Reset();
 
             // Animal/Humanlike
-            if ( ((SettingHandle<bool>)config["PatchAnimalToHumanlike"]).Value ) {
+            if (configCache["PatchAnimalToHumanlike"]) {
                 if (IsDebug) Logger.Message(beforeMsg, "animal", "humanlikes");
 
                 var surgeryList = allSurgeryDefs.Where(s => Regex.IsMatch( Helpers.GetSurgeryBioType(s), "animal|fleshlike|mixed" )).ToList();
@@ -255,7 +256,7 @@ namespace XenobionicPatcher {
             stopwatch.Reset();
 
             // Humanlike/Animal
-            if ( ((SettingHandle<bool>)config["PatchHumanlikeToAnimal"]).Value ) {
+            if (configCache["PatchHumanlikeToAnimal"]) {
                 if (IsDebug) Logger.Message(beforeMsg, "humanlike", "animals");
 
                 var surgeryList = allSurgeryDefs.Where(s => Regex.IsMatch( Helpers.GetSurgeryBioType(s), "(?:human|flesh)like|mixed" )).ToList();
@@ -271,10 +272,10 @@ namespace XenobionicPatcher {
 
             // Any Fleshlike to any Fleshlike (only if all other similar ones are on)
             if (
-                ((SettingHandle<bool>)config["PatchAnimalToAnimal"])      .Value &&
-                ((SettingHandle<bool>)config["PatchHumanlikeToHumanlike"]).Value &&
-                ((SettingHandle<bool>)config["PatchAnimalToHumanlike"])   .Value &&
-                ((SettingHandle<bool>)config["PatchHumanlikeToAnimal"])   .Value
+                configCache["PatchAnimalToAnimal"]       &&
+                configCache["PatchHumanlikeToHumanlike"] &&
+                configCache["PatchAnimalToHumanlike"]    &&
+                configCache["PatchHumanlikeToAnimal"]
             ) {
                 if (IsDebug) Logger.Message(beforeMsg, "fleshlike", "fleshlikes");
 
@@ -290,7 +291,7 @@ namespace XenobionicPatcher {
             stopwatch.Reset();
 
             // Humanlike/Mech
-            if ( ((SettingHandle<bool>)config["PatchHumanlikeToMech"]).Value ) {
+            if (configCache["PatchHumanlikeToMech"]) {
                 if (IsDebug) Logger.Message(beforeMsg, "humanlike", "mechs");
 
                 var surgeryList = allSurgeryDefs.Where(s => Helpers.GetSurgeryBioType(s) == "humanlike").ToList();
@@ -305,7 +306,7 @@ namespace XenobionicPatcher {
             stopwatch.Reset();
 
             // Mech-like/Humanlike
-            if ( ((SettingHandle<bool>)config["PatchMechlikeToHumanlike"]).Value ) {
+            if (configCache["PatchMechlikeToHumanlike"]) {
                 if (IsDebug) Logger.Message(beforeMsg, "mech-like", "humanlikes");
 
                 var surgeryList = allSurgeryDefs.Where(s => Helpers.GetSurgeryBioType(s) == "mech"     ).ToList();
@@ -320,7 +321,7 @@ namespace XenobionicPatcher {
             stopwatch.Reset();
 
             // Hand/foot clean up
-            if ( ((SettingHandle<bool>)config["CleanupHandFootSurgeries"]).Value ) {
+            if (configCache["CleanupHandFootSurgeries"]) {
                 if (IsDebug) Logger.Message("Cleaning up hand/foot surgical recipes");
 
                 var surgeryList = allSurgeryDefs.Where(
@@ -423,6 +424,7 @@ namespace XenobionicPatcher {
                     setting.CustomDrawer = rect => { return false; };
                 }
 
+                configCache[sName] = setting.Value;
                 order++;
             }
 
