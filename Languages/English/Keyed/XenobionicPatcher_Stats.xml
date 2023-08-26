@@ -22,6 +22,15 @@
     <Stat_Recipe_Surgery_SurgeryCategory_RemoveImplant            >Remove implant</Stat_Recipe_Surgery_SurgeryCategory_RemoveImplant>
     <Stat_Recipe_Surgery_SurgeryCategory_Surgery                  >Surgery</Stat_Recipe_Surgery_SurgeryCategory_Surgery>
 
+    <!-- biotech -->
+    <Stat_Recipe_Surgery_SurgeryCategory_ExtractHemogen    >Extract hemogen</Stat_Recipe_Surgery_SurgeryCategory_ExtractHemogen>
+    <Stat_Recipe_Surgery_SurgeryCategory_ImplantXenogerm   >Implant xenogerm</Stat_Recipe_Surgery_SurgeryCategory_ImplantXenogerm>
+    <Stat_Recipe_Surgery_SurgeryCategory_TerminatePregnancy>Terminate pregnancy</Stat_Recipe_Surgery_SurgeryCategory_TerminatePregnancy>
+    <Stat_Recipe_Surgery_SurgeryCategory_ExtractOvum       >Extract ovum</Stat_Recipe_Surgery_SurgeryCategory_ExtractOvum>
+    <Stat_Recipe_Surgery_SurgeryCategory_ImplantEmbryo     >Implant embryo</Stat_Recipe_Surgery_SurgeryCategory_ImplantEmbryo>
+    <Stat_Recipe_Surgery_SurgeryCategory_ImplantIUD        >Implant IUD</Stat_Recipe_Surgery_SurgeryCategory_ImplantIUD>
+    <Stat_Recipe_Surgery_SurgeryCategory_BloodTransfusion  >Blood transfusion</Stat_Recipe_Surgery_SurgeryCategory_BloodTransfusion>
+
     <!-- modded -->
     <Stat_Recipe_Surgery_SurgeryCategory_RemoveScarHediff     >Remove scar</Stat_Recipe_Surgery_SurgeryCategory_RemoveScarHediff>
     <Stat_Recipe_Surgery_SurgeryCategory_RemoveBrainScarHediff>Remove brain scar</Stat_Recipe_Surgery_SurgeryCategory_RemoveBrainScarHediff>
@@ -95,6 +104,9 @@
     <Stat_Recipe_Surgery_SurgeryCategory_ExtractBloodWine>Extract blood wine</Stat_Recipe_Surgery_SurgeryCategory_ExtractBloodWine>
     <Stat_Recipe_Surgery_SurgeryCategory_TransferBlood>Transfer blood</Stat_Recipe_Surgery_SurgeryCategory_TransferBlood>
 
+    <Stat_Recipe_Surgery_SurgeryCategory_InstallAndroidPart>Install (android) part</Stat_Recipe_Surgery_SurgeryCategory_InstallAndroidPart>
+    <Stat_Recipe_Surgery_SurgeryCategory_InstallReactor>Install reactor</Stat_Recipe_Surgery_SurgeryCategory_InstallReactor>
+    <Stat_Recipe_Surgery_SurgeryCategory_RemoveArtificialBodyPart>Remove artificial body part</Stat_Recipe_Surgery_SurgeryCategory_RemoveArtificialBodyPart>
 
     <!-- The rest of the stats -->
     <Stat_Recipe_Surgery_WorkerMod_Name>Worker mod</Stat_Recipe_Surgery_WorkerMod_Name>
