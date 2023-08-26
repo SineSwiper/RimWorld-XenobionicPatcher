@@ -8,6 +8,7 @@ using HarmonyLib;
 using HugsLib;
 using HugsLib.Settings;
 using Verse;
+using System.Reflection;
 
 namespace XenobionicPatcher {
     [StaticConstructorOnStartup]
@@ -34,6 +35,22 @@ namespace XenobionicPatcher {
         internal List<Type> surgeryWorkerClassesFilter = new List<Type> {};
 
         public override void DefsLoaded() {
+            /* NOTE: Okay, I guess this is what it takes to unfuck the arms race that VREA created.  I have to _unpatch_ a method that VREA
+             * patched as a Postfix because Team Oskar declared this override to always act very very last with a HarmonyPriority(-2147483648).
+             * Well, sorry, but with modding, there are *always* options, except now with priorities like this, it makes VREA developers look
+             * hostile towards other modders.  I'm just trying to fix bugs that my users are reporting, because they don't like the limitations
+             * VREA created.
+             * 
+             * This all could have been avoided if the VREA developers understood that if a surgery isn't installed into pawn.def.recipes or 
+             * surgery.recipeUsers, it won't end up on the list, and if it does end up on one of those list by another mod, it's there because
+             * *the user wanted it!*  There's nothing "vanilla" about this sort of behavior.
+             */
+            if (Helpers.SafeTypeByName("VREAndroids.RecipeDef_AvailableNow_Patch") != null) {
+                MethodInfo originalMethod = AccessTools.PropertyGetter(typeof(RecipeDef), "AvailableNow");
+                Instance.HarmonyInst.Unpatch(originalMethod, HarmonyPatchType.Postfix, "VREAndroidsMod");
+                Logger.Message("Unpatched VREAndroids Postfix on {0}.{1}", originalMethod.ReflectedType.FullName, originalMethod.Name);
+            }
+
             ProcessSettings();
 
             // Set the debug flag
@@ -45,7 +62,7 @@ namespace XenobionicPatcher {
                 { "InstallNaturalBodyPart",    new[] { typeof(Recipe_InstallNaturalBodyPart)    } },
                 { "InstallArtificialBodyPart", new[] { typeof(Recipe_InstallArtificialBodyPart) } },
                 { "InstallImplant",            new[] { typeof(Recipe_InstallImplant), typeof(Recipe_ChangeImplantLevel) } },
-                { "VanillaRemoval",            new[] { typeof(Recipe_RemoveHediff), AccessTools.TypeByName("RimWorld.Recipe_RemoveBodyPart"), typeof(Recipe_RemoveImplant) } }, 
+                { "VanillaRemoval",            new[] { typeof(Recipe_RemoveHediff), typeof(Recipe_RemoveBodyPart), typeof(Recipe_RemoveImplant) } }, 
             };
             foreach (string cName in searchConfigMapper.Keys) {
                 if (configCache["Search" + cName + "Recipes"]) surgeryWorkerClassesFilter.AddRange( searchConfigMapper[cName] );
@@ -136,6 +153,11 @@ namespace XenobionicPatcher {
 
                     // Vanilla Factions Expanded: Insectoids
                     "VFEI.Other.Recipe_AddMutationHediff",
+
+                    // Vanilla Races Expanded: Androids
+                    "VREAndroids.Recipe_InstallAndroidPart",
+                    "VREAndroids.Recipe_InstallReactor",
+                    //"VREAndroids.Recipe_RemoveArtificialBodyPart",  // Non-androids can use the standard Recipe_RemoveBodyPart
 
                     // Deathrattle
                     "DeathRattle.Recipe_AdministerComaDrug",

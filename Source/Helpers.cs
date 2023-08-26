@@ -25,6 +25,9 @@ namespace XenobionicPatcher {
             "MOARANDROIDS.Recipe_ApplyHealFrameworkSystem",
             "MOARANDROIDS.Recipe_ApplyHealCoolingSystem",
             "MOARANDROIDS.Recipe_ApplyHealCPUSerum",
+            "VREAndroids.Recipe_InstallAndroidPart",
+            "VREAndroids.Recipe_InstallReactor",
+            "VREAndroids.Recipe_RemoveArtificialBodyPart"
         };
 
         public static string GetSurgeryBioType (RecipeDef surgery) {
@@ -160,6 +163,8 @@ namespace XenobionicPatcher {
             SafeTypeByName("OrenoMSE.Recipe_InstallImplantSystem"),
             SafeTypeByName("MSE2.Recipe_InstallModule"),
             SafeTypeByName("MOARANDROIDS.Recipe_InstallImplantAndroid"),
+            SafeTypeByName("VREAndroids.Recipe_InstallAndroidPart"),
+            SafeTypeByName("VREAndroids.Recipe_InstallReactor"),
             SafeTypeByName("MOARANDROIDS.Recipe_InstallArtificialBrain"),
             SafeTypeByName("Recipe_ChangeImplantLevel"),
             SafeTypeByName("QEthics.RecipeWorker_NerveStapling"),
@@ -170,6 +175,7 @@ namespace XenobionicPatcher {
             SafeTypeByName("ScarRemoving.Recipe_RemoveHediff_noBrain"),
             SafeTypeByName("EPIA.Recipe_RemoveScarHediff"),
             SafeTypeByName("OrenoMSE.Recipe_RemoveImplantSystem"),
+            SafeTypeByName("VREAndroids.Recipe_RemoveArtificialBodyPart"),
             SafeTypeByName("MSE2.Recipe_RemoveModules"),
             SafeTypeByName("EPIA.Recipe_RemoveImplant"),
             SafeTypeByName("RRYautja.Recipe_Remove_Gauntlet"),
