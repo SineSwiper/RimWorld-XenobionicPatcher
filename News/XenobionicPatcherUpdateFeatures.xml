@@ -8,6 +8,17 @@
     </HugsLib.UpdateFeatureDef>
 
     <HugsLib.UpdateFeatureDef ParentName="XP_UpdateFeatureBase">
+        <defName>XenobionicPatcher_1_2_7</defName>
+        <assemblyVersion>1.2.7</assemblyVersion>
+        <content>&lt;b&gt;Fixes:&lt;/b&gt;
+- Added compatibility with Vanilla Races Expanded: Androids
+
+&lt;b&gt;Tweaks:&lt;/b&gt;
+- Added some extra translation strings for Biotech surgery worker classes
+        </content>
+    </HugsLib.UpdateFeatureDef>
+
+    <HugsLib.UpdateFeatureDef ParentName="XP_UpdateFeatureBase">
         <defName>XenobionicPatcher_1_2_6</defName>
         <assemblyVersion>1.2.6</assemblyVersion>
         <content>&lt;b&gt;Additions:&lt;/b&gt;
