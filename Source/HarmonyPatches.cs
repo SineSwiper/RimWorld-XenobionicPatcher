@@ -89,11 +89,17 @@ namespace XenobionicPatcher {
             // Allow androids to use surgery types from non-VREA sources
             [HarmonyPatch]
             internal class RecipeIsAvailableOnAndroid_HarmonyPatch {
+                private static Type VREAndroids_PatchType = Helpers.SafeTypeByName("VREAndroids.RecipeWorker_AvailableOnNow_Patch");
+
+                [HarmonyPrepare]
+                private static bool Prepare() {
+                    // If the mod isn't loaded, don't bother with this whole class
+                    if (VREAndroids_PatchType == null) return false;
+                    return true;
+                }
+
                 [HarmonyTargetMethod]
                 private static MethodBase TargetMethod() {
-                    // If the mod isn't loaded, don't bother with this whole class
-                    Type VREAndroids_PatchType = Helpers.SafeTypeByName("VREAndroids.RecipeWorker_AvailableOnNow_Patch");
-                    if (VREAndroids_PatchType == null) return null;
                     return VREAndroids_PatchType.GetMethod("RecipeIsAvailableOnAndroid", AccessTools.all);
                 }
 
@@ -145,16 +151,23 @@ namespace XenobionicPatcher {
             // Allow non-androids to use VREA surgery types
             [HarmonyPatch]
             internal class AvailableOnNow_HarmonyPatch {
+                private static List<Type> moddedWorkerClasses = new List<Type> {
+                    Helpers.SafeTypeByName("VREAndroids.Recipe_InstallAndroidPart"),
+                    Helpers.SafeTypeByName("VREAndroids.Recipe_InstallReactor"),
+                };
+
+                [HarmonyPrepare]
+                private static bool Prepare() {
+                    // If the mod isn't loaded, don't bother with this whole class
+                    foreach (Type vreaClass in moddedWorkerClasses) {
+                        if (vreaClass == null) return false;
+                    }
+                    return true;
+                }
+
                 [HarmonyTargetMethods]
                 private static IEnumerable<MethodBase> TargetMethods() {
-                    List<Type> moddedWorkerClasses = new List<Type> {
-                        Helpers.SafeTypeByName("VREAndroids.Recipe_InstallAndroidPart"),
-                        Helpers.SafeTypeByName("VREAndroids.Recipe_InstallReactor"),
-                    };
                     foreach (Type vreaClass in moddedWorkerClasses) {
-                        // If the mod isn't loaded, don't bother with this whole class
-                        if (vreaClass == null) yield break;
-
                         MethodInfo method = AccessTools.Method(vreaClass, "AvailableOnNow");
                         if (method != null) yield return method;
                     }
@@ -180,11 +193,17 @@ namespace XenobionicPatcher {
             // Don't hide android parts on non-androids
             [HarmonyPatch]
             internal class Hediff_AndroidPart_HarmonyPatch {
+                private static Type VREAndroids_PatchType = Helpers.SafeTypeByName("VREAndroids.Hediff_AndroidPart");
+
+                [HarmonyPrepare]
+                private static bool Prepare(MethodBase original) {
+                    // If the mod isn't loaded, don't bother with this whole class
+                    if (VREAndroids_PatchType == null) return false;
+                    return true;
+                }
+
                 [HarmonyTargetMethod]
                 private static MethodBase TargetMethod() {
-                    // If the mod isn't loaded, don't bother with this whole class
-                    Type VREAndroids_PatchType = Helpers.SafeTypeByName("VREAndroids.Hediff_AndroidPart");
-                    if (VREAndroids_PatchType == null) return null;
                     return AccessTools.PropertyGetter(VREAndroids_PatchType, "Visible");
                 }
 
