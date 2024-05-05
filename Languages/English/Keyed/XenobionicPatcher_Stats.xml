@@ -31,6 +31,10 @@
     <Stat_Recipe_Surgery_SurgeryCategory_ImplantIUD        >Implant IUD</Stat_Recipe_Surgery_SurgeryCategory_ImplantIUD>
     <Stat_Recipe_Surgery_SurgeryCategory_BloodTransfusion  >Blood transfusion</Stat_Recipe_Surgery_SurgeryCategory_BloodTransfusion>
 
+    <!-- anomaly -->
+    <Stat_Recipe_Surgery_SurgeryCategory_GhoulInfusion     >Ghoul infusion</Stat_Recipe_Surgery_SurgeryCategory_GhoulInfusion>
+    <Stat_Recipe_Surgery_SurgeryCategory_SurgicalInspection>Surgical inspection</Stat_Recipe_Surgery_SurgeryCategory_SurgicalInspection>
+
     <!-- modded -->
     <Stat_Recipe_Surgery_SurgeryCategory_RemoveScarHediff     >Remove scar</Stat_Recipe_Surgery_SurgeryCategory_RemoveScarHediff>
     <Stat_Recipe_Surgery_SurgeryCategory_RemoveBrainScarHediff>Remove brain scar</Stat_Recipe_Surgery_SurgeryCategory_RemoveBrainScarHediff>

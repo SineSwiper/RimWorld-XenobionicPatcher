@@ -49,7 +49,7 @@ namespace XenobionicPatcher {
             else if (users.All(p => GetPawnBioType(p) == "animal"))    result = "animal";
             else if (users.All(p => GetPawnBioType(p) == "humanlike")) result = "humanlike";
             else if (users.All(p => GetPawnBioType(p) == "other"))     result = "other";
-            else if (users.All(p => Regex.IsMatch( GetPawnBioType(p), "animal|humanlike" ))) result = "fleshlike";
+            else if (users.All(p => Regex.IsMatch( GetPawnBioType(p), "animal|humanlike|fleshlike" ))) result = "fleshlike";
 
             surgeryBioTypeCache[surgery.defName] = result;
             return result;
@@ -60,7 +60,11 @@ namespace XenobionicPatcher {
         public static string GetPawnBioType (ThingDef pawn) {
             if (pawnBioTypeCache.ContainsKey(pawn.defName)) return pawnBioTypeCache[pawn.defName];
 
-            if (pawn.race == null) return "non-pawn";  // certain surgeries work against non-pawns
+            // certain surgeries work against non-pawns
+            if (pawn.race == null) {
+                pawnBioTypeCache[pawn.defName] = "non-pawn";
+                return "non-pawn";
+            }
 
             string result = "other";  // default; must be a toolUser?
 
@@ -68,9 +72,12 @@ namespace XenobionicPatcher {
             if (pawn.race.Animal) result = "animal";
 
             // This catches mechanoids and droids, but not meat-containing Androids
-            else if (pawn.race.IsMechanoid || pawn.GetStatValueAbstract(StatDefOf.MeatAmount) <= 0) result = "mech";
+            else if (pawn.race.IsMechanoid || !pawn.race.IsFlesh || pawn.GetStatValueAbstract(StatDefOf.MeatAmount) <= 0) result = "mech";
 
             else if (pawn.race.Humanlike) result = "humanlike";
+
+            // Fleshlike ToolUsers, like Anomaly entities
+            else if (pawn.race.IsFlesh) result = "fleshlike";
 
             pawnBioTypeCache[pawn.defName] = result;
             return result;
