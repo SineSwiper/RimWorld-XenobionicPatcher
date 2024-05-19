@@ -126,16 +126,19 @@ namespace XenobionicPatcher {
                     // Rah's Bionics and Surgery Expansion
                     "ScarRemoving.Recipe_RemoveHediff_noBrain",
                 
-                    // Medical Surgery Expansion
+                    // Medical Surgery Expansion (retired in v1.3, in favor of MSE2)
                     "OrenoMSE.Recipe_InstallBodyPartModule",
                     "OrenoMSE.Recipe_InstallImplantSystem",
                     "OrenoMSE.Recipe_RemoveImplantSystem",
+                    "OrenoMSE.Recipe_RemoveBodyPartSystem",
 
                     // Medical Surgery Expansion 2.0
                     "MSE2.Recipe_InstallModule",
                     "MSE2.Recipe_RemoveModules",
                     "MSE2.Recipe_InstallNaturalBodyPartWithChildren",
                     "MSE2.Recipe_InstallArtificialBodyPartWithChildren",
+                    "MSE2.Surgey_MakeShiftRepair",
+                    "MSE2.Surgery_MakeShiftRepair",  // maybe they'll fix the typo someday...
 
                     // Cyber Fauna
                     "SurgeryCF_Simple",
@@ -146,6 +149,11 @@ namespace XenobionicPatcher {
                     // Chj's Androids
                     "Androids.Recipe_Disassemble",
                     "Androids.Recipe_RepairKit",
+
+                    // Alpha Animals/Mythology
+                    // (There's enough "execute" type surgeries to go around...)
+                    //"AlphaBehavioursAndEvents.Recipe_ShutDown",
+                    //"AnimalBehaviours.Recipe_ShutDown",
 
                     // Android Tiers
                     "MOARANDROIDS.Recipe_AndroidRewireSurgery",
@@ -158,10 +166,17 @@ namespace XenobionicPatcher {
                     "MOARANDROIDS.Recipe_ApplyHealFrameworkSystem",
                     "MOARANDROIDS.Recipe_ApplyHealCoolingSystem",
                     "MOARANDROIDS.Recipe_ApplyHealCPUSerum",
+                    // Not included: MOARANDROIDS.Recipe_PaintAndroidFramework[color]
                     
                     // Alien vs. Predator
                     "RRYautja.Recipe_Remove_Gauntlet",
                     "RRYautja.Recipe_RemoveHugger",
+
+                    // Diseases+
+                    "Diseases.RecipeWorker_Lobotomy",
+
+                    // Immortals
+                    "Immortals.Recipe_InstallFakeEye",
 
                     // Questionable Ethics
                     "QEthics.RecipeWorker_CreateBrainScan",
@@ -171,10 +186,17 @@ namespace XenobionicPatcher {
 
                     // Harpies
                     "SyrHarpy.Recipe_InstallPart",
+                    "SyrHarpy.Recipe_ChangeLightningAmplifier",
+
+                    // Scar Removal Plus
+                    "SyrScarRemoval.Recipe_BodyPartRegrowth",
+                    "SyrScarRemoval.Recipe_ScarRemoval",
+                    "SyrScarRemoval.Recipe_ScarRemovalBrain",
 
                     // A RimWorld of Magic
                     "TorannMagic.Recipe_RegrowBodyPart",
                     "TorannMagic.Recipe_RegrowUniversalBodyPart",
+                    "TorannMagic.Recipe_RuneCarving",
 
                     // PolarisBloc
                     "Polarisbloc.Recipe_MakeCartridgeSurgery",
@@ -196,8 +218,14 @@ namespace XenobionicPatcher {
                     // Cybernetic Organism and Neural Network
                     "CONN.Recipe_InstallArtificialBodyPartAndClearPawnFromCache",
 
+                    // Vanilla Genetics Expanded (aka Genetic Rim)
+                    "GeneticRim.Recipe_InstallGeneticBodyPart",
+
                     // Vanilla Factions Expanded: Insectoids
                     "VFEI.Other.Recipe_AddMutationHediff",
+
+                    // Vanilla Factions Expanded: Pirates
+                    "VFEPirates.RecipeWorker_WarcasketRemoval",
 
                     // Vanilla Races Expanded: Androids
                     "VREAndroids.Recipe_InstallAndroidPart",
@@ -262,7 +290,7 @@ namespace XenobionicPatcher {
                     msgSubs:      new[] { "animal", "other animals" },
                     surgeryTypes: new() {
                         {XenoPatchType.Strict,  XPBioType.Animal},
-                        {XenoPatchType.Relaxed, XPBioType.Fleshlike},
+                        {XenoPatchType.Relaxed, XPBioType.Critterlike},
                         {XenoPatchType.Loose,   XPBioType.Fleshlike | XPBioType.Other},
                     },
                     pawnType:     XPBioType.Animal
@@ -272,7 +300,7 @@ namespace XenobionicPatcher {
                     msgSubs:      new[] { "humanlike", "other humanlikes" },
                     surgeryTypes: new() {
                         {XenoPatchType.Strict,  XPBioType.Humanlike},
-                        {XenoPatchType.Relaxed, XPBioType.Fleshlike},
+                        {XenoPatchType.Relaxed, XPBioType.SmartPawn},
                         {XenoPatchType.Loose,   XPBioType.Pawnlike | XPBioType.Other},
                     },
                     pawnType:     XPBioType.Humanlike
@@ -289,7 +317,7 @@ namespace XenobionicPatcher {
                     msgSubs:    new[] { "animal", "humanlikes" },
                     surgeryTypes: new() {
                         {XenoPatchType.Strict,  XPBioType.Animal},
-                        {XenoPatchType.Relaxed, XPBioType.Fleshlike},
+                        {XenoPatchType.Relaxed, XPBioType.Critterlike},
                         {XenoPatchType.Loose,   XPBioType.Fleshlike | XPBioType.Other},
                     },
                     pawnType:     XPBioType.Humanlike
@@ -299,7 +327,7 @@ namespace XenobionicPatcher {
                     msgSubs:      new[] { "humanlike", "animals" },
                     surgeryTypes: new() {
                         {XenoPatchType.Strict,  XPBioType.Humanlike},
-                        {XenoPatchType.Relaxed, XPBioType.Fleshlike},
+                        {XenoPatchType.Relaxed, XPBioType.SmartPawn},
                         {XenoPatchType.Loose,   XPBioType.Pawnlike | XPBioType.Other},
                     },
                     pawnType:     XPBioType.Animal
@@ -336,7 +364,7 @@ namespace XenobionicPatcher {
                 ),
                 new PatchLoopDetails(
                     configName: "PatchAnyToAny",
-                    msgSubs:    new[] { "any", "everybody" },
+                    msgSubs:    new[] { "ALL", "EVERYBODY" },
                     surgeryTypes: new() {
                         {XenoPatchType.Strict,  XPBioType.Pawnlike},
                         {XenoPatchType.Relaxed, XPBioType.Pawnlike | XPBioType.Other},
@@ -346,7 +374,7 @@ namespace XenobionicPatcher {
                         {XenoPatchType.Strict,  XPBioType.Pawnlike},
                         {XenoPatchType.Relaxed, XPBioType.Pawnlike | XPBioType.Other},
                         {XenoPatchType.Loose,   XPBioType.All},
-            }
+                    }
                 ),
             };
 
@@ -361,49 +389,49 @@ namespace XenobionicPatcher {
                     // Use class lookups instead
                     if (details.ConfigName == "PatchArtificialToMech") {
                         var customClassSearch = new List<string> {
-                                "OrenoMSE.Recipe_InstallBodyPartModule",
-                                "MSE2.Recipe_InstallArtificialBodyPartWithChildren",
-                                "CONN.Recipe_InstallArtificialBodyPartAndClearPawnFromCache",
+                            "OrenoMSE.Recipe_InstallBodyPartModule",
+                            "MSE2.Recipe_InstallArtificialBodyPartWithChildren",
+                            "CONN.Recipe_InstallArtificialBodyPartAndClearPawnFromCache",
                         };
                         if (xpt >= XenoPatchType.Relaxed) customClassSearch.AddRange(new[] {
-                                "MSE2.Recipe_InstallModule",
-                                "MSE2.Recipe_RemoveModules",
-                                "MSE2.Surgey_MakeShiftRepair",
-                                "MSE2.Surgery_MakeShiftRepair",
-                                "RRYautja.Recipe_Remove_Gauntlet",
-                                "Immortals.Recipe_InstallFakeEye",
-                                "Polarisbloc.Recipe_InstallCombatChip",
+                            "MSE2.Recipe_InstallModule",
+                            "MSE2.Recipe_RemoveModules",
+                            "MSE2.Surgey_MakeShiftRepair",
+                            "MSE2.Surgery_MakeShiftRepair",
+                            "RRYautja.Recipe_Remove_Gauntlet",
+                            "Immortals.Recipe_InstallFakeEye",
+                            "Polarisbloc.Recipe_InstallCombatChip",
                         });
                         if (xpt >= XenoPatchType.Loose) customClassSearch.AddRange(new[] {
                             "VFEPirates.RecipeWorker_WarcasketRemoval",
                         });
 
                         if (xpt < XenoPatchType.Loose) customClassSearch.AddRange(new[] {
-                                // from Helpers.mechSurgeryClasses
-                                "MOARANDROIDS.Recipe_InstallImplantAndroid",
-                                "MOARANDROIDS.Recipe_InstallArtificialBodyPartAndroid",
-                                "MOARANDROIDS.Recipe_InstallArtificialBrain",
-                                "VREAndroids.Recipe_InstallAndroidPart",     
-                                "VREAndroids.Recipe_InstallReactor",         
-                                "VREAndroids.Recipe_RemoveArtificialBodyPart",
+                            // from Helpers.mechSurgeryClasses
+                            "MOARANDROIDS.Recipe_InstallImplantAndroid",
+                            "MOARANDROIDS.Recipe_InstallArtificialBodyPartAndroid",
+                            "MOARANDROIDS.Recipe_InstallArtificialBrain",
+                            "VREAndroids.Recipe_InstallAndroidPart",     
+                            "VREAndroids.Recipe_InstallReactor",         
+                            "VREAndroids.Recipe_RemoveArtificialBodyPart",
                         });
                         // Else, the Helpers.mechSurgeryClasses are covered in "mech" check below
 
                         surgeryList = allSurgeryDefs.Where(s => 
-                    Helpers.IsSupertypeOf(typeof(Recipe_InstallArtificialBodyPart), s.workerClass) ||
+                            Helpers.IsSupertypeOf(typeof(Recipe_InstallArtificialBodyPart), s.workerClass) ||
                             customClassSearch.Any(t => Helpers.IsSupertypeOf(t, s.workerClass)) ||
                             // any of the extra mech-like surgeries above + anything that is exclusively tied to a mech pawn
                             (xpt == XenoPatchType.Loose && Helpers.GetSurgeryBioType(s) == XPBioType.Mech)
-                ).ToList();
-            }
+                        ).ToList();
+                    }
 
-                stopwatch.Start();
+                    stopwatch.Start();
                     DefInjector.InjectSurgeryRecipes(surgeryList, pawnList);
-                stopwatch.Stop();
+                    stopwatch.Stop();
 
                     Logger.Message(afterMsg, details.MsgSubs[0], details.MsgSubs[1], stopwatch.ElapsedMilliseconds / 1000f, surgeryList.Count() * pawnList.Count());
-            }
-            stopwatch.Reset();
+                }
+                stopwatch.Reset();
             }
 
             // Hand/foot clean up
@@ -556,7 +584,7 @@ namespace XenobionicPatcher {
                 else {
                     boolConfigCache[sName] = ((SettingHandle<bool>)config[sName]).Value;
                 }
-
+                
                 order++;
             }
 

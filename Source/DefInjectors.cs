@@ -57,12 +57,13 @@ namespace XenobionicPatcher {
             }
 
             // Add to every usable bio-type combination
-            List<XPBioType> bioTypeFlags = Enum.GetValues(typeof(XPBioType)).OfType<XPBioType>().ToList();
-            foreach (XPBioType comboBioType in bioTypeFlags.Where( pbt => X86.Popcnt.popcnt_u32((uint)pbt) > 1 ) ) {  // combo flags only
+            List<XPBioType> xpBioTypes = Enum.GetValues(typeof(XPBioType)).OfType<XPBioType>().ToList();
+            foreach (XPBioType comboBioType in xpBioTypes.Where( pbt => X86.Popcnt.popcnt_u32((uint)pbt) > 1 ) ) {  // combo flags only
                 if (pawnSurgeriesByBioType.ContainsKey(comboBioType)) continue;
-                pawnSurgeriesByBioType[comboBioType] = bioTypeFlags.
+                pawnSurgeriesByBioType[comboBioType] =
+                    xpBioTypes.
                     Where     ( pbt => X86.Popcnt.popcnt_u32((uint)pbt) == 1 ).  // single bits only
-                    Where     ( sbt => comboBioType.HasFlag(sbt) ).
+                    Where     ( sbt => comboBioType.HasFlag(sbt) && pawnSurgeriesByBioType.ContainsKey(sbt) ).
                     SelectMany( sbt => pawnSurgeriesByBioType[sbt] ).
                     ToHashSet()
                 ;

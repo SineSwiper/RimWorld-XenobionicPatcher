@@ -166,9 +166,12 @@ namespace XenobionicPatcher {
         }
 
         internal static List<Type> surgeryTypeOrder = new List<Type> {
+            // Mech/droid, emergency, weirder stuff
             SafeTypeByName("Androids.Recipe_Disassemble"),
             SafeTypeByName("Androids.Recipe_RepairKit"),
             SafeTypeByName("RRYautja.Recipe_RemoveHugger"),
+            SafeTypeByName("MSE2.Surgey_MakeShiftRepair"),
+            SafeTypeByName("MSE2.Surgery_MakeShiftRepair"),
             SafeTypeByName("QEthics.RecipeWorker_CreateBrainScan"),
             SafeTypeByName("QEthics.RecipeWorker_GenomeSequencing"),
             SafeTypeByName("MOARANDROIDS.Recipe_AndroidRewireSurgery"),
@@ -178,10 +181,20 @@ namespace XenobionicPatcher {
             SafeTypeByName("MOARANDROIDS.Recipe_ApplyHealFrameworkSystem"),
             SafeTypeByName("MOARANDROIDS.Recipe_ApplyHealCoolingSystem"),
             SafeTypeByName("MOARANDROIDS.Recipe_ApplyHealCPUSerum"),
+            SafeTypeByName("SyrHarpy.Recipe_ChangeLightningAmplifier"),
+            SafeTypeByName("SyrScarRemoval.Recipe_BodyPartRegrowth"),
+            SafeTypeByName("SyrScarRemoval.Recipe_ScarRemoval"),
+            SafeTypeByName("SyrScarRemoval.Recipe_ScarRemovalBrain"),
+            SafeTypeByName("TorannMagic.Recipe_RuneCarving"),
+
+            // Install artificial body parts
             typeof(Recipe_InstallArtificialBodyPart),
             SafeTypeByName("OrenoMSE.Recipe_InstallBodyPartModule"),
             SafeTypeByName("MOARANDROIDS.Recipe_InstallArtificialBodyPartAndroid"),
             SafeTypeByName("MSE2.Recipe_InstallArtificialBodyPartWithChildren"),
+            SafeTypeByName("Immortals.Recipe_InstallFakeEye"),
+
+            // Install implants
             typeof(Recipe_InstallImplant),
             SafeTypeByName("OrenoMSE.Recipe_InstallImplantSystem"),
             SafeTypeByName("MSE2.Recipe_InstallModule"),
@@ -191,9 +204,14 @@ namespace XenobionicPatcher {
             SafeTypeByName("MOARANDROIDS.Recipe_InstallArtificialBrain"),
             SafeTypeByName("Recipe_ChangeImplantLevel"),
             SafeTypeByName("QEthics.RecipeWorker_NerveStapling"),
+
+            // Install natural body part
             typeof(Recipe_InstallNaturalBodyPart),
             SafeTypeByName("QEthics.RecipeWorker_InstallNaturalBodyPart"),
             SafeTypeByName("MSE2.Recipe_InstallNaturalBodyPartWithChildren"),
+            SafeTypeByName("GeneticRim.Recipe_InstallGeneticBodyPart"),
+
+            // Removals
             typeof(Recipe_RemoveHediff),
             SafeTypeByName("ScarRemoving.Recipe_RemoveHediff_noBrain"),
             SafeTypeByName("EPIA.Recipe_RemoveScarHediff"),
@@ -202,10 +220,20 @@ namespace XenobionicPatcher {
             SafeTypeByName("MSE2.Recipe_RemoveModules"),
             SafeTypeByName("EPIA.Recipe_RemoveImplant"),
             SafeTypeByName("RRYautja.Recipe_Remove_Gauntlet"),
+            SafeTypeByName("VFEPirates.RecipeWorker_WarcasketRemoval"),
+
+            // Administer items
             typeof(Recipe_AdministerUsableItem),
             typeof(Recipe_AdministerIngestible),
+
+            // Vanilla removals
             AccessTools.TypeByName("RimWorld.Recipe_RemoveBodyPart"),
+
+            // Vanilla execute
             typeof(Recipe_ExecuteByCut),
+            SafeTypeByName("Diseases.RecipeWorker_Lobotomy"),
+
+            // Final fallback
             typeof(Recipe_Surgery),
         };
 
