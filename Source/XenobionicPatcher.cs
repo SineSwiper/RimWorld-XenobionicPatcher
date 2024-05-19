@@ -11,6 +11,51 @@ using Verse;
 using System.Reflection;
 
 namespace XenobionicPatcher {
+    public enum XenoPatchType : ushort {
+        None    = 0,
+        Strict  = 1,
+        Relaxed = 2,
+        Loose   = 3,
+    };
+
+    internal readonly struct PatchLoopDetails {
+        internal string                            ConfigName { get; }
+        internal string[]                          MsgSubs    { get; }
+        internal Dictionary<XenoPatchType, string> SurgeryREs { get; }
+        internal Dictionary<XenoPatchType, string>    PawnREs { get; }
+
+        internal PatchLoopDetails(string configName, string[] msgSubs, Dictionary<XenoPatchType, string> surgeryREs, Dictionary<XenoPatchType, string> pawnREs) {
+            ConfigName = configName;
+            MsgSubs    = msgSubs;
+            SurgeryREs = surgeryREs;
+            PawnREs    = pawnREs;
+        }
+        internal PatchLoopDetails(string configName, string[] msgSubs, Dictionary<XenoPatchType, string> surgeryREs, string pawnRE) {
+            ConfigName = configName;
+            MsgSubs    = msgSubs;
+            SurgeryREs = surgeryREs;
+            PawnREs    = new() {
+                {XenoPatchType.Strict,  pawnRE},
+                {XenoPatchType.Relaxed, pawnRE},
+                {XenoPatchType.Loose,   pawnRE},
+            };
+        }
+        internal PatchLoopDetails(string configName, string[] msgSubs, string surgeryRE, string pawnRE) {
+            ConfigName = configName;
+            MsgSubs    = msgSubs;
+            SurgeryREs = new() {
+                {XenoPatchType.Strict,  surgeryRE},
+                {XenoPatchType.Relaxed, surgeryRE},
+                {XenoPatchType.Loose,   surgeryRE},
+            };
+            PawnREs    = new() {
+                {XenoPatchType.Strict,  pawnRE},
+                {XenoPatchType.Relaxed, pawnRE},
+                {XenoPatchType.Loose,   pawnRE},
+            };
+        }
+    }
+
     [StaticConstructorOnStartup]
     public class Base : ModBase {
         public override string ModIdentifier {
@@ -29,10 +74,11 @@ namespace XenobionicPatcher {
             IsDebug     = false;
         }
 
-        internal Dictionary<string, SettingHandle> config      = new();
-        internal Dictionary<string, bool>          configCache = new();  // XXX: Relying on the fact that all of our config entries are boolean
+        internal Dictionary<string, SettingHandle> config          = new();
+        internal Dictionary<string, bool>          boolConfigCache = new();
+        internal Dictionary<string, XenoPatchType> xptConfigCache  = new();
 
-        internal List<Type> surgeryWorkerClassesFilter = new List<Type> {};
+        internal List<Type> surgeryWorkerClassesFilter = new();
 
         public override void DefsLoaded() {
             /* NOTE: Okay, I guess this is what it takes to unfuck the arms race that VREA created.  I have to _unpatch_ a method that VREA
@@ -54,10 +100,10 @@ namespace XenobionicPatcher {
             ProcessSettings();
 
             // Set the debug flag
-            IsDebug = configCache["MoreDebug"];
+            IsDebug = boolConfigCache["MoreDebug"];
 
             // Curate the surgery worker class list before building allSurgeryDefs
-            Dictionary<string, Type[]> searchConfigMapper = new Dictionary<string, Type[]> {
+            Dictionary<string, Type[]> searchConfigMapper = new() {
                 { "Adminster",                 new[] { typeof(Recipe_AdministerIngestible), typeof(Recipe_AdministerUsableItem) } },
                 { "InstallNaturalBodyPart",    new[] { typeof(Recipe_InstallNaturalBodyPart)    } },
                 { "InstallArtificialBodyPart", new[] { typeof(Recipe_InstallArtificialBodyPart) } },
@@ -65,11 +111,11 @@ namespace XenobionicPatcher {
                 { "VanillaRemoval",            new[] { typeof(Recipe_RemoveHediff), typeof(Recipe_RemoveBodyPart), typeof(Recipe_RemoveImplant) } }, 
             };
             foreach (string cName in searchConfigMapper.Keys) {
-                if (configCache["Search" + cName + "Recipes"]) surgeryWorkerClassesFilter.AddRange( searchConfigMapper[cName] );
+                if (boolConfigCache["Search" + cName + "Recipes"]) surgeryWorkerClassesFilter.AddRange( searchConfigMapper[cName] );
             }
 
             // Add additional search types for modded surgery classes
-            if (configCache["SearchModdedSurgeryClasses"]) {
+            if (boolConfigCache["SearchModdedSurgeryClasses"]) {
                 List<string> moddedWorkerClassNames = new List<string> {
                     // (EPOE doesn't have any custom worker classes)
 
@@ -196,7 +242,7 @@ namespace XenobionicPatcher {
             // pawn.recipes complete.
             stopwatch.Start();
             foreach (ThingDef pawn in allPawnDefs) {
-                if (pawn.recipes == null) pawn.recipes = new List<RecipeDef> {};
+                pawn.recipes ??= new List<RecipeDef> {};
                 pawn.recipes.AddRange(
                     allSurgeryDefs.Where(s => s.recipeUsers != null && s.recipeUsers.Contains(pawn))
                 );
@@ -211,139 +257,176 @@ namespace XenobionicPatcher {
             Logger.Message("Prep work / pre-caching (took {0:F4}s; {1:N0} defs)", stopwatch.ElapsedMilliseconds / 1000f, allSurgeryDefs.Count() + allPawnDefs.Count());
             stopwatch.Reset();
 
-            // Animal/Animal
-            if (configCache["PatchAnimalToAnimal"]) {
-                if (IsDebug) Logger.Message(beforeMsg, "animal", "other animals");
-
-                var surgeryList = allSurgeryDefs.Where(s => Regex.IsMatch( Helpers.GetSurgeryBioType(s), "animal|fleshlike|mixed" )).ToList();
-                var    pawnList = allPawnDefs   .Where(p => Helpers.GetPawnBioType   (p) == "animal").ToList();
-
-                stopwatch.Start();
-                DefInjector.InjectSurgeryRecipes(surgeryList, pawnList);
-                stopwatch.Stop();
-
-                Logger.Message(afterMsg, "animal", "other animals", stopwatch.ElapsedMilliseconds / 1000f, surgeryList.Count() * pawnList.Count());
+            PatchLoopDetails[] patchLoopDetails = new[] {
+                new PatchLoopDetails(
+                    configName: "PatchAnimalToAnimal",
+                    msgSubs:    new[] { "animal", "other animals" },
+                    surgeryREs: new() {
+                        {XenoPatchType.Strict,  "animal"},
+                        {XenoPatchType.Relaxed, "animal|(?:critter|flesh)like"},
+                        {XenoPatchType.Loose,   "animal|(?:critter|flesh|pawn)like|mixed"},
+                    },
+                    pawnRE:     "animal"
+                ),
+                new PatchLoopDetails(
+                    configName: "PatchHumanlikeToHumanlike",
+                    msgSubs:    new[] { "humanlike", "other humanlikes" },
+                    surgeryREs: new() {
+                        {XenoPatchType.Strict,  "humanlike"},
+                        {XenoPatchType.Relaxed, "(?:human|critter|flesh)like"},
+                        {XenoPatchType.Loose,   "(?:human|critter|flesh|pawn)like|smart-pawn|mixed"},
+                    },
+                    pawnRE:     "humanlike"
+                ),
+                new PatchLoopDetails(
+                    configName: "PatchArtificialToMech",
+                    msgSubs:    new[] { "artificial part", "mechs" },
+                    // PatchArtificialToMech has a different way of handling this
+                    surgeryRE:  ".+",
+                    pawnRE:     ".+"
+                ),
+                new PatchLoopDetails(
+                    configName: "PatchAnimalToHumanlike",
+                    msgSubs:    new[] { "animal", "humanlikes" },
+                    surgeryREs: new() {
+                        {XenoPatchType.Strict,  "animal"},
+                        {XenoPatchType.Relaxed, "animal|(?:critter|flesh)like"},
+                        {XenoPatchType.Loose,   "animal|(?:critter|flesh|pawn)like|mixed"},
+                    },
+                    pawnRE:     "humanlike"
+                ),
+                new PatchLoopDetails(
+                    configName: "PatchHumanlikeToAnimal",
+                    msgSubs:    new[] { "humanlike", "animals" },
+                    surgeryREs: new() {
+                        {XenoPatchType.Strict,  "humanlike"},
+                        {XenoPatchType.Relaxed, "(?:human|critter|flesh)like"},
+                        {XenoPatchType.Loose,   "(?:human|critter|flesh|pawn)like|smart-pawn|mixed"},
+                    },
+                    pawnRE:     "animal"
+                ),
+                new PatchLoopDetails(
+                    configName: "PatchFleshlikeToFleshlike",
+                    msgSubs:    new[] { "fleshlike", "fleshlikes" },
+                    surgeryREs: new() {
+                        {XenoPatchType.Strict,  "humanlike"},
+                        {XenoPatchType.Relaxed, "(?:human|critter|flesh)like"},
+                        {XenoPatchType.Loose,   "(?:human|critter|flesh|pawn)like|smart-pawn|mixed"},
+                    },
+                    pawnRE:     "animal|(?:human|flesh)like"
+                ),
+                new PatchLoopDetails(
+                    configName: "PatchHumanlikeToMech",
+                    msgSubs:    new[] { "humanlike", "mechs" },
+                    surgeryREs: new() {
+                        {XenoPatchType.Strict,  "humanlike"},
+                        {XenoPatchType.Relaxed, "(?:human|critter|flesh|pawn)like|smart-pawn"},
+                        {XenoPatchType.Loose,   "(?:human|critter|flesh|pawn)like|smart-pawn|other|mixed"},
+                    },
+                    pawnRE:     "mech"
+                ),
+                new PatchLoopDetails(
+                    configName: "PatchMechlikeToHumanlike",
+                    msgSubs:    new[] { "mech-like", "humanlikes" },
+                    surgeryREs: new() {
+                        {XenoPatchType.Strict,  "mech"},
+                        {XenoPatchType.Relaxed, "mech|smart-pawn"},
+                        {XenoPatchType.Loose,   "mech|smart-pawn|mixed"},
+                    },
+                    pawnRE:     "humanlike"
+                ),
+                new PatchLoopDetails(
+                    configName: "PatchAnyToAny",
+                    msgSubs:    new[] { "any", "everybody" },
+                    surgeryREs: new() {
+                        {XenoPatchType.Strict,  "(mech|animal)|(?:human|critter|flesh|pawn)like|smart-pawn"},
+                        {XenoPatchType.Relaxed, "(mech|animal)|(?:human|critter|flesh|pawn)like|smart-pawn|mixed|other"},
+                        {XenoPatchType.Loose,   ".+"},
+                    },
+                    pawnREs: new() {
+                        {XenoPatchType.Strict,  "(mech|animal)|(?:human|flesh)like"},
+                        {XenoPatchType.Relaxed, "(mech|animal)|(?:human|flesh)like|other"},
+                        {XenoPatchType.Loose,   ".+"},
             }
-            stopwatch.Reset();
+                ),
+            };
 
-            // Humanlike/Humanlike
-            if (configCache["PatchHumanlikeToHumanlike"]) {
-                if (IsDebug) Logger.Message(beforeMsg, "humanlike", "other humanlikes");
+            foreach (PatchLoopDetails details in patchLoopDetails) {
+                XenoPatchType xpt = xptConfigCache[details.ConfigName];
+                if (xpt > 0) {
+                    if (IsDebug) Logger.Message(beforeMsg, details.MsgSubs);
 
-                var surgeryList = allSurgeryDefs.Where(s => Regex.IsMatch( Helpers.GetSurgeryBioType(s), "(?:human|flesh)like|mixed" )).ToList();
-                var    pawnList = allPawnDefs   .Where(p => Helpers.GetPawnBioType   (p) == "humanlike").ToList();
+                    var surgeryList = allSurgeryDefs.Where(s => Regex.IsMatch( Helpers.GetSurgeryBioType(s), details.SurgeryREs[xpt] ) ).ToList();
+                    var    pawnList = allPawnDefs   .Where(p => Regex.IsMatch( Helpers.   GetPawnBioType(p), details.   PawnREs[xpt] ) ).ToList();
 
-                stopwatch.Start();
-                DefInjector.InjectSurgeryRecipes(surgeryList, pawnList);
-                stopwatch.Stop();
-
-                Logger.Message(afterMsg, "humanlike", "other humanlikes", stopwatch.ElapsedMilliseconds / 1000f, surgeryList.Count() * pawnList.Count());
+                    // Use class lookups instead
+                    if (details.ConfigName == "PatchArtificialToMech") {
+                        var customClassSearch = 
+                            xpt == XenoPatchType.Strict ? new List<string> {
+                                "OrenoMSE.Recipe_InstallBodyPartModule",
+                                "MSE2.Recipe_InstallArtificialBodyPartWithChildren",
+                                "CONN.Recipe_InstallArtificialBodyPartAndClearPawnFromCache",
+                                // from Helpers.mechSurgeryClasses
+                                "MOARANDROIDS.Recipe_InstallImplantAndroid",
+                                "MOARANDROIDS.Recipe_InstallArtificialBodyPartAndroid",
+                                "MOARANDROIDS.Recipe_InstallArtificialBrain",
+                                "VREAndroids.Recipe_InstallAndroidPart",     
+                                "VREAndroids.Recipe_InstallReactor",         
+                                "VREAndroids.Recipe_RemoveArtificialBodyPart",
+                            } :
+                            xpt == XenoPatchType.Relaxed ? new List<string> {
+                                "OrenoMSE.Recipe_InstallBodyPartModule",
+                                "MSE2.Recipe_InstallModule",
+                                "MSE2.Recipe_RemoveModules",
+                                "MSE2.Recipe_InstallArtificialBodyPartWithChildren",
+                                "MSE2.Surgey_MakeShiftRepair",
+                                "MSE2.Surgery_MakeShiftRepair",
+                                "CONN.Recipe_InstallArtificialBodyPartAndClearPawnFromCache",
+                                "RRYautja.Recipe_Remove_Gauntlet",
+                                "Immortals.Recipe_InstallFakeEye",
+                                "Polarisbloc.Recipe_InstallCombatChip",
+                                // from Helpers.mechSurgeryClasses
+                                "MOARANDROIDS.Recipe_InstallImplantAndroid",
+                                "MOARANDROIDS.Recipe_InstallArtificialBodyPartAndroid",
+                                "MOARANDROIDS.Recipe_InstallArtificialBrain",
+                                "VREAndroids.Recipe_InstallAndroidPart",     
+                                "VREAndroids.Recipe_InstallReactor",         
+                                "VREAndroids.Recipe_RemoveArtificialBodyPart",
+                            } : new List<string> {
+                                "OrenoMSE.Recipe_InstallBodyPartModule",
+                                "MSE2.Recipe_InstallModule",
+                                "MSE2.Recipe_RemoveModules",
+                                "MSE2.Recipe_InstallArtificialBodyPartWithChildren",
+                                "MSE2.Surgey_MakeShiftRepair",
+                                "MSE2.Surgery_MakeShiftRepair",
+                                "CONN.Recipe_InstallArtificialBodyPartAndClearPawnFromCache",
+                                "RRYautja.Recipe_Remove_Gauntlet",
+                                "Immortals.Recipe_InstallFakeEye",
+                                "Polarisbloc.Recipe_InstallCombatChip",
+                                "VFEPirates.RecipeWorker_WarcasketRemoval",
+                                // Helpers.mechSurgeryClasses covered in "mech" check below
             }
-            stopwatch.Reset();
+                        ;
 
-            // */Mech (artificial+mech only)
-            if (configCache["PatchArtificialToMech"]) {
-                if (IsDebug) Logger.Message(beforeMsg, "artificial part", "mechs");
-
-                var surgeryList = allSurgeryDefs.Where(s => 
+                        surgeryList = allSurgeryDefs.Where(s => 
                     Helpers.IsSupertypeOf(typeof(Recipe_InstallArtificialBodyPart), s.workerClass) ||
-                    Helpers.IsSupertypeOf("OrenoMSE.Recipe_InstallBodyPartModule",  s.workerClass) ||
-                    Helpers.IsSupertypeOf("MSE2.Recipe_InstallArtificialBodyPartWithChildren",          s.workerClass) ||
-                    Helpers.IsSupertypeOf("CONN.Recipe_InstallArtificialBodyPartAndClearPawnFromCache", s.workerClass) ||
-                    Helpers.GetSurgeryBioType(s) == "mech"
+                            customClassSearch.Any(t => Helpers.IsSupertypeOf(t, s.workerClass)) ||
+                            // any of the extra mech-like surgeries above + anything that is exclusively tied to a mech pawn
+                            (xpt == XenoPatchType.Loose && Helpers.GetSurgeryBioType(s) == "mech")
                 ).ToList();
-                var    pawnList = allPawnDefs   .Where(p => Helpers.GetPawnBioType   (p) == "mech").ToList();
+            }
 
                 stopwatch.Start();
                 DefInjector.InjectSurgeryRecipes(surgeryList, pawnList);
                 stopwatch.Stop();
 
-                Logger.Message(afterMsg, "artificial part", "mechs", stopwatch.ElapsedMilliseconds / 1000f, surgeryList.Count() * pawnList.Count());
+                    Logger.Message(afterMsg, details.MsgSubs[0], details.MsgSubs[1], stopwatch.ElapsedMilliseconds / 1000f, surgeryList.Count() * pawnList.Count());
             }
             stopwatch.Reset();
-
-            // Animal/Humanlike
-            if (configCache["PatchAnimalToHumanlike"]) {
-                if (IsDebug) Logger.Message(beforeMsg, "animal", "humanlikes");
-
-                var surgeryList = allSurgeryDefs.Where(s => Regex.IsMatch( Helpers.GetSurgeryBioType(s), "animal|fleshlike|mixed" )).ToList();
-                var    pawnList = allPawnDefs   .Where(p => Helpers.GetPawnBioType   (p) == "humanlike").ToList();
-
-                stopwatch.Start();
-                DefInjector.InjectSurgeryRecipes(surgeryList, pawnList);
-                stopwatch.Stop();
-
-                Logger.Message(afterMsg, "animal", "humanlikes", stopwatch.ElapsedMilliseconds / 1000f, surgeryList.Count() * pawnList.Count());
             }
-            stopwatch.Reset();
-
-            // Humanlike/Animal
-            if (configCache["PatchHumanlikeToAnimal"]) {
-                if (IsDebug) Logger.Message(beforeMsg, "humanlike", "animals");
-
-                var surgeryList = allSurgeryDefs.Where(s => Regex.IsMatch( Helpers.GetSurgeryBioType(s), "(?:human|flesh)like|mixed" )).ToList();
-                var    pawnList = allPawnDefs   .Where(p => Helpers.GetPawnBioType   (p) == "animal"   ).ToList();
-
-                stopwatch.Start();
-                DefInjector.InjectSurgeryRecipes(surgeryList, pawnList);
-                stopwatch.Stop();
-
-                Logger.Message(afterMsg, "humanlike", "animals", stopwatch.ElapsedMilliseconds / 1000f, surgeryList.Count() * pawnList.Count());
-            }
-            stopwatch.Reset();
-
-            // Any Fleshlike to any Fleshlike (only if all other similar ones are on)
-            if (
-                configCache["PatchAnimalToAnimal"]       &&
-                configCache["PatchHumanlikeToHumanlike"] &&
-                configCache["PatchAnimalToHumanlike"]    &&
-                configCache["PatchHumanlikeToAnimal"]
-            ) {
-                if (IsDebug) Logger.Message(beforeMsg, "fleshlike", "fleshlikes");
-
-                var surgeryList = allSurgeryDefs.Where(s => Regex.IsMatch( Helpers.GetSurgeryBioType(s), "animal|(?:human|flesh)like|mixed" )).ToList();
-                var    pawnList = allPawnDefs   .Where(p => Helpers.GetPawnBioType(p) != "mech").ToList();
-
-                stopwatch.Start();
-                DefInjector.InjectSurgeryRecipes(surgeryList, pawnList);
-                stopwatch.Stop();
-
-                Logger.Message(afterMsg, "fleshlike", "fleshlikes", stopwatch.ElapsedMilliseconds / 1000f, surgeryList.Count() * pawnList.Count());
-            }
-            stopwatch.Reset();
-
-            // Humanlike/Mech
-            if (configCache["PatchHumanlikeToMech"]) {
-                if (IsDebug) Logger.Message(beforeMsg, "humanlike", "mechs");
-
-                var surgeryList = allSurgeryDefs.Where(s => Helpers.GetSurgeryBioType(s) == "humanlike").ToList();
-                var    pawnList = allPawnDefs   .Where(p => Helpers.GetPawnBioType   (p) == "mech"     ).ToList();
-
-                stopwatch.Start();
-                DefInjector.InjectSurgeryRecipes(surgeryList, pawnList);
-                stopwatch.Stop();
-
-                Logger.Message(afterMsg, "humanlike", "mechs", stopwatch.ElapsedMilliseconds / 1000f, surgeryList.Count() * pawnList.Count());
-            }
-            stopwatch.Reset();
-
-            // Mech-like/Humanlike
-            if (configCache["PatchMechlikeToHumanlike"]) {
-                if (IsDebug) Logger.Message(beforeMsg, "mech-like", "humanlikes");
-
-                var surgeryList = allSurgeryDefs.Where(s => Helpers.GetSurgeryBioType(s) == "mech"     ).ToList();
-                var    pawnList = allPawnDefs   .Where(p => Helpers.GetPawnBioType   (p) == "humanlike").ToList();
-
-                stopwatch.Start();
-                DefInjector.InjectSurgeryRecipes(surgeryList, pawnList);
-                stopwatch.Stop();
-
-                Logger.Message(afterMsg, "mech-like", "humanlikes", stopwatch.ElapsedMilliseconds / 1000f, surgeryList.Count() * pawnList.Count());
-            }
-            stopwatch.Reset();
 
             // Hand/foot clean up
-            if (configCache["CleanupHandFootSurgeries"]) {
+            if (boolConfigCache["CleanupHandFootSurgeries"]) {
                 if (IsDebug) Logger.Message("Cleaning up hand/foot surgical recipes");
 
                 var surgeryList = allSurgeryDefs.Where(
@@ -377,7 +460,9 @@ namespace XenobionicPatcher {
             Version currentVer    = Instance.GetVersion();
             string  currentVerStr = currentVer.ToString();
 
-            config["ConfigVersion"] = Settings.GetHandle<string>("ConfigVersion", "", "", currentVerStr);
+            config["ConfigVersion"] = Settings.GetHandle(
+                settingName: "ConfigVersion", title: "", description: "", defaultValue: currentVerStr
+            );
             var configVerSetting = (SettingHandle<string>)config["ConfigVersion"];
             configVerSetting.DisplayOrder = 0;
             configVerSetting.NeverVisible = true;
@@ -404,8 +489,11 @@ namespace XenobionicPatcher {
                 "PatchArtificialToMech",
                 "PatchAnimalToHumanlike",
                 "PatchHumanlikeToAnimal",
+                "PatchFleshlikeToFleshlike",
                 "PatchHumanlikeToMech",
                 "PatchMechlikeToHumanlike",
+                "BlankHeader",
+                "PatchAnyToAny",
 
                 "BlankHeader",
                 "CleanupHeader",
@@ -414,39 +502,75 @@ namespace XenobionicPatcher {
                 "BlankHeader",
                 "MoreDebug",
             };
+            var defaultPatchValues = new Dictionary<string, XenoPatchType> {
+                {"PatchAnimalToAnimal",       XenoPatchType.Relaxed},
+                {"PatchHumanlikeToHumanlike", XenoPatchType.Relaxed},
+                {"PatchArtificialToMech",     XenoPatchType.Relaxed},
+                {"PatchAnimalToHumanlike",    XenoPatchType.Relaxed},
+                {"PatchHumanlikeToAnimal",    XenoPatchType.Relaxed},
+                {"PatchFleshlikeToFleshlike", XenoPatchType.Strict},
+                {"PatchHumanlikeToMech",      XenoPatchType.None },
+                {"PatchMechlikeToHumanlike",  XenoPatchType.None },
+                {"PatchAnyToAny",             XenoPatchType.None },
+            };
             
             int order = 1;
             foreach (string sName in settingNames) {
                 bool isHeader = sName.Contains("Header");
-                bool isOffByDefault = sName == "PatchHumanlikeToMech" || sName == "PatchMechlikeToHumanlike" || sName == "MoreDebug";
+                bool isPatch  = sName.StartsWith("Patch");
 
                 if (sName == "BlankHeader") {
                     // No translations here
-                    config[sName] = Settings.GetHandle<bool>(sName + order, "", "", false);
+                    config[sName] = Settings.GetHandle(sName + order, "", "", false);
+                }
+                else if (isPatch && !isHeader) {
+                    XenoPatchType defaultValue = defaultPatchValues[sName];
+
+                    // Convert the old bool settings to XenoPatchType
+                    if (configVer <= new Version("1.2.8") && Settings.ValueExists(sName)) {
+                        string oldValue = Settings.PeekValue(sName);
+                        if (oldValue == "True")  defaultValue = XenoPatchType.Relaxed;
+                        if (oldValue == "False") defaultValue = XenoPatchType.None;
+                        Settings.TryRemoveUnclaimedValue(sName);
+                    }
+
+                    config[sName] = Settings.GetHandle(
+                        settingName:  sName,
+                        title:        ("XP_" + sName + "_Title").Translate(),
+                        description:  ("XP_" + sName + "_Description").Translate(),
+                        defaultValue: defaultValue,
+                        enumPrefix:   "XP_XenoPatchType_"
+                    );                    
                 }
                 else {
-                    config[sName] = Settings.GetHandle<bool>(
-                        sName,
-                        string.Concat(
+                    bool isOffByDefault = sName == "MoreDebug";
+
+                    config[sName] = Settings.GetHandle(
+                        settingName:  sName,
+                        title:        string.Concat(
                             isHeader ? "<size=15><b>" : "",
                             ("XP_" + sName + "_Title").Translate(),
                             isHeader ? "</b></size>" : ""
                         ),
-                        ("XP_" + sName + "_Description").Translate(),
-                        !isHeader && !isOffByDefault
+                        description:  ("XP_" + sName + "_Description").Translate(),
+                        defaultValue: !isHeader && !isOffByDefault
                     );
                 }
 
-                var setting = (SettingHandle<bool>)config[sName];
-                setting.DisplayOrder = order;
+                config[sName].DisplayOrder = order;
 
                 if (isHeader) {
                     // No real settings here; just for display
-                    setting.Unsaved = true;
-                    setting.CustomDrawer = rect => { return false; };
+                    config[sName].Unsaved = true;
+                    config[sName].CustomDrawer = rect => { return false; };
+                }
+                else if (isPatch) {
+                    xptConfigCache[sName] = ((SettingHandle<XenoPatchType>)config[sName]).Value;
+                }
+                else {
+                    boolConfigCache[sName] = ((SettingHandle<bool>)config[sName]).Value;
                 }
 
-                configCache[sName] = setting.Value;
                 order++;
             }
 

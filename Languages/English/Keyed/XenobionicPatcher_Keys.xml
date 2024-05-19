@@ -26,8 +26,13 @@
     <XP_SearchModdedSurgeryClasses_Title>Modded Surgery Classes</XP_SearchModdedSurgeryClasses_Title>
     <XP_SearchModdedSurgeryClasses_Description>Look through any surgery that requires a special non-vanilla worker class.</XP_SearchModdedSurgeryClasses_Description>
 
-    <!-- Patching Toggles -->
-    <XP_PatchHeader_Title>Patching Toggles</XP_PatchHeader_Title>
+    <!-- Patching Types -->
+    <XP_XenoPatchType_None>None</XP_XenoPatchType_None>
+    <XP_XenoPatchType_Strict>Strict</XP_XenoPatchType_Strict>
+    <XP_XenoPatchType_Relaxed>Relaxed</XP_XenoPatchType_Relaxed>
+    <XP_XenoPatchType_Loose>Loose</XP_XenoPatchType_Loose>
+
+    <XP_PatchHeader_Title>Patching Types</XP_PatchHeader_Title>
     <XP_PatchHeader_Description>These options control what kind of patching jobs are ran to match surgery operations from one kind of pawn to other pawn definitions.</XP_PatchHeader_Description>
 
     <XP_PatchAnimalToAnimal_Title>Animal Surgeries → Animals</XP_PatchAnimalToAnimal_Title>
@@ -45,11 +50,17 @@
     <XP_PatchHumanlikeToAnimal_Title>Humanlike Surgeries → Animals</XP_PatchHumanlikeToAnimal_Title>
     <XP_PatchHumanlikeToAnimal_Description>Patch humanlike surgical operations into animals</XP_PatchHumanlikeToAnimal_Description>
 
+    <XP_PatchFleshlikeToFleshlike_Title>Fleshlike Surgeries → Fleshlikes</XP_PatchFleshlikeToFleshlike_Title>
+    <XP_PatchFleshlikeToFleshlike_Description>Patch any fleshlike surgical operations into any other fleshlikes (like humans, animals, fleshy monsters/anomolies, etc.).  Note that this may pollute up any stricter human/animal surgeries you may have had up above.</XP_PatchFleshlikeToFleshlike_Description>
+
     <XP_PatchHumanlikeToMech_Title>Humanlike Surgeries → Mechs</XP_PatchHumanlikeToMech_Title>
     <XP_PatchHumanlikeToMech_Description>Patch humanlike surgical operations into any mech-like creature.  Note that this may enable certain organic-like surgeries into mechs with strange side effects, like installing organic arms onto mechs with no visible effect, or applying serums &amp; mutagens that would only make sense used on a meaty organic.</XP_PatchHumanlikeToMech_Description>
 
     <XP_PatchMechlikeToHumanlike_Title>Mech-like Surgeries → Humanlikes</XP_PatchMechlikeToHumanlike_Title>
     <XP_PatchMechlikeToHumanlike_Description>Patch mech-like surgical operations into humanlikes.  Note that this may enable certain mech-like surgeries into organics with strange side effects, like "shutting down" humans or repairing humans with a mech toolkit.</XP_PatchMechlikeToHumanlike_Description>
+
+    <XP_PatchAnyToAny_Title>Surgeries → Pawns</XP_PatchAnyToAny_Title>
+    <XP_PatchAnyToAny_Description>The nuclear option.  This makes all of the above patching types redundant.  Use this if you don't care about balance or being able to "shut down" humans, and just want the freedom to install any part or use any surgery option you want.  Strict mode will try to keep some sanity around the filter, and loose mode will truly mix everything with everything.</XP_PatchAnyToAny_Description>
 
     <!-- Cleanup Toggles -->
     <XP_CleanupHeader_Title>Cleanup Toggles</XP_CleanupHeader_Title>

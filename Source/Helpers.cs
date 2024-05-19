@@ -49,7 +49,11 @@ namespace XenobionicPatcher {
             else if (users.All(p => GetPawnBioType(p) == "animal"))    result = "animal";
             else if (users.All(p => GetPawnBioType(p) == "humanlike")) result = "humanlike";
             else if (users.All(p => GetPawnBioType(p) == "other"))     result = "other";
-            else if (users.All(p => Regex.IsMatch( GetPawnBioType(p), "animal|humanlike|fleshlike" ))) result = "fleshlike";
+            else if (users.All(p => GetPawnBioType(p) == "non-pawn"))  result = "non-pawn";
+            else if (users.All(p => Regex.IsMatch( GetPawnBioType(p), "animal|humanlike" )))                result = "critterlike";
+            else if (users.All(p => Regex.IsMatch( GetPawnBioType(p), "animal|humanlike|fleshlike" )))      result = "fleshlike";
+            else if (users.All(p => Regex.IsMatch( GetPawnBioType(p), "humanlike|mech" )))                  result = "smart-pawn";
+            else if (users.All(p => Regex.IsMatch( GetPawnBioType(p), "animal|humanlike|fleshlike|mech" ))) result = "pawnlike";
 
             surgeryBioTypeCache[surgery.defName] = result;
             return result;
