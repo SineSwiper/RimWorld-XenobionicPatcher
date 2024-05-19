@@ -7,12 +7,33 @@ using System.Text.RegularExpressions;
 using Verse;
 
 namespace XenobionicPatcher {
+    [Flags]
+    public enum XPBioType : ushort {
+        None      = 0,
+        Animal    = 1 << 0,
+        Humanlike = 1 << 1,
+        Flesh     = 1 << 2,
+        Mech      = 1 << 3,
+
+        Other     = 1 << 6,
+        NonPawn   = 1 << 7,
+
+        Critterlike = Animal | Humanlike,
+        Fleshlike   = Animal | Humanlike | Flesh,
+        SmartPawn   = Humanlike | Mech,
+        Pawnlike    = Fleshlike | Mech,
+
+        All = (1 << 8) - 1,
+    };
+
     public static class Helpers {
         // Most of these are very hot (and deterministic), so they have caches built-in
 
-        internal static Dictionary<string, string> surgeryBioTypeCache = new Dictionary<string, string>() {};
+        internal static Dictionary<string, XPBioType> surgeryBioTypeCache = new() {};
 
         internal static List<string> mechSurgeryClasses = new List<string> {
+            "AlphaBehavioursAndEvents.Recipe_ShutDown",
+            "AnimalBehaviours.Recipe_ShutDown",
             "Androids.Recipe_Disassemble",
             "Androids.Recipe_RepairKit",
             "MOARANDROIDS.Recipe_AndroidRewireSurgery",
@@ -30,58 +51,49 @@ namespace XenobionicPatcher {
             "VREAndroids.Recipe_RemoveArtificialBodyPart"
         };
 
-        public static string GetSurgeryBioType (RecipeDef surgery) {
+        public static XPBioType GetSurgeryBioType (RecipeDef surgery) {
             if (surgeryBioTypeCache.ContainsKey(surgery.defName)) return surgeryBioTypeCache[surgery.defName];
 
             // Special short-circuit
             foreach (string mechSurgeryClass in mechSurgeryClasses) {
                 if (IsSupertypeOf(mechSurgeryClass, surgery.workerClass)) {
-                    surgeryBioTypeCache[surgery.defName] = "mech";
-                    return "mech";
+                    surgeryBioTypeCache[surgery.defName] = XPBioType.Mech;
+                    return XPBioType.Mech;
                 }
             }
 
             var users = surgery.AllRecipeUsers.Where(p => IsSupertypeOf(typeof(Pawn), p.thingClass)).ToList();  // pawns only
             users.RemoveDuplicates();
 
-            string result = "mixed";  // default
-            if      (users.All(p => GetPawnBioType(p) == "mech"))      result = "mech";
-            else if (users.All(p => GetPawnBioType(p) == "animal"))    result = "animal";
-            else if (users.All(p => GetPawnBioType(p) == "humanlike")) result = "humanlike";
-            else if (users.All(p => GetPawnBioType(p) == "other"))     result = "other";
-            else if (users.All(p => GetPawnBioType(p) == "non-pawn"))  result = "non-pawn";
-            else if (users.All(p => Regex.IsMatch( GetPawnBioType(p), "animal|humanlike" )))                result = "critterlike";
-            else if (users.All(p => Regex.IsMatch( GetPawnBioType(p), "animal|humanlike|fleshlike" )))      result = "fleshlike";
-            else if (users.All(p => Regex.IsMatch( GetPawnBioType(p), "humanlike|mech" )))                  result = "smart-pawn";
-            else if (users.All(p => Regex.IsMatch( GetPawnBioType(p), "animal|humanlike|fleshlike|mech" ))) result = "pawnlike";
-
+            XPBioType result = XPBioType.None;  // start with nothing
+            users.ForEach(p => result |= GetPawnBioType(p) );
             surgeryBioTypeCache[surgery.defName] = result;
             return result;
         }
 
-        internal static Dictionary<string, string> pawnBioTypeCache = new Dictionary<string, string>() {};
+        internal static Dictionary<string, XPBioType> pawnBioTypeCache = new() {};
 
-        public static string GetPawnBioType (ThingDef pawn) {
+        public static XPBioType GetPawnBioType (ThingDef pawn) {
             if (pawnBioTypeCache.ContainsKey(pawn.defName)) return pawnBioTypeCache[pawn.defName];
 
             // certain surgeries work against non-pawns
             if (pawn.race == null) {
-                pawnBioTypeCache[pawn.defName] = "non-pawn";
-                return "non-pawn";
+                pawnBioTypeCache[pawn.defName] = XPBioType.NonPawn;
+                return XPBioType.NonPawn;
             }
 
-            string result = "other";  // default; must be a toolUser?
+            XPBioType result = XPBioType.Other;  // default; must be a toolUser?
 
             // Fungi like Wildpods also don't have meat, so this takes priority
-            if (pawn.race.Animal) result = "animal";
+            if (pawn.race.Animal) result = XPBioType.Animal;
 
             // This catches mechanoids and droids, but not meat-containing Androids
-            else if (pawn.race.IsMechanoid || !pawn.race.IsFlesh || pawn.GetStatValueAbstract(StatDefOf.MeatAmount) <= 0) result = "mech";
+            else if (pawn.race.IsMechanoid || !pawn.race.IsFlesh || pawn.GetStatValueAbstract(StatDefOf.MeatAmount) <= 0) result = XPBioType.Mech;
 
-            else if (pawn.race.Humanlike) result = "humanlike";
+            else if (pawn.race.Humanlike) result = XPBioType.Humanlike;
 
             // Fleshlike ToolUsers, like Anomaly entities
-            else if (pawn.race.IsFlesh) result = "fleshlike";
+            else if (pawn.race.IsFlesh) result = XPBioType.Flesh;
 
             pawnBioTypeCache[pawn.defName] = result;
             return result;

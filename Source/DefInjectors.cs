@@ -5,6 +5,8 @@ using System.Linq;
 using System.Reflection;
 using HarmonyLib;
 using Verse;
+using Unity.Burst.Intrinsics;
+using RimWorld;
 
 namespace XenobionicPatcher {
     public class DefInjectors {
@@ -48,10 +50,22 @@ namespace XenobionicPatcher {
             // main surgery double-loop.
             if (Base.IsDebug) stopwatch.Start();
 
-            var pawnSurgeriesByBioType = new Dictionary<string, HashSet<RecipeDef>> {};
+            var pawnSurgeriesByBioType = new Dictionary<XPBioType, HashSet<RecipeDef>> {};
             foreach (ThingDef pawn in pawnList.Where(p => p.recipes != null)) {
-                string pawnBioType = Helpers.GetPawnBioType(pawn);
+                XPBioType pawnBioType = Helpers.GetPawnBioType(pawn);
                 pawnSurgeriesByBioType.SetOrAddNestedRange(pawnBioType, pawn.recipes);
+            }
+
+            // Add to every usable bio-type combination
+            List<XPBioType> bioTypeFlags = Enum.GetValues(typeof(XPBioType)).OfType<XPBioType>().ToList();
+            foreach (XPBioType comboBioType in bioTypeFlags.Where( pbt => X86.Popcnt.popcnt_u32((uint)pbt) > 1 ) ) {  // combo flags only
+                if (pawnSurgeriesByBioType.ContainsKey(comboBioType)) continue;
+                pawnSurgeriesByBioType[comboBioType] = bioTypeFlags.
+                    Where     ( pbt => X86.Popcnt.popcnt_u32((uint)pbt) == 1 ).  // single bits only
+                    Where     ( sbt => comboBioType.HasFlag(sbt) ).
+                    SelectMany( sbt => pawnSurgeriesByBioType[sbt] ).
+                    ToHashSet()
+                ;
             }
 
             if (Base.IsDebug) {
@@ -253,9 +267,9 @@ namespace XenobionicPatcher {
             if (Base.IsDebug) stopwatch.Start();
 
             foreach (RecipeDef surgery in surgeryList.Where(s => s.targetsBodyPart)) {
-                string surgeryBioType    = Helpers.GetSurgeryBioType(surgery);
-                string surgeryLabelLower = surgery.label.ToLower();
-                bool   defnameDebug      = Base.IsDebug && debugSurgeryDefName != null && surgery.defName == debugSurgeryDefName;
+                XPBioType surgeryBioType    = Helpers.GetSurgeryBioType(surgery);
+                string    surgeryLabelLower = surgery.label.ToLower();
+                bool      defnameDebug      = Base.IsDebug && debugSurgeryDefName != null && surgery.defName == debugSurgeryDefName;
 
                 if (defnameDebug) XP.ModLogger.Message(
                     "      {0}: BioType = {1}, is in BioType cache = {2}",
