@@ -8,6 +8,18 @@
     </HugsLib.UpdateFeatureDef>
 
     <HugsLib.UpdateFeatureDef ParentName="XP_UpdateFeatureBase">
+        <defName>XenobionicPatcher_1_2_9</defName>
+        <assemblyVersion>1.2.9</assemblyVersion>
+        <content>&lt;b&gt;Additions:&lt;/b&gt;
+- Added more customability to patching operations in Mod Options.
+- Post-injection clean up now includes arm/leg mixups (with config option).  No more peg legs on arms!
+
+&lt;b&gt;Fixes:&lt;/b&gt;
+- Added support for several other modded surgery classes
+        </content>
+    </HugsLib.UpdateFeatureDef>
+
+    <HugsLib.UpdateFeatureDef ParentName="XP_UpdateFeatureBase">
         <defName>XenobionicPatcher_1_2_8</defName>
         <assemblyVersion>1.2.8</assemblyVersion>
         <content>&lt;b&gt;Additions:&lt;/b&gt;

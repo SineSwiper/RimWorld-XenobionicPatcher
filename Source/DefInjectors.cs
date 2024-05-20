@@ -6,7 +6,6 @@ using System.Reflection;
 using HarmonyLib;
 using Verse;
 using Unity.Burst.Intrinsics;
-using RimWorld;
 
 namespace XenobionicPatcher {
     public class DefInjectors {
