@@ -440,11 +440,13 @@ namespace XenobionicPatcher {
             }
         }
 
-        public void CleanupHandFootSurgeryRecipes (List<RecipeDef> surgeryList) {
+        public void CleanupNamedPartSurgeryRecipes (List<RecipeDef> surgeryList) {
             Base XP = Base.Instance;
 
-            // Try to clean up the more obvious hand/foot cross-connections on humanlikes
-            foreach (RecipeDef surgery in surgeryList.Where(s => s.targetsBodyPart && s.appliedOnFixedBodyParts.Count > 0)) {
+            // Try to clean up the more obvious named part cross-connections on humanlikes
+            foreach (RecipeDef surgery in surgeryList.Where(
+                s => s.targetsBodyPart && s.appliedOnFixedBodyParts.Count > 0
+            )) {
                 string surgeryLabelLower = surgery.label.ToLower();
 
                 if      (surgeryLabelLower.Contains(" foot ") || surgeryLabelLower.EndsWith(" foot")) {
@@ -453,10 +455,18 @@ namespace XenobionicPatcher {
                 else if (surgeryLabelLower.Contains(" hand ") || surgeryLabelLower.EndsWith(" hand")) {
                     surgery.appliedOnFixedBodyParts.RemoveAll(sbp => BodyPartMatcher.SimplifyBodyPartLabel(sbp) == "foot");
                 }
+                else if (surgeryLabelLower.Contains(" leg ") || surgeryLabelLower.EndsWith(" leg")) {
+                    surgery.appliedOnFixedBodyParts.RemoveAll(sbp => 
+                        BodyPartMatcher.SimplifyBodyPartLabel(sbp) is string sbpl && (sbpl == "arm" || sbpl == "shoulder")
+                    );
+                }
+                else if (surgeryLabelLower.Contains(" arm ") || surgeryLabelLower.EndsWith(" arm")) {
+                    surgery.appliedOnFixedBodyParts.RemoveAll(sbp => BodyPartMatcher.SimplifyBodyPartLabel(sbp) == "leg");
+                }
 
                 // This shouldn't happen
                 if (surgery.appliedOnFixedBodyParts.Count == 0) {
-                    XP.ModLogger.Error("Cleaning up hand/foot surgeries for {0}, but ended up removing all the body parts!", surgery.LabelCap);
+                    XP.ModLogger.Error("Cleaning up named part surgeries for {0}, but ended up removing all the body parts!", surgery.LabelCap);
                 }
             }
         }

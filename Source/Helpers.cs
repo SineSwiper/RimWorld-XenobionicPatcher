@@ -51,8 +51,8 @@ namespace XenobionicPatcher {
             "VREAndroids.Recipe_RemoveArtificialBodyPart"
         };
 
-        public static XPBioType GetSurgeryBioType (RecipeDef surgery) {
-            if (surgeryBioTypeCache.ContainsKey(surgery.defName)) return surgeryBioTypeCache[surgery.defName];
+        public static XPBioType GetSurgeryBioType (RecipeDef surgery, bool useCache = true) {
+            if (useCache && surgeryBioTypeCache.ContainsKey(surgery.defName)) return surgeryBioTypeCache[surgery.defName];
 
             // Special short-circuit
             foreach (string mechSurgeryClass in mechSurgeryClasses) {
@@ -73,8 +73,8 @@ namespace XenobionicPatcher {
 
         internal static Dictionary<string, XPBioType> pawnBioTypeCache = new() {};
 
-        public static XPBioType GetPawnBioType (ThingDef pawn) {
-            if (pawnBioTypeCache.ContainsKey(pawn.defName)) return pawnBioTypeCache[pawn.defName];
+        public static XPBioType GetPawnBioType (ThingDef pawn, bool useCache = true) {
+            if (useCache && pawnBioTypeCache.ContainsKey(pawn.defName)) return pawnBioTypeCache[pawn.defName];
 
             // certain surgeries work against non-pawns
             if (pawn.race == null) {

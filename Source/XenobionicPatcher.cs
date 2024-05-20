@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Text.RegularExpressions;
 using HarmonyLib;
 using HugsLib;
 using HugsLib.Settings;
@@ -434,19 +435,37 @@ namespace XenobionicPatcher {
                 stopwatch.Reset();
             }
 
+            // XXX: If this gets any more WET than two, this should be a 'for' loop, similar to the above
+
             // Hand/foot clean up
             if (boolConfigCache["CleanupHandFootSurgeries"]) {
                 if (IsDebug) Logger.Message("Cleaning up hand/foot surgical recipes");
 
                 var surgeryList = allSurgeryDefs.Where(
-                    s => s.label.ToLower() is string sl && (sl.Contains("hand") || sl.Contains("foot"))
+                    s => Regex.IsMatch( s.label.ToLower(), "hand|foot" )
                 ).ToList();
 
                 stopwatch.Start();
-                DefInjector.CleanupHandFootSurgeryRecipes(surgeryList);
+                DefInjector.CleanupNamedPartSurgeryRecipes(surgeryList);
                 stopwatch.Stop();
 
                 Logger.Message("Cleaning up hand/foot surgical recipes (took {0:F4}s)", stopwatch.ElapsedMilliseconds / 1000f);
+            }
+            stopwatch.Reset();
+
+            // Arm/leg clean up
+            if (boolConfigCache["CleanupArmLegSurgeries"]) {
+                if (IsDebug) Logger.Message("Cleaning up arm/leg surgical recipes");
+
+                var surgeryList = allSurgeryDefs.Where(
+                    s => Regex.IsMatch( s.label.ToLower(), "arm|leg" )
+                ).ToList();
+
+                stopwatch.Start();
+                DefInjector.CleanupNamedPartSurgeryRecipes(surgeryList);
+                stopwatch.Stop();
+
+                Logger.Message("Cleaning up arm/leg surgical recipes (took {0:F4}s)", stopwatch.ElapsedMilliseconds / 1000f);
             }
             stopwatch.Reset();
 
@@ -507,6 +526,7 @@ namespace XenobionicPatcher {
                 "BlankHeader",
                 "CleanupHeader",
                 "CleanupHandFootSurgeries",
+                "CleanupArmLegSurgeries",
 
                 "BlankHeader",
                 "MoreDebug",
