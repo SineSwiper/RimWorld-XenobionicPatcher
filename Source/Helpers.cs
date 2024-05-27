@@ -304,11 +304,38 @@ namespace XenobionicPatcher {
                     int lastKnownPartIndex = 0;
                     foreach (var bpd in bodyPartList) {
                         int index = partList.IndexOf(bpd);
-                        if   (index > -1) lastKnownPartIndex = index;
-                        else {
-                            partList.Insert(lastKnownPartIndex + 1, bpd);
-                            lastKnownPartIndex++;
+                        if (index > -1) {
+                            lastKnownPartIndex = index;
+                            continue;
                         }
+
+                        /* XXX: This matching still isn't perfect, since parts with different base names aren't going to get
+                         * tied together here.
+                         *
+                         * What we really need is the partToPartMapper used in DefInjectors, but caching that data in
+                         * BodyPartMatcher may start polluting pawn species types for the different separated patching loops.
+                         * It can be done (by filtering the returned HashSet<BodyPartDef> on each loop), but it would require
+                         * moving a large part of InjectSurgeryRecipes into the BodyPartMatcher, and quite a bit more
+                         * testing/timing.
+                         * 
+                         * I'm not against doing so, as it's probably additional time savings in the loops, but just not right
+                         * now.  It feels too much like bikeshedding currently, and this v1.5 version of XP is "good enough".
+                         * I might revisit this next DLC cycle...
+                         */ 
+
+                        // try harder with the BodyPartMatcher
+                        string simplePartLabel = BodyPartMatcher.SimplifyBodyPartLabel(bpd);
+                        index = partList.FirstIndexOf( obpd => BodyPartMatcher.SimplifyBodyPartLabel(obpd) == simplePartLabel );
+
+                        if (index > -1) {
+                            // still need to add in the part, but at least we know where it goes
+                            partList.Insert(index + 1, bpd);
+                            lastKnownPartIndex = index + 2;
+                            continue;
+                        }
+
+                        partList.Insert(lastKnownPartIndex + 1, bpd);
+                        lastKnownPartIndex++;
                     }
                 }
 

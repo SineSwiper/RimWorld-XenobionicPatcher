@@ -21,8 +21,8 @@ namespace XenobionicPatcher {
             "over-developed", "split", "zipper-shaped", "overbite", "underbite", "toothless", "malformed",
             "scissor-shaped", "elongated", "crooked", "gumless",
 
-            "spot", "sentient", "sensor", "set",
-            "insect", "animal", "plant", "crocodile", "snake", "artificial", "skeletal", "sickle", "mech(anical)?", "xeno",
+            "spot", "sentient", "sensor", "set", "honey",
+            "insect", "animal", "plant", "crocodile", "snake", "artificial", "skeletal", "sickle", "mech(a|anical)?", "xeno",
             "front", "back", "rear",
             "index", "middle", "ring",
             "segment",  // + "ring"
