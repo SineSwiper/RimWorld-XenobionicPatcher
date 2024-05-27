@@ -109,7 +109,7 @@ namespace XenobionicPatcher {
                 { "InstallArtificialBodyPart", new[] { typeof(Recipe_InstallArtificialBodyPart) } },
                 { "InstallImplant",            new[] { typeof(Recipe_InstallImplant), typeof(Recipe_ChangeImplantLevel) } },
                 { "SimpleCondition",           new[] { typeof(Recipe_AddHediff) } },
-                { "VanillaRemoval",            new[] { typeof(Recipe_RemoveHediff), typeof(Recipe_RemoveBodyPart), typeof(Recipe_RemoveImplant) } }, 
+                { "VanillaRemoval",            new[] { typeof(Recipe_RemoveHediff), typeof(Recipe_RemoveBodyPart), typeof(Recipe_RemoveImplant) } },
             };
             if (ModsConfig.BiotechActive) searchConfigMapper.AddRange( new Dictionary<string, Type[]>() {
                 { "BloodWork",                 new[] { typeof(Recipe_ExtractHemogen), typeof(Recipe_BloodTransfusion) } },
@@ -236,7 +236,11 @@ namespace XenobionicPatcher {
                     "VFEI.Other.Recipe_AddMutationHediff",
 
                     // Vanilla Factions Expanded: Pirates
-                    "VFEPirates.RecipeWorker_WarcasketRemoval",
+
+                    // NOTE: This bugs out on VFEPirates.RecipeWorker_WarcasketRemoval.AvailableOnNow, because of the
+                    // lack of pawn.apparel on animals.  Besides, we have no control over warcasket conversion, since
+                    // it's not surgery, so there's little point to spreading around the removal surgery.
+                    //"VFEPirates.RecipeWorker_WarcasketRemoval",
 
                     // Vanilla Races Expanded: Androids
                     "VREAndroids.Recipe_InstallAndroidPart",
@@ -599,7 +603,7 @@ namespace XenobionicPatcher {
                         description:  ("XP_" + sName + "_Description").Translate(),
                         defaultValue: defaultValue,
                         enumPrefix:   "XP_XenoPatchType_"
-                    );                    
+                    );
                 }
                 else {
                     config[sName] = Settings.GetHandle(
