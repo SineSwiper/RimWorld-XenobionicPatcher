@@ -3,7 +3,6 @@ using HarmonyLib;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text.RegularExpressions;
 using Verse;
 
 namespace XenobionicPatcher {
@@ -166,10 +165,15 @@ namespace XenobionicPatcher {
         }
 
         internal static List<Type> surgeryTypeOrder = new List<Type> {
+            // Anomaly
+            typeof(Recipe_SurgicalInspection),
+            typeof(Recipe_GhoulInfusion),
+
             // Mech/droid, emergency, weirder stuff
             SafeTypeByName("Androids.Recipe_Disassemble"),
             SafeTypeByName("Androids.Recipe_RepairKit"),
             SafeTypeByName("RRYautja.Recipe_RemoveHugger"),
+            SafeTypeByName("WhatTheHack.Recipes.Recipe_ExtractBrainData"),
             SafeTypeByName("MSE2.Surgey_MakeShiftRepair"),
             SafeTypeByName("MSE2.Surgery_MakeShiftRepair"),
             SafeTypeByName("QEthics.RecipeWorker_CreateBrainScan"),
@@ -181,10 +185,6 @@ namespace XenobionicPatcher {
             SafeTypeByName("MOARANDROIDS.Recipe_ApplyHealFrameworkSystem"),
             SafeTypeByName("MOARANDROIDS.Recipe_ApplyHealCoolingSystem"),
             SafeTypeByName("MOARANDROIDS.Recipe_ApplyHealCPUSerum"),
-            SafeTypeByName("SyrHarpy.Recipe_ChangeLightningAmplifier"),
-            SafeTypeByName("SyrScarRemoval.Recipe_BodyPartRegrowth"),
-            SafeTypeByName("SyrScarRemoval.Recipe_ScarRemoval"),
-            SafeTypeByName("SyrScarRemoval.Recipe_ScarRemovalBrain"),
             SafeTypeByName("TorannMagic.Recipe_RuneCarving"),
 
             // Install artificial body parts
@@ -192,6 +192,12 @@ namespace XenobionicPatcher {
             SafeTypeByName("OrenoMSE.Recipe_InstallBodyPartModule"),
             SafeTypeByName("MOARANDROIDS.Recipe_InstallArtificialBodyPartAndroid"),
             SafeTypeByName("MSE2.Recipe_InstallArtificialBodyPartWithChildren"),
+            SafeTypeByName("CONN.Recipe_InstallArtificialBodyPartAndClearPawnFromCache"),
+            SafeTypeByName("SyrHarpy.Recipe_InstallPart"),
+            SafeTypeByName("SurgeryCF_Simple"),
+            SafeTypeByName("SurgeryCF_Bionic"),
+            SafeTypeByName("SurgeryCF_Archo"),
+            SafeTypeByName("SurgeryCF_Battle"),
             SafeTypeByName("Immortals.Recipe_InstallFakeEye"),
 
             // Install implants
@@ -202,8 +208,9 @@ namespace XenobionicPatcher {
             SafeTypeByName("VREAndroids.Recipe_InstallAndroidPart"),
             SafeTypeByName("VREAndroids.Recipe_InstallReactor"),
             SafeTypeByName("MOARANDROIDS.Recipe_InstallArtificialBrain"),
-            SafeTypeByName("Recipe_ChangeImplantLevel"),
-            SafeTypeByName("QEthics.RecipeWorker_NerveStapling"),
+            SafeTypeByName("Polarisbloc.Recipe_MakeCartridgeSurgery"),
+            SafeTypeByName("Polarisbloc.Recipe_InstallCombatChip"),
+            SafeTypeByName("CyberNet.Recipe_InstallCyberNetBrainImplant"),
 
             // Install natural body part
             typeof(Recipe_InstallNaturalBodyPart),
@@ -211,58 +218,126 @@ namespace XenobionicPatcher {
             SafeTypeByName("MSE2.Recipe_InstallNaturalBodyPartWithChildren"),
             SafeTypeByName("GeneticRim.Recipe_InstallGeneticBodyPart"),
 
+            // Part restoration
+            SafeTypeByName("SyrScarRemoval.Recipe_BodyPartRegrowth"),
+            SafeTypeByName("Polarisbloc.Recipe_RestoreMissingPart"),
+            SafeTypeByName("TorannMagic.Recipe_RegrowBodyPart"),
+            SafeTypeByName("TorannMagic.Recipe_RegrowUniversalBodyPart"),
+
+            // "Change" surgeries
+            typeof(Recipe_ChangeImplantLevel),
+            SafeTypeByName("Polarisbloc.Recipe_TransgenderSurgery"),
+            SafeTypeByName("Polarisbloc.Recipe_SurgeryChangeBioAge"),
+            SafeTypeByName("Polarisbloc.Recipe_ExtractAbility"),
+            SafeTypeByName("SyrHarpy.Recipe_ChangeLightningAmplifier"),
+
+            // Simple Hediff additions
+            typeof(Recipe_AddHediff),
+            SafeTypeByName("VFEI.Other.Recipe_AddMutationHediff"),
+
+            // Xenogerm/Pregnancy
+            typeof(Recipe_ImplantXenogerm),
+            typeof(Recipe_ImplantEmbryo),
+            typeof(Recipe_ImplantIUD),
+            typeof(Recipe_ExtractOvum),
+            typeof(Recipe_TerminatePregnancy),
+
+            // Lobotomy
+            SafeTypeByName("QEthics.RecipeWorker_NerveStapling"),
+            SafeTypeByName("Diseases.RecipeWorker_Lobotomy"),
+
             // Removals
             typeof(Recipe_RemoveHediff),
+            SafeTypeByName("SyrScarRemoval.Recipe_ScarRemoval"),
+            SafeTypeByName("SyrScarRemoval.Recipe_ScarRemovalBrain"),
             SafeTypeByName("ScarRemoving.Recipe_RemoveHediff_noBrain"),
             SafeTypeByName("EPIA.Recipe_RemoveScarHediff"),
+            SafeTypeByName("EPIA.Recipe_RemoveBrainScarHediff"),
             SafeTypeByName("OrenoMSE.Recipe_RemoveImplantSystem"),
-            SafeTypeByName("VREAndroids.Recipe_RemoveArtificialBodyPart"),
             SafeTypeByName("MSE2.Recipe_RemoveModules"),
             SafeTypeByName("EPIA.Recipe_RemoveImplant"),
+            SafeTypeByName("Polarisbloc.Recipe_RemoveImplant"),
+            SafeTypeByName("Polarisbloc.Recipe_RemoveHediffIsOld"),
+            SafeTypeByName("VREAndroids.Recipe_RemoveArtificialBodyPart"),
+            SafeTypeByName("OrenoMSE.Recipe_RemoveBodyPartSystem"),
             SafeTypeByName("RRYautja.Recipe_Remove_Gauntlet"),
             SafeTypeByName("VFEPirates.RecipeWorker_WarcasketRemoval"),
+
+            // Blood work
+            typeof(Recipe_ExtractHemogen),
+            typeof(Recipe_BloodTransfusion),
+            SafeTypeByName("Vampire.Recipe_ExtractBloodVial"),
+            SafeTypeByName("Vampire.Recipe_ExtractBloodPack"),
+            SafeTypeByName("Vampire.Recipe_ExtractBloodWine"),
+            SafeTypeByName("Vampire.Recipe_TransferBlood"),
 
             // Administer items
             typeof(Recipe_AdministerUsableItem),
             typeof(Recipe_AdministerIngestible),
+            SafeTypeByName("DeathRattle.Recipe_AdministerComaDrug"),
 
             // Vanilla removals
-            AccessTools.TypeByName("RimWorld.Recipe_RemoveBodyPart"),
+            typeof(Recipe_RemoveImplant),
+            typeof(Recipe_RemoveBodyPart),
 
             // Vanilla execute
             typeof(Recipe_ExecuteByCut),
-            SafeTypeByName("Diseases.RecipeWorker_Lobotomy"),
 
             // Final fallback
             typeof(Recipe_Surgery),
         };
 
+        internal static Dictionary<BodyPartDef, int> partSortOrderLookupCache = new();
+
         public static int SurgerySort (RecipeDef surgery) {
+            // Initialize cache
+            if (partSortOrderLookupCache.Count == 0) {
+                // Start with a human body part list
+                List<BodyPartDef> partList = DefDatabase<BodyDef>.GetNamed("Human").AllParts.Select(bpr => bpr.def).ToList();
+                partList.RemoveDuplicates();
+
+                // Create an ordered list that combines all of the bodies in as close to its original order as possible (in relation
+                // to the original human body set)
+                foreach (BodyDef bodyDef in DefDatabase<BodyDef>.AllDefs) {
+                    List<BodyPartDef> bodyPartList = bodyDef.AllParts.Select(bpr => bpr.def).ToList();
+
+                    int lastKnownPartIndex = 0;
+                    foreach (var bpd in bodyPartList) {
+                        int index = partList.IndexOf(bpd);
+                        if   (index > -1) lastKnownPartIndex = index;
+                        else {
+                            partList.Insert(lastKnownPartIndex + 1, bpd);
+                            lastKnownPartIndex++;
+                        }
+                    }
+                }
+
+                partSortOrderLookupCache = partList.ToDictionary( bpd => bpd, partList.IndexOf );
+            }
+
             // First sort
             var worker    = surgery.workerClass;
             int typeOrder = surgeryTypeOrder.IndexOf(worker);
 
-            if (typeOrder == -1) typeOrder = surgery.targetsBodyPart ? 50 : 55;
+            if (typeOrder == -1) typeOrder = surgery.targetsBodyPart ? 150 : 155;  // XXX: Recipe_Surgery should take care of almost all of these, anyway
 
             // Second sort
-            List<BodyPartDef> humanPartList = DefDatabase<BodyDef>.GetNamed("Human").AllParts.Select(bpr => bpr.def).ToList();
-            int partOrder = -1;
+            int partOrder = 9999;
             if (surgery.targetsBodyPart) {
-                foreach (var part in surgery.appliedOnFixedBodyParts) {
-                    partOrder = humanPartList.IndexOf(part);
-                    if (partOrder > -1) break;
-                }
+                // XXX: We looked through every BodyPartDef, so this First shouldn't ever fail (and should always
+                // return index 0).  But, I can't argue against a little NPE protection...
+                BodyPartDef foundPart = surgery.appliedOnFixedBodyParts.FirstOrDefault( bpd => partSortOrderLookupCache.ContainsKey(bpd) );
+                if (foundPart != null) partOrder = partSortOrderLookupCache[foundPart];
             }
 
-            if (partOrder == -1) partOrder = 999;
-
-            return typeOrder * 1000 + partOrder;
+            return typeOrder * 10000 + partOrder;
         }
 
         public static void ClearCaches () {
             surgeryBioTypeCache.Clear();
             pawnBioTypeCache   .Clear();
             typeByNameCache    .Clear();
+            partSortOrderLookupCache.Clear();
             BodyPartMatcher.simplifyCache.Clear();
         }
 
