@@ -10,6 +10,7 @@
     <Stat_Recipe_Surgery_SurgeryCategory_Desc>The basic type of surgery.</Stat_Recipe_Surgery_SurgeryCategory_Desc>
 
     <!-- vanilla -->
+    <Stat_Recipe_Surgery_SurgeryCategory_AddHediff                >Add health condition</Stat_Recipe_Surgery_SurgeryCategory_AddHediff>
     <Stat_Recipe_Surgery_SurgeryCategory_AdministerIngestible     >Administer ingestible</Stat_Recipe_Surgery_SurgeryCategory_AdministerIngestible>
     <Stat_Recipe_Surgery_SurgeryCategory_AdministerUsableItem     >Administer usable item</Stat_Recipe_Surgery_SurgeryCategory_AdministerUsableItem>
     <Stat_Recipe_Surgery_SurgeryCategory_ChangeImplantLevel       >Change implant level</Stat_Recipe_Surgery_SurgeryCategory_ChangeImplantLevel>

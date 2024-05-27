@@ -28,6 +28,32 @@ namespace XenobionicPatcher {
             hasRemovedDupesFromRecipeCache.Add(__instance.GetHashCode());
         }
 
+        // Safeguard against this vanilla surgery spreading to pawns that might cause it to crash with an NRE
+        // (because they don't have genes).  This applies to all surgery types that mess with xenogerms,
+        // including fertilization surgeries.
+        [HarmonyPatch(typeof(Recipe_ImplantXenogerm), nameof(Recipe_ImplantXenogerm.AvailableOnNow))]
+        [HarmonyPostfix]
+        private static void Recipe_ImplantXenogerm_AvailableOnNow_Postfix(ref bool __result, Thing thing) {
+            if (!__result) return;  // already false
+            if (!ModsConfig.BiotechActive || thing is not Pawn pawn || pawn.genes?.Endogenes == null) __result = false;
+        }
+
+        [HarmonyPatch(typeof(Recipe_ImplantEmbryo), nameof(Recipe_ImplantEmbryo.AvailableOnNow))]
+        [HarmonyPostfix]
+        private static void Recipe_ImplantEmbryo_AvailableOnNow_Postfix(ref bool __result, Thing thing) {
+            if (!__result) return;  // already false
+            if (!ModsConfig.BiotechActive || thing is not Pawn pawn || pawn.genes?.Endogenes == null) __result = false;
+        }
+
+        // No Recipe_ExtractOvum.AvailableOnNow method available, so we have to postfix the superclass
+        [HarmonyPatch(typeof(Recipe_AddHediff), nameof(Recipe_AddHediff.AvailableOnNow))]
+        [HarmonyPostfix]
+        private static void Recipe_ExtractOvum_AvailableOnNow_Postfix(Recipe_AddHediff __instance, ref bool __result, Thing thing) {
+            if (__instance is not Recipe_ExtractOvum) return;  // not the right subclass
+            if (!__result) return;  // already false
+            if (!ModsConfig.BiotechActive || thing is not Pawn pawn || pawn.genes?.Endogenes == null) __result = false;
+        }
+
         // NOTE: Sadly, the StatRequest object is basically useless here, because Def stats don't get additional context, like Pawn objects.
 
         // Override the RecipeDef.SpecialDisplayStats method to display our own surgery stats.

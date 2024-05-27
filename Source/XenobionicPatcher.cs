@@ -108,15 +108,25 @@ namespace XenobionicPatcher {
                 { "InstallNaturalBodyPart",    new[] { typeof(Recipe_InstallNaturalBodyPart)    } },
                 { "InstallArtificialBodyPart", new[] { typeof(Recipe_InstallArtificialBodyPart) } },
                 { "InstallImplant",            new[] { typeof(Recipe_InstallImplant), typeof(Recipe_ChangeImplantLevel) } },
+                { "SimpleCondition",           new[] { typeof(Recipe_AddHediff) } },
                 { "VanillaRemoval",            new[] { typeof(Recipe_RemoveHediff), typeof(Recipe_RemoveBodyPart), typeof(Recipe_RemoveImplant) } }, 
             };
+            if (ModsConfig.BiotechActive) searchConfigMapper.AddRange( new Dictionary<string, Type[]>() {
+                { "BloodWork",                 new[] { typeof(Recipe_ExtractHemogen), typeof(Recipe_BloodTransfusion) } },
+                // Recipe_ImplantIUD / Recipe_ExtractOvum are subclasses of Recipe_AddHediff, so either of these checks will enable them
+                { "XenogermPregnancy",         new[] { typeof(Recipe_ImplantXenogerm), typeof(Recipe_TerminatePregnancy), typeof(Recipe_ImplantEmbryo), typeof(Recipe_ImplantIUD), typeof(Recipe_ExtractOvum) } },
+            });
+            if (ModsConfig.AnomalyActive) searchConfigMapper.AddRange( new Dictionary<string, Type[]>() {
+                { "GhoulInfusion",             new[] { typeof(Recipe_GhoulInfusion) } },
+                { "SurgicalInspection",        new[] { typeof(Recipe_SurgicalInspection) } }, 
+            });
             foreach (string cName in searchConfigMapper.Keys) {
-                if (boolConfigCache["Search" + cName + "Recipes"]) surgeryWorkerClassesFilter.AddRange( searchConfigMapper[cName] );
+                if (boolConfigCache["Search" + cName + "Recipes"] && searchConfigMapper.ContainsKey(cName)) surgeryWorkerClassesFilter.AddRange( searchConfigMapper[cName] );
             }
 
             // Add additional search types for modded surgery classes
             if (boolConfigCache["SearchModdedSurgeryClasses"]) {
-                List<string> moddedWorkerClassNames = new List<string> {
+                List<string> moddedWorkerClassNames = new() {
                     // (EPOE doesn't have any custom worker classes)
 
                     // EPOE Forked
@@ -235,16 +245,16 @@ namespace XenobionicPatcher {
 
                     // Deathrattle
                     "DeathRattle.Recipe_AdministerComaDrug",
+                };
 
-                    // Rim of Madness: Vampires has blood recipes, but who knows which blood is compatible to a vampire?
-                    // Just leave them alone.
-                    /*
+                // If they also enabled BloodWork, we'll allow this
+                if (boolConfigCache["SearchBloodWorkRecipes"]) moddedWorkerClassNames.AddRange( new List<string>() {
+                    // Rim of Madness: Vampires
                     "Vampire.Recipe_ExtractBloodVial",
                     "Vampire.Recipe_ExtractBloodPack",
                     "Vampire.Recipe_ExtractBloodWine",
                     "Vampire.Recipe_TransferBlood",
-                    */
-                };
+                });
 
                 foreach (string workerName in moddedWorkerClassNames) {
                     Type worker = Helpers.SafeTypeByName(workerName);
@@ -507,7 +517,14 @@ namespace XenobionicPatcher {
                 "SearchInstallNaturalBodyPartRecipes",
                 "SearchInstallArtificialBodyPartRecipes",
                 "SearchInstallImplantRecipes",
+                "SearchSimpleConditionRecipes",
                 "SearchVanillaRemovalRecipes",
+                "BlankHeader",
+                "SearchBloodWorkRecipes",
+                "SearchXenogermPregnancyRecipes",
+                "SearchGhoulInfusionRecipes",
+                "SearchSurgicalInspectionRecipes",
+                "BlankHeader",
                 "SearchModdedSurgeryClasses",
 
                 "BlankHeader",
@@ -530,6 +547,14 @@ namespace XenobionicPatcher {
 
                 "BlankHeader",
                 "MoreDebug",
+            };
+
+            var defaultIsOffBooleans = new HashSet<string> {
+                "SearchSimpleConditionRecipes",
+                "SearchXenogermPregnancyRecipes",
+                "SearchGhoulInfusionRecipes",
+                "SearchSurgicalInspectionRecipes",
+                "MoreDebug"
             };
             var defaultPatchValues = new Dictionary<string, XenoPatchType> {
                 {"PatchAnimalToAnimal",       XenoPatchType.Relaxed},
@@ -577,8 +602,6 @@ namespace XenobionicPatcher {
                     );                    
                 }
                 else {
-                    bool isOffByDefault = sName == "MoreDebug";
-
                     config[sName] = Settings.GetHandle(
                         settingName:  sName,
                         title:        string.Concat(
@@ -587,7 +610,7 @@ namespace XenobionicPatcher {
                             isHeader ? "</b></size>" : ""
                         ),
                         description:  ("XP_" + sName + "_Description").Translate(),
-                        defaultValue: !isHeader && !isOffByDefault
+                        defaultValue: !isHeader && !defaultIsOffBooleans.Contains(sName)
                     );
                 }
 

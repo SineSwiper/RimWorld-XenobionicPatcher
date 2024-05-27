@@ -20,11 +20,26 @@
     <XP_SearchInstallImplantRecipes_Title>Install Implants</XP_SearchInstallImplantRecipes_Title>
     <XP_SearchInstallImplantRecipes_Description>Look through all "Install Implant" operations, such as brain implants like Joywires.</XP_SearchInstallImplantRecipes_Description>
 
+    <XP_SearchSimpleConditionRecipes_Title>Simple Add Conditions</XP_SearchSimpleConditionRecipes_Title>
+    <XP_SearchSimpleConditionRecipes_Description>Look through all "Add health condition" operations.  These are almost guaranteed to add the condition, but other code that tries to check for that condition may or may not check the right pawn types/species.</XP_SearchSimpleConditionRecipes_Description>
+
     <XP_SearchVanillaRemovalRecipes_Title>Basic Removals</XP_SearchVanillaRemovalRecipes_Title>
     <XP_SearchVanillaRemovalRecipes_Description>Look through all basic "removal" operations, such as harvesting, part removal, or excising.</XP_SearchVanillaRemovalRecipes_Description>
 
     <XP_SearchModdedSurgeryClasses_Title>Modded Surgery Classes</XP_SearchModdedSurgeryClasses_Title>
     <XP_SearchModdedSurgeryClasses_Description>Look through any surgery that requires a special non-vanilla worker class.</XP_SearchModdedSurgeryClasses_Description>
+
+    <XP_SearchBloodWorkRecipes_Title>Blood Work</XP_SearchBloodWorkRecipes_Title>
+    <XP_SearchBloodWorkRecipes_Description>Look through all hemogen and vampire blood operations.  Hemogen searching requires Biotech DLC.</XP_SearchBloodWorkRecipes_Description>
+
+    <XP_SearchXenogermPregnancyRecipes_Title>Xenogerm/Pregnancy Classes</XP_SearchXenogermPregnancyRecipes_Title>
+    <XP_SearchXenogermPregnancyRecipes_Description>Look through all vanilla xenogerm and pregnancy operations.  This still requires that the pawn has xenogerms/genes to begin with, and spreading this around to other pawn types may even be unnecessary.  Requires Biotech DLC.</XP_SearchXenogermPregnancyRecipes_Description>
+
+    <XP_SearchGhoulInfusionRecipes_Title>Ghoul Infusion</XP_SearchGhoulInfusionRecipes_Title>
+    <XP_SearchGhoulInfusionRecipes_Description>Look through "Ghoul Infusion" operations.  This mostly works, though mutant animals will show up in the colony bar.  Requires Anomaly DLC.</XP_SearchGhoulInfusionRecipes_Description>
+
+    <XP_SearchSurgicalInspectionRecipes_Title>Surgical Inspection</XP_SearchSurgicalInspectionRecipes_Title>
+    <XP_SearchSurgicalInspectionRecipes_Description>Look through "Surgical inspection" operations.  The inspection may not find anything in species that normally don't have mutant events in the first place.  Requires Anomaly DLC.</XP_SearchSurgicalInspectionRecipes_Description>
 
     <!-- Patching Types -->
     <XP_XenoPatchType_None>None</XP_XenoPatchType_None>
