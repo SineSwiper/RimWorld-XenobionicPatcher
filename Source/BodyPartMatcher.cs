@@ -27,8 +27,8 @@ namespace XenobionicPatcher {
             "index", "middle", "ring",
             "segment",  // + "ring"
             "left", "center", "right", "upper", "middle", "lower",
-            "first", "second", "third", "fourth", "fifth",
-            "1st", "2nd", "3rd", "4th", "5th"
+            "first", "second", "third", "fourth", "fifth", "sixth", "seventh", "eighth",
+            "1st", "2nd", "3rd", "4th", "5th", "6th", "7th", "8th",
         };
         internal static Regex prefixedBodyPartAdjectives = new Regex(
             @"^(?<word>" + string.Join("|", bodyPartAdjectives) + @")\s+(?=\w)",
