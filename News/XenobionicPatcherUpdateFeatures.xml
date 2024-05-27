@@ -8,6 +8,18 @@
     </HugsLib.UpdateFeatureDef>
 
     <HugsLib.UpdateFeatureDef ParentName="XP_UpdateFeatureBase">
+        <defName>XenobionicPatcher_1_2_10</defName>
+        <assemblyVersion>1.2.10</assemblyVersion>
+        <content>&lt;b&gt;Additions:&lt;/b&gt;
+- Added (experimental) support for DLC surgeries.  This includes hemogen, xenogerm, pregnancy, and ghoul infusion surgeries.  (Check the Mod Options to enable them.)
+
+&lt;b&gt;Fixes:&lt;/b&gt;
+- Removed "Warcasket removal" from modded surgery list, since it would cause red errors on the surgery display for animals.
+- Sped up and improved surgery sorting
+        </content>
+    </HugsLib.UpdateFeatureDef>
+
+    <HugsLib.UpdateFeatureDef ParentName="XP_UpdateFeatureBase">
         <defName>XenobionicPatcher_1_2_9</defName>
         <assemblyVersion>1.2.9</assemblyVersion>
         <content>&lt;b&gt;Additions:&lt;/b&gt;
