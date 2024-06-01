@@ -9,12 +9,13 @@ using Unity.Burst.Intrinsics;
 
 namespace XenobionicPatcher {
     public class DefInjectors {
-        enum partMatchType {
+        enum PartMatchType {
             BodyPartRecord,
             BodyPartDef,
             DefName,
             LabelShort,
             Label,
+            Tags,
         };
 
         // For personal debugging only
@@ -174,10 +175,12 @@ namespace XenobionicPatcher {
             staticPartGroups["Foot"] = staticPartGroups["Hand"];
 
             // Initialize part mapper with the vanilla part
+            var vanillaPartDef = new Dictionary<string, BodyPartDef> {};
             foreach (string vanillaPartName in staticPartGroups.Keys) {
+                vanillaPartDef.Add(vanillaPartName, DefDatabase<BodyPartDef>.GetNamed(vanillaPartName));
                 partToPartMapper.Add(
                     vanillaPartName,
-                    new HashSet<BodyPartDef> { DefDatabase<BodyPartDef>.GetNamed(vanillaPartName) }
+                    new HashSet<BodyPartDef> { vanillaPartDef[vanillaPartName] }
                 );
             }
 
@@ -185,20 +188,45 @@ namespace XenobionicPatcher {
             if (Base.IsDebug) stopwatch.Start();
             foreach (BodyPartRecord raceBodyPart in raceBodyParts) {
                 // Try really hard to only match one vanilla part group
-                foreach (partMatchType matchType in Enum.GetValues(typeof(partMatchType))) {
+                foreach (PartMatchType matchType in Enum.GetValues(typeof(PartMatchType))) {
                     var partGroupMatched = new Dictionary<string, bool> {};
                     foreach (string vanillaPartName in staticPartGroups.Keys) {
-                        partGroupMatched.Add(
-                            vanillaPartName,
-                            staticPartGroups[vanillaPartName].Any( fuzzyPartName => fuzzyPartName == (
-                                matchType == partMatchType.BodyPartRecord ? BodyPartMatcher.SimplifyBodyPartLabel(raceBodyPart            ) :
-                                matchType == partMatchType.BodyPartDef    ? BodyPartMatcher.SimplifyBodyPartLabel(raceBodyPart.def        ) :
-                                matchType == partMatchType.DefName        ? BodyPartMatcher.SimplifyBodyPartLabel(raceBodyPart.def.defName) :
-                                matchType == partMatchType.LabelShort     ? BodyPartMatcher.SimplifyBodyPartLabel(raceBodyPart.LabelShort ) :
-                                matchType == partMatchType.Label          ? BodyPartMatcher.SimplifyBodyPartLabel(raceBodyPart.Label      ) :
-                                ""  // ??? Forgot to add a partMatchType?
-                            ) )
-                        );
+                        if (matchType != PartMatchType.Tags) {
+                            // Fuzzy string match
+                            partGroupMatched.Add(
+                                vanillaPartName,
+                                staticPartGroups[vanillaPartName].Any( fuzzyPartName => fuzzyPartName == (
+                                    matchType == PartMatchType.BodyPartRecord ? BodyPartMatcher.SimplifyBodyPartLabel(raceBodyPart            ) :
+                                    matchType == PartMatchType.BodyPartDef    ? BodyPartMatcher.SimplifyBodyPartLabel(raceBodyPart.def        ) :
+                                    matchType == PartMatchType.DefName        ? BodyPartMatcher.SimplifyBodyPartLabel(raceBodyPart.def.defName) :
+                                    matchType == PartMatchType.LabelShort     ? BodyPartMatcher.SimplifyBodyPartLabel(raceBodyPart.LabelShort ) :
+                                    matchType == PartMatchType.Label          ? BodyPartMatcher.SimplifyBodyPartLabel(raceBodyPart.Label      ) :
+                                    ""  // ??? Forgot to add a partMatchType?
+                                ) )
+                            );
+                        }
+                        else {
+                            // Match against BodyPartDef.tags (must be all of them; checked last)
+                            BodyPartDef vanillaPart = vanillaPartDef[vanillaPartName];
+                            BodyPartDef raceBPD     = raceBodyPart.def;
+
+                            // Some of these tag matches can get dicey with weird creature parts, eg: SnakeBody (with
+                            // MovingLimbCore, like a Leg) or SnakeHead (with HearingSource, like an Ear).  So, we limit the
+                            // range to just vital parts or multiple tag matches.
+
+                            partGroupMatched.Add(
+                                vanillaPartName,
+                                raceBPD.tags.Count > 0 &&
+                                raceBPD.tags.Count == vanillaPart.tags.Count &&
+                                raceBPD.tags.All( vanillaPart.tags.Contains ) &&
+                                // (past this point, we know raceBPD.tags == vanillaPart.tags, so we can just reference the former
+                                // from now on)
+                                (
+                                    raceBPD.tags.Count >= 2 ||
+                                    raceBPD.tags.Any( bptd => bptd.vital )
+                                )
+                            );
+                        }
                     }
 
                     // Only stop to add if there's a conclusive singular part matched
@@ -213,10 +241,6 @@ namespace XenobionicPatcher {
                             racePartDef.defName,
                             partToPartMapper[vanillaPartName].First(bpd => bpd.defName == vanillaPartName)
                         );
-                        break;
-                    }
-                    else if (partGroupMatches == 0) {
-                        // It's never going to match on other loops, so just stop here
                         break;
                     }
                 }
