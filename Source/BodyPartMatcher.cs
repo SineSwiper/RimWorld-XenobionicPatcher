@@ -23,12 +23,18 @@ namespace XenobionicPatcher {
 
             "spot", "sentient", "sensor", "set", "honey",
             "insect", "animal", "plant", "crocodile", "snake", "artificial", "skeletal", "sickle", "mech(a|anical)?", "xeno",
-            "front", "back", "rear",
+            "front(al)?", "back", "rear", "top",
             "index", "middle", "ring",
             "segment",  // + "ring"
             "left", "center", "right", "upper", "middle", "lower",
             "first", "second", "third", "fourth", "fifth", "sixth", "seventh", "eighth",
             "1st", "2nd", "3rd", "4th", "5th", "6th", "7th", "8th",
+
+            // Abdominopelvic regions from Evolved Organs
+            "hypoch?ondriac", "lumbar", "iliac",  // XXX: hypocondriac is a typo
+
+            // Insect throratic regions (also from Evolved Organs)
+            "prothoracic", "mesothoracic", "metathoracic",
         };
         internal static Regex prefixedBodyPartAdjectives = new Regex(
             @"^(?<word>" + string.Join("|", bodyPartAdjectives) + @")\s+(?=\w)",
