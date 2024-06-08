@@ -279,6 +279,8 @@ namespace XenobionicPatcher {
                 recipe => recipe.IsSurgery && surgeryWorkerClassesFilter.Any( t => Helpers.IsSupertypeOf(t, recipe.workerClass) )
             ).ToList();
 
+            BodyPartMatcher.Initialize();
+
             // Because we use pawn.recipes so often for surgery checks, and not the other side (surgery.recipeUsers),
             // merge the latter into the former.  Our new additions will be sure to add it in both sides to keep
             // pawn.recipes complete.

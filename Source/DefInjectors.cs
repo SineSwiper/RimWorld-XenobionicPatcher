@@ -6,23 +6,10 @@ using System.Reflection;
 using HarmonyLib;
 using Verse;
 using Unity.Burst.Intrinsics;
+using Verse.Noise;
 
 namespace XenobionicPatcher {
     public class DefInjectors {
-        enum PartMatchType {
-            BodyPartRecord,
-            BodyPartDef,
-            DefName,
-            LabelShort,
-            Label,
-            Tags,
-        };
-
-        // For personal debugging only
-        private const string debugVanillaPartName = null;
-        private const string debugSurgeryDefName  = null;
-        private const string debugPawnKindDefName = null;
-
         /* WARNING: Because of the sheer amount of combinations and loops we're dealing with, there is a LOT
          * of caching (both here and within Helpers), HashSets (for duplicate checks), and stopwatch timing.
          * Everything needs be optimized to the Nth degree to reduce as much overhead as possible.
@@ -32,52 +19,6 @@ namespace XenobionicPatcher {
             Base XP = Base.Instance;
 
             Stopwatch stopwatch = Stopwatch.StartNew();
-
-            /* Many mods like to use different def names for basic body parts.  This makes it harder to add the
-             * surgery recipe to the alien.  We'll need to add in the similar body part to the
-             * appliedOnFixedBodyParts list first.
-             * 
-             * First, look through the list of common surgery recipes to infer the part type.  In other words, if
-             * there's a surgery called "Install bionic arm" then that part is an arm that can accept other kinds of
-             * arms.  Then, also look for body part matches by looking at the body part labels directly (basically
-             * duck typing).
-             * 
-             * These's all go into the part mapper for later injection.
-             */
-            var partToPartMapper = new Dictionary<string, HashSet<BodyPartDef>> {};
-
-            // There are only a few pawn bio-types, so compile all of the pawn surgery lists outside of the
-            // main surgery double-loop.
-            if (Base.IsDebug) stopwatch.Start();
-
-            var pawnSurgeriesByBioType = new Dictionary<XPBioType, HashSet<RecipeDef>> {};
-            foreach (ThingDef pawn in pawnList.Where(p => p.recipes != null)) {
-                XPBioType pawnBioType = Helpers.GetPawnBioType(pawn);
-                pawnSurgeriesByBioType.SetOrAddNestedRange(pawnBioType, pawn.recipes);
-            }
-
-            // Add to every usable bio-type combination
-            List<XPBioType> xpBioTypes = Enum.GetValues(typeof(XPBioType)).OfType<XPBioType>().ToList();
-            foreach (XPBioType comboBioType in xpBioTypes.Where( pbt => X86.Popcnt.popcnt_u32((uint)pbt) > 1 ) ) {  // combo flags only
-                if (pawnSurgeriesByBioType.ContainsKey(comboBioType)) continue;
-                pawnSurgeriesByBioType[comboBioType] =
-                    xpBioTypes.
-                    Where     ( pbt => X86.Popcnt.popcnt_u32((uint)pbt) == 1 ).  // single bits only
-                    Where     ( sbt => comboBioType.HasFlag(sbt) && pawnSurgeriesByBioType.ContainsKey(sbt) ).
-                    SelectMany( sbt => pawnSurgeriesByBioType[sbt] ).
-                    ToHashSet()
-                ;
-            }
-
-            if (Base.IsDebug) {
-                stopwatch.Stop();
-                XP.ModLogger.Message(
-                    "    PawnSurgeriesByBioType cache: took {0:F4}s; {1:N0}/{2:N0} keys/recipes",
-                    stopwatch.ElapsedMilliseconds / 1000f,
-                    pawnSurgeriesByBioType.Keys.Count(), pawnSurgeriesByBioType.Values.Sum(h => h.Count())
-                );
-                stopwatch.Reset();
-            }
 
             // This list is used a few times.  Best to compose it outside the loops.  Distinct is important
             // because there's a lot of dupes.
@@ -129,265 +70,51 @@ namespace XenobionicPatcher {
                 stopwatch.Reset();
             }
 
-            /* Start with a hard-coded list, just in case any of these don't match.  This is especially helpful for
-             * animals, since they don't always have obvious humanlike analogues.  This also works as a part group
-             * separator to ensure parts don't get mixed into the wrong groups.
-             */
-            string staticPartSetString =
-                // Basics
-                "Arm Shoulder Hand Finger Foot Toe Eye Ear Nose Jaw Head Brain Torso Heart Lung Kidney Liver Stomach Neck" + ' ' +
-                // Animal parts
-                "Elytra Tail Horn Tusk Trunk" + ' ' +
-                // Bones
-                "Skull Ribcage Spine Clavicle Sternum Humerus Radius Pelvis Femur Tibia"
-            ;
-            Dictionary<string, List<string>> staticPartGroups = staticPartSetString.Split(' ').ToDictionary(
-                keySelector:     k => k,
-                elementSelector: k => new List<string> { k.ToLower() }
-            );
-            
-            Dictionary<string, List<string>> additionalStaticPartGroups = new() {
-                { "Arm",      new() { "flipper"                                   } },
-                { "Hand",     new() { "claw", "grasper", "pincer"                 } },
-                { "Finger",   new() { "thumb", "pinky"                            } },
-                { "Foot",     new() { "hoof", "paw"                               } },
-                { "Eye",      new() { "sight", "seeing", "visual"                 } },
-                { "Ear",      new() { "antenna", "hear", "hearing", "sound"       } },
-                { "Nose",     new() { "nostril", "smell", "smelling"              } },
-                { "Jaw",      new() { "beak", "mouth", "maw", "teeth", "mandible" } },
-                { "Torso",    new() { "thorax", "body", "shell"                   } },
-                { "Heart",    new() { "reactor"                                   } },
-                { "Neck",     new() { "pronotum"                                  } },
-                // Wing should really be the base name, but there is no vanilla Wing part (even for birds!)
-                { "Elytra",   new() { "wing" } },
-            };
-            foreach (string vanillaPartName in additionalStaticPartGroups.Keys) {
-                staticPartGroups.SetOrAddNestedRange(vanillaPartName, additionalStaticPartGroups[vanillaPartName]);
-            }
+            // NOTE: Most of the part matching is in BodyPartMatcher now
 
-            /* It's futile to try to separate the hand/foot connection, as animals have "hands" which also
-             * sometimes double as feet.  We can try to clean this up later in CleanupHandFootSurgeryRecipes.
-             *
-             * We're still going to keep the bio-boundary below to keep out leg->hand connections.  That's still a
-             * bit off.  And mechs, of course.
-             */
-            staticPartGroups["Hand"].AddRange(staticPartGroups["Foot"]);
-            staticPartGroups["Foot"] = staticPartGroups["Hand"];
-
-            // Initialize part mapper with the vanilla part
-            var vanillaPartDef = new Dictionary<string, BodyPartDef> {};
-            foreach (string vanillaPartName in staticPartGroups.Keys) {
-                vanillaPartDef.Add(vanillaPartName, DefDatabase<BodyPartDef>.GetNamed(vanillaPartName));
-                partToPartMapper.Add(
-                    vanillaPartName,
-                    new HashSet<BodyPartDef> { vanillaPartDef[vanillaPartName] }
-                );
-            }
-
-            // Static part loop
+            // Part-to-part matching
             if (Base.IsDebug) stopwatch.Start();
-            foreach (BodyPartRecord raceBodyPart in raceBodyParts) {
-                // Try really hard to only match one vanilla part group
-                foreach (PartMatchType matchType in Enum.GetValues(typeof(PartMatchType))) {
-                    var partGroupMatched = new Dictionary<string, bool> {};
-                    foreach (string vanillaPartName in staticPartGroups.Keys) {
-                        if (matchType != PartMatchType.Tags) {
-                            // Fuzzy string match
-                            partGroupMatched.Add(
-                                vanillaPartName,
-                                staticPartGroups[vanillaPartName].Any( fuzzyPartName => fuzzyPartName == (
-                                    matchType == PartMatchType.BodyPartRecord ? BodyPartMatcher.SimplifyBodyPartLabel(raceBodyPart            ) :
-                                    matchType == PartMatchType.BodyPartDef    ? BodyPartMatcher.SimplifyBodyPartLabel(raceBodyPart.def        ) :
-                                    matchType == PartMatchType.DefName        ? BodyPartMatcher.SimplifyBodyPartLabel(raceBodyPart.def.defName) :
-                                    matchType == PartMatchType.LabelShort     ? BodyPartMatcher.SimplifyBodyPartLabel(raceBodyPart.LabelShort ) :
-                                    matchType == PartMatchType.Label          ? BodyPartMatcher.SimplifyBodyPartLabel(raceBodyPart.Label      ) :
-                                    ""  // ??? Forgot to add a partMatchType?
-                                ) )
-                            );
-                        }
-                        else {
-                            // Match against BodyPartDef.tags (must be all of them; checked last)
-                            BodyPartDef vanillaPart = vanillaPartDef[vanillaPartName];
-                            BodyPartDef raceBPD     = raceBodyPart.def;
 
-                            // Some of these tag matches can get dicey with weird creature parts, eg: SnakeBody (with
-                            // MovingLimbCore, like a Leg) or SnakeHead (with HearingSource, like an Ear).  So, we limit the
-                            // range to just vital parts or multiple tag matches.
-
-                            partGroupMatched.Add(
-                                vanillaPartName,
-                                raceBPD.tags.Count > 0 &&
-                                raceBPD.tags.Count == vanillaPart.tags.Count &&
-                                raceBPD.tags.All( vanillaPart.tags.Contains ) &&
-                                // (past this point, we know raceBPD.tags == vanillaPart.tags, so we can just reference the former
-                                // from now on)
-                                (
-                                    raceBPD.tags.Count >= 2 ||
-                                    raceBPD.tags.Any( bptd => bptd.vital )
-                                )
-                            );
-                        }
-                    }
-
-                    // Only stop to add if there's a conclusive singular part matched
-                    int partGroupMatches = staticPartGroups.Keys.Sum(k => partGroupMatched[k] ? 1 : 0);
-                    if (partGroupMatches == 1) {
-                        string vanillaPartName  = partGroupMatched.Keys.First(k => partGroupMatched[k]);
-                        BodyPartDef racePartDef = raceBodyPart.def;
-
-                        // Add to both sides
-                        partToPartMapper[vanillaPartName].Add(racePartDef);
-                        partToPartMapper.SetOrAddNested(
-                            racePartDef.defName,
-                            partToPartMapper[vanillaPartName].First(bpd => bpd.defName == vanillaPartName)
-                        );
-                        break;
-                    }
-                }
-            }
-            if (Base.IsDebug) {
-                stopwatch.Stop();
-                XP.ModLogger.Message(
-                    "    Static part loop: took {0:F4}s; {1:N0}/{2:N0} PartToPartMapper keys/BPDs",
-                    stopwatch.ElapsedMilliseconds / 1000f,
-                    partToPartMapper.Keys.Count(), partToPartMapper.Values.Sum(h => h.Count())
-                );
-                stopwatch.Reset();
-            }
-
-            // Part-to-part mapping
-            // (This is actually fewer combinations than all of the duplicates within
-            // surgeryList -> appliedOnFixedBodyParts.)
-            if (Base.IsDebug) stopwatch.Start();
-            var simpleLabelToBPDMapping = new Dictionary<string, HashSet<BodyPartDef>> {};
-            raceBodyParts.ForEach( bpr => simpleLabelToBPDMapping.SetOrAddNested(
-                key:   BodyPartMatcher.SimplifyBodyPartLabel(bpr),
-                value: bpr.def
-            ) );
-
-            foreach (HashSet<BodyPartDef> similarBPDs in simpleLabelToBPDMapping.Values.Where( hs => hs.Count() >= 2 ) ) {
-                similarBPDs.
-                    Select( bpd     => bpd.defName ).
-                    Do    ( defName => partToPartMapper.SetOrAddNestedRange(defName, similarBPDs) )
-                ;
-            }
+            int filteredCount = BodyPartMatcher.MatchPartsToParts(raceBodyParts);
 
             if (Base.IsDebug) {
                 stopwatch.Stop();
                 XP.ModLogger.Message(
-                    "    Part-to-part mapping: took {0:F4}s; {1:N0}/{2:N0} PartToPartMapper keys/BPDs",
+                    "    Part-to-part mapping: took {0:F4}s; {1:N0}/{2:N0} filtered BPDs",
                     stopwatch.ElapsedMilliseconds / 1000f,
-                    partToPartMapper.Keys.Count(), partToPartMapper.Values.Sum(h => h.Count())
+                    filteredCount, raceBodyParts.Count
                 );
                 stopwatch.Reset();
-
-                if (debugVanillaPartName != null) XP.ModLogger.Message(
-                    "      StaticParts[{0}] = {1}",
-                    debugVanillaPartName, string.Join(", ", staticPartGroups[debugVanillaPartName])
-                );
             }
 
             // Surgery-to-part mapping
             if (Base.IsDebug) stopwatch.Start();
 
-            foreach (RecipeDef surgery in surgeryList.Where(s => s.targetsBodyPart)) {
-                XPBioType surgeryBioType    = Helpers.GetSurgeryBioType(surgery);
-                string    surgeryLabelLower = surgery.label.ToLower();
-                bool      defnameDebug      = Base.IsDebug && debugSurgeryDefName != null && surgery.defName == debugSurgeryDefName;
-
-                if (defnameDebug) XP.ModLogger.Message(
-                    "      {0}: BioType = {1}, is in BioType cache = {2}",
-                    debugSurgeryDefName, surgeryBioType, pawnSurgeriesByBioType.ContainsKey(surgeryBioType).ToStringYesNo()
-                );
-                if (!pawnSurgeriesByBioType.ContainsKey(surgeryBioType)) continue;
-
-                // Compose this list outside of the surgeryBodyPart loop
-                HashSet<BodyPartDef> pawnSurgeryBodyParts =
-                    // We can't cross the animal/humanlike boundary with these checks because animal surgery recipes tend to be a lot
-                    // looser with limbs (ie: power claws on animal legs)
-                    pawnSurgeriesByBioType[surgeryBioType].
-                    Where     (s  => s.targetsBodyPart && s != surgery && s.defName != surgery.defName && s.label.ToLower() == surgeryLabelLower).
-                    SelectMany(s  => s.appliedOnFixedBodyParts).Distinct().
-                    ToHashSet()
-                ;
-
-                if (defnameDebug) XP.ModLogger.Message("      {0}: pawnSurgeryBodyParts = {1}", debugSurgeryDefName, string.Join(", ", pawnSurgeryBodyParts) );
-                if (pawnSurgeryBodyParts.Count == 0) continue;
-
-                /* If this list is crossing a bunch of our static part group boundaries, we should skip it.
-                 * RoM's Druid Regrowth recipe is one such example that tends to pollute the whole bunch.
-                 */
-                int partGroupMatches = staticPartGroups.Keys.Sum(k =>
-                    partToPartMapper[k].Overlaps(pawnSurgeryBodyParts) || partToPartMapper[k].Overlaps(surgery.appliedOnFixedBodyParts) ? 1 : 0
-                );
-                if (defnameDebug) XP.ModLogger.Message("      {0}: partGroupMatches = {1}", debugSurgeryDefName, partGroupMatches );
-                if (partGroupMatches >= 2) continue;
-
-                // Look for matching surgery labels, and map them to similar body parts
-                bool warnedAboutLargeSet = false;
-                foreach (BodyPartDef surgeryBodyPart in surgery.appliedOnFixedBodyParts) {
-                    string sbpDefName = surgeryBodyPart.defName;
-                    partToPartMapper.NewIfNoKey(sbpDefName);
-
-                    // Useful to warn when it's about to add a bunch of parts into a recipe at one time
-                    HashSet<BodyPartDef> diff = pawnSurgeryBodyParts.Except(partToPartMapper[sbpDefName]).ToHashSet();
-                    if (diff.Count() > 10 && !warnedAboutLargeSet) {
-                        XP.ModLogger.Warning(
-                            "Mapping a large set of body parts from \"{0}\":\nSurgery parts: {1}\nCurrent mapper parts: {2} ==> {3}\nNew mapper parts: {4}",
-                            surgery.LabelCap,
-                            string.Join(", ", surgery.appliedOnFixedBodyParts.Select(bpd => bpd.defName)),
-                            sbpDefName, string.Join(", ", partToPartMapper[sbpDefName].Select(bpd => bpd.defName)),
-                            string.Join(", ", diff.Select(bpd => bpd.defName))
-                        );
-                        warnedAboutLargeSet = true;
-                    }
-
-                    if (defnameDebug) XP.ModLogger.Message(
-                        "        -> {0}: current partToPartMapper = {1}\n          diff = {2}",
-                        sbpDefName, string.Join(", ", partToPartMapper[sbpDefName]), string.Join(", ", diff)
-                    );
-
-                    partToPartMapper[sbpDefName].AddRange(
-                        pawnSurgeryBodyParts.Where(bp => bp != surgeryBodyPart && bp.defName != sbpDefName)
-                    );
-                }
-            }
-            if (Base.IsDebug) {
-                stopwatch.Stop();
-                XP.ModLogger.Message(
-                    "    Surgery-to-part mapping: took {0:F4}s; {1:N0}/{2:N0} PartToPartMapper keys/BPDs",
-                    stopwatch.ElapsedMilliseconds / 1000f,
-                    partToPartMapper.Keys.Count(), partToPartMapper.Values.Sum(h => h.Count())
-                );
-                stopwatch.Reset();
-            }
-
-            // Clear out empty lists
-            if (Base.IsDebug) stopwatch.Start();
-
-            partToPartMapper.RemoveAll( kvp => kvp.Value.Count < 1 );
+            BodyPartMatcher.MatchSurgeriesToParts(surgeryList, pawnList);
 
             if (Base.IsDebug) {
                 stopwatch.Stop();
                 XP.ModLogger.Message(
-                    "    Empty list cleanup: took {0:F4}s; {1:N0}/{2:N0} PartToPartMapper keys/BPDs",
+                    "    Surgery-to-part mapping: took {0:F4}s; {1:N0} surgeries",
                     stopwatch.ElapsedMilliseconds / 1000f,
-                    partToPartMapper.Keys.Count(), partToPartMapper.Values.Sum(h => h.Count())
+                    surgeryList.Count
                 );
                 stopwatch.Reset();
             }
+
+            var racePartMapper = BodyPartMatcher.GetFilteredPartMapper(raceBodyParts);
 
             // With the parts mapped, add new body parts to existing recipes
             if (Base.IsDebug) stopwatch.Start();
 
             int newPartsAdded = 0;
             foreach (RecipeDef surgery in surgeryList.Where( s => s.targetsBodyPart && !s.appliedOnFixedBodyParts.NullOrEmpty() )) {
-                var newPartSet = new HashSet<BodyPartDef> {};
-                foreach (BodyPartDef surgeryBodyPart in surgery.appliedOnFixedBodyParts) {
-                    if (partToPartMapper.ContainsKey(surgeryBodyPart.defName)) {
-                        newPartSet.AddRange(partToPartMapper[surgeryBodyPart.defName]);
-                    }
-                }
+                HashSet<BodyPartDef> newPartSet =
+                    surgery.appliedOnFixedBodyParts.
+                    Where     ( sbpd => racePartMapper.ContainsKey(sbpd.defName) ).
+                    SelectMany( sbpd => racePartMapper[sbpd.defName] ).
+                    ToHashSet()
+                ;
 
                 List<BodyPartDef> AOFBP = surgery.appliedOnFixedBodyParts;
                 if (newPartSet.Count() >= 1 && !newPartSet.IsSubsetOf(AOFBP)) {
@@ -396,9 +123,9 @@ namespace XenobionicPatcher {
                     newPartsAdded += newPartSet.Count();
                 }
 
-                if (Base.IsDebug && debugSurgeryDefName != null && surgery.defName == debugSurgeryDefName) XP.ModLogger.Message(
+                if (Base.IsDebug && BodyPartMatcher.debugSurgeryDefName != null && surgery.defName == BodyPartMatcher.debugSurgeryDefName) XP.ModLogger.Message(
                     "      {0}: new AOFBP = {1}",
-                    debugSurgeryDefName, string.Join(", ", surgery.appliedOnFixedBodyParts)
+                    BodyPartMatcher.debugSurgeryDefName, string.Join(", ", surgery.appliedOnFixedBodyParts)
                 );
             }
 
@@ -416,41 +143,42 @@ namespace XenobionicPatcher {
             if (Base.IsDebug) stopwatch.Start();
 
             int newSurgeriesAdded = 0;
-            foreach (RecipeDef surgery in surgeryList) {
-                string surgeryLabelLower = surgery.label.ToLower();
+            foreach (ThingDef pawnDef in pawnList) {
+                List<RecipeDef> newSurgeries =
+                    surgeryList.
+                    Where( s =>
+                        // If it already exists, don't add it
+                        !doesPawnHaveSurgery.Contains( pawnDef.defName + "|" + s.label.ToLower() ) &&
+                        (
+                            // If it's an administer recipe, add it
+                            !s.targetsBodyPart ||
+                            // If it targets a body part, but nothing specific, add it
+                            (s.appliedOnFixedBodyParts.Count() == 0 && s.appliedOnFixedBodyPartGroups.Count() == 0) ||
+                            // If it targets any body parts that exist within the pawn, add it
+                            s.appliedOnFixedBodyParts.Any( sbp =>
+                                doesPawnHaveBodyPart.Contains( pawnDef.defName + "|" + sbp.defName )
+                            )
+                        )
+                    ).
+                    ToList()
+                ;
+                newSurgeriesAdded += newSurgeries.Count;
 
-                foreach (ThingDef pawnDef in pawnList.Where( p =>
-                    // If it already exists, don't add it
-                    !doesPawnHaveSurgery.Contains( p.defName + "|" + surgeryLabelLower )
-                )) {
-                    bool shouldAddSurgery = false;
+                if (pawnDef.recipes == null) pawnDef.recipes = newSurgeries; else pawnDef.recipes.AddRange(newSurgeries);
+                newSurgeries.DoIf(
+                    condition: s => s.recipeUsers == null,
+                    action:    s => s.recipeUsers = new()
+                );
+                newSurgeries.Do( s => s.recipeUsers.Add(pawnDef) );
 
-                    // If it's an administer recipe, add it
-                    if (!surgery.targetsBodyPart) shouldAddSurgery = true;
-
-                    // If it targets a body part, but nothing specific, add it
-                    else if (surgery.targetsBodyPart && surgery.appliedOnFixedBodyParts.Count() == 0 && surgery.appliedOnFixedBodyPartGroups.Count() == 0) {
-                        shouldAddSurgery = true;
-                    }
-
-                    // XXX: Despite my best efforts, this step is still mapping hand/foot surgeries together...
-
-                    // If it targets any body parts that exist within the pawn, add it
-                    else if (surgery.targetsBodyPart && surgery.appliedOnFixedBodyParts.Count() >= 1 && surgery.appliedOnFixedBodyParts.Any( sbp =>
-                        doesPawnHaveBodyPart.Contains( pawnDef.defName + "|" + sbp.defName )
-                    )) shouldAddSurgery = true;
-
-                    if (Base.IsDebug && debugSurgeryDefName != null && debugPawnKindDefName != null && surgery.defName == debugSurgeryDefName && pawnDef.defName == debugPawnKindDefName) XP.ModLogger.Message(
-                        "      {0} -> {1}: shouldAddSurgery = {2}",
-                        debugSurgeryDefName, debugPawnKindDefName, shouldAddSurgery.ToStringYesNo()
-                    );
-
-                    if (shouldAddSurgery) {
-                        newSurgeriesAdded++;
-                        if (pawnDef.recipes     == null) pawnDef.recipes     = new List<RecipeDef> { surgery }; else pawnDef.recipes    .Add(surgery);
-                        if (surgery.recipeUsers == null) surgery.recipeUsers = new List<ThingDef>  { pawnDef }; else surgery.recipeUsers.Add(pawnDef);
-                    }
-                }
+                if (
+                    Base.IsDebug &&
+                    BodyPartMatcher.debugPawnKindDefName != null &&
+                    pawnDef.defName == BodyPartMatcher.debugPawnKindDefName
+                ) XP.ModLogger.Message(
+                    "      Pawn {0}: newSurgeries = {2}",
+                    BodyPartMatcher.debugPawnKindDefName, string.Join(", ", newSurgeries.Select( s => s.defName ))
+                );
             }
             if (Base.IsDebug) {
                 stopwatch.Stop();
