@@ -381,6 +381,18 @@ namespace XenobionicPatcher {
 
             // Sort all of the recipes on the pawn side
             if (Base.IsDebug) stopwatch.Start();
+            Helpers.CachePartSortOrder();
+
+            if (Base.IsDebug) {
+                stopwatch.Stop();
+                XP.ModLogger.Message(
+                    "    Create part sort order cache: took {0:F4}s; {1:N0} parts total",
+                    stopwatch.ElapsedMilliseconds / 1000f, Helpers.partSortOrderLookupCache.Count
+                );
+                stopwatch.Reset();
+            }
+
+            if (Base.IsDebug) stopwatch.Start();
 
             foreach (ThingDef pawnDef in pawnList.Where(p => p.recipes != null)) {
                 try {

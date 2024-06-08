@@ -288,13 +288,15 @@ namespace XenobionicPatcher {
         };
 
         internal static Dictionary<BodyPartDef, int> partSortOrderLookupCache = new();
+        internal static HashSet<BodyPartDef>         humanPartHashCache       = new();
 
-        public static int SurgerySort (RecipeDef surgery) {
+        public static void CachePartSortOrder () {
+            HashSet<BodyPartDef> humanPartHash = DefDatabase<BodyDef>.GetNamed("Human").AllParts.Select(bpr => bpr.def).ToHashSet();
+
             // Initialize cache
             if (partSortOrderLookupCache.Count == 0) {
                 // Start with a human body part list
-                List<BodyPartDef> partList = DefDatabase<BodyDef>.GetNamed("Human").AllParts.Select(bpr => bpr.def).ToList();
-                partList.RemoveDuplicates();
+                List<BodyPartDef> partList = humanPartHash.ToList();
 
                 // Create an ordered list that combines all of the bodies in as close to its original order as possible (in relation
                 // to the original human body set)
@@ -305,27 +307,22 @@ namespace XenobionicPatcher {
                     foreach (var bpd in bodyPartList) {
                         int index = partList.IndexOf(bpd);
                         if (index > -1) {
+                            // part already exists in list
                             lastKnownPartIndex = index;
                             continue;
                         }
 
-                        /* XXX: This matching still isn't perfect, since parts with different base names aren't going to get
-                         * tied together here.
-                         *
-                         * What we really need is the partToPartMapper used in DefInjectors, but caching that data in
-                         * BodyPartMatcher may start polluting pawn species types for the different separated patching loops.
-                         * It can be done (by filtering the returned HashSet<BodyPartDef> on each loop), but it would require
-                         * moving a large part of InjectSurgeryRecipes into the BodyPartMatcher, and quite a bit more
-                         * testing/timing.
-                         * 
-                         * I'm not against doing so, as it's probably additional time savings in the loops, but just not right
-                         * now.  It feels too much like bikeshedding currently, and this v1.5 version of XP is "good enough".
-                         * I might revisit this next DLC cycle...
-                         */ 
+                        // look up the current partToPartMapper cache (which should have mostly everything at this point)
+                        if (BodyPartMatcher.partToPartMapper.ContainsKey(bpd.defName)) {
+                            HashSet<BodyPartDef> partDefSet = BodyPartMatcher.partToPartMapper[bpd.defName].PartDefSet;
+                            index = partList.FirstIndexOf(partDefSet.Contains);
+                        }
 
-                        // try harder with the BodyPartMatcher
-                        string simplePartLabel = BodyPartMatcher.SimplifyBodyPartLabel(bpd);
-                        index = partList.FirstIndexOf( obpd => BodyPartMatcher.SimplifyBodyPartLabel(obpd) == simplePartLabel );
+                        // I guess we try with SimplifyBodyPartLabel
+                        if (index == -1) {
+                            string simplePartLabel = BodyPartMatcher.SimplifyBodyPartLabel(bpd);
+                            index = partList.FirstIndexOf( obpd => BodyPartMatcher.SimplifyBodyPartLabel(obpd) == simplePartLabel );
+                        }
 
                         if (index > -1) {
                             // still need to add in the part, but at least we know where it goes
@@ -334,14 +331,17 @@ namespace XenobionicPatcher {
                             continue;
                         }
 
-                        partList.Insert(lastKnownPartIndex + 1, bpd);
+                        // can't figure where to put it; just use the lastKnownPartIndex and add it in
                         lastKnownPartIndex++;
+                        partList.Insert(lastKnownPartIndex, bpd);
                     }
                 }
 
                 partSortOrderLookupCache = partList.ToDictionary( bpd => bpd, partList.IndexOf );
             }
+        }
 
+        public static int SurgerySort (RecipeDef surgery) {
             // First sort
             var worker    = surgery.workerClass;
             int typeOrder = surgeryTypeOrder.IndexOf(worker);
@@ -351,9 +351,12 @@ namespace XenobionicPatcher {
             // Second sort
             int partOrder = 9999;
             if (surgery.targetsBodyPart) {
-                // XXX: We looked through every BodyPartDef, so this First shouldn't ever fail (and should always
-                // return index 0).  But, I can't argue against a little NPE protection...
-                BodyPartDef foundPart = surgery.appliedOnFixedBodyParts.FirstOrDefault( bpd => partSortOrderLookupCache.ContainsKey(bpd) );
+                BodyPartDef foundPart =
+                    surgery.appliedOnFixedBodyParts.FirstOrDefault( bpd => humanPartHashCache.Contains(bpd) ) ??
+                    // XXX: We looked through every BodyPartDef, so this First shouldn't ever fail (and should always
+                    // return index 0).  But, I can't argue against a little NPE protection...
+                    surgery.appliedOnFixedBodyParts.FirstOrDefault( bpd => partSortOrderLookupCache.ContainsKey(bpd) )
+                ;
                 if (foundPart != null) partOrder = partSortOrderLookupCache[foundPart];
             }
 
@@ -365,6 +368,7 @@ namespace XenobionicPatcher {
             pawnBioTypeCache   .Clear();
             typeByNameCache    .Clear();
             partSortOrderLookupCache.Clear();
+            humanPartHashCache .Clear();
             
             BodyPartMatcher.simplifyCache.Clear();
             BodyPartMatcher.partToPartMapper.Clear();
