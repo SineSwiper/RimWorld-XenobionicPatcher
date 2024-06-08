@@ -8,6 +8,21 @@
     </HugsLib.UpdateFeatureDef>
 
     <HugsLib.UpdateFeatureDef ParentName="XP_UpdateFeatureBase">
+        <defName>XenobionicPatcher_1_2_11</defName>
+        <assemblyVersion>1.2.11</assemblyVersion>
+        <content>&lt;b&gt;Additions:&lt;/b&gt;
+- Added (limited) tag matching to the static part mapper
+
+&lt;b&gt;Fixes:&lt;/b&gt;
+- Sped up part-to-part mapping
+- Improved accuracy of surgery sorting
+
+&lt;b&gt;Tweaks:&lt;/b&gt;
+- Added some Evolved Organs adjectives to the part list
+        </content>
+    </HugsLib.UpdateFeatureDef>
+
+    <HugsLib.UpdateFeatureDef ParentName="XP_UpdateFeatureBase">
         <defName>XenobionicPatcher_1_2_10</defName>
         <assemblyVersion>1.2.10</assemblyVersion>
         <content>&lt;b&gt;Additions:&lt;/b&gt;
